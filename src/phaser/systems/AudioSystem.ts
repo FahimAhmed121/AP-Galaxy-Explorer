@@ -38,6 +38,18 @@ export class AudioSystem {
     audioEngine.playSound('discovery-ready');
   };
 
+  private handleLearningStarted = () => {
+    audioEngine.playSound('learning-start');
+  };
+
+  private handleLearningCardChanged = () => {
+    audioEngine.playSound('card-flip');
+  };
+
+  private handleLearningCompleted = () => {
+    audioEngine.playSound('learning-complete');
+  };
+
   constructor() {
     logger.info('AudioSystem: Game Audio System initialized.');
     this.setupListeners();
@@ -51,6 +63,9 @@ export class AudioSystem {
     eventBus.on('DISCOVERY_STARTED', this.handleDiscoveryStarted);
     eventBus.on('DISCOVERY_OVERLAY_SHOWN', this.handleDiscoveryOverlayShown);
     eventBus.on('DISCOVERY_READY', this.handleDiscoveryReady);
+    eventBus.on('LEARNING_STARTED', this.handleLearningStarted);
+    eventBus.on('LEARNING_CARD_CHANGED', this.handleLearningCardChanged);
+    eventBus.on('LEARNING_COMPLETED', this.handleLearningCompleted);
   }
 
   public updateThrustSound(isThrusting: boolean, _isBoosting: boolean): void {
@@ -86,6 +101,9 @@ export class AudioSystem {
     eventBus.off('DISCOVERY_STARTED', this.handleDiscoveryStarted);
     eventBus.off('DISCOVERY_OVERLAY_SHOWN', this.handleDiscoveryOverlayShown);
     eventBus.off('DISCOVERY_READY', this.handleDiscoveryReady);
+    eventBus.off('LEARNING_STARTED', this.handleLearningStarted);
+    eventBus.off('LEARNING_CARD_CHANGED', this.handleLearningCardChanged);
+    eventBus.off('LEARNING_COMPLETED', this.handleLearningCompleted);
     this.isThrustPlaying = false;
   }
 }

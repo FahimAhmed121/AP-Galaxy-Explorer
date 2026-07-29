@@ -156,6 +156,33 @@ class AudioEngine {
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
         osc.start(now);
         osc.stop(now + 0.6);
+      } else if (type === 'card-flip') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(783.99, now); // G5
+        osc.frequency.exponentialRampToValueAtTime(1046.50, now + 0.08); // C6
+        gain.gain.setValueAtTime(baseGain * 0.8, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      } else if (type === 'learning-start') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(440.00, now); // A4
+        osc.frequency.setValueAtTime(554.37, now + 0.10); // C#5
+        osc.frequency.setValueAtTime(659.25, now + 0.20); // E5
+        gain.gain.setValueAtTime(baseGain * 1.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc.start(now);
+        osc.stop(now + 0.5);
+      } else if (type === 'learning-complete') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.setValueAtTime(659.25, now + 0.10); // E5
+        osc.frequency.setValueAtTime(783.99, now + 0.20); // G5
+        osc.frequency.setValueAtTime(1046.50, now + 0.30); // C6
+        gain.gain.setValueAtTime(baseGain * 1.5, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+        osc.start(now);
+        osc.stop(now + 0.8);
       }
     } catch (e) {
       console.warn('Audio play failed', e);

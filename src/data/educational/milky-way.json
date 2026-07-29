@@ -1,0 +1,112 @@
+{
+  "galaxyId": "milky-way",
+  "galaxyName": "Milky Way Galaxy",
+  "auraIntro": "Welcome home, Explorer. Review the classified briefing on our home galaxy, the Milky Way.",
+  "overview": "The Milky Way is a barred spiral galaxy containing our Solar System, along with an estimated 100 to 400 billion other stars.",
+  "formation": "Formed approximately 13.6 billion years ago shortly after the Big Bang.",
+  "structure": "Barred spiral with two major spiral arms (Scutum-Centaurus and Perseus) and a central supermassive black hole, Sagittarius A*.",
+  "distance": "0 Light Years",
+  "diameter": "100,000 Light Years",
+  "age": "13.6 Billion Years",
+  "constellation": "Sagittarius (Galactic Center)",
+  "discoveryHistory": "Observed since antiquity as a band of light in the night sky. Democritus suggested it consisted of distant stars in 400 BCE.",
+  "observationTips": "Best viewed on clear, moonless summer or autumn nights far from urban light pollution.",
+  "funFacts": [
+    "Our Solar System orbits the galactic center at 828,000 km/h, taking 230 million years per cosmic orbit.",
+    "The Milky Way and Andromeda are approaching each other at 110 km/s and will merge in ~4.5 billion years."
+  ],
+  "quizReferences": ["milky-way-q1", "milky-way-q2"],
+  "cards": [
+    {
+      "id": "milky-way-card-1",
+      "title": "Galactic Overview & Home Base",
+      "subtitle": "Barred Spiral Architecture",
+      "category": "OVERVIEW",
+      "body": "The Milky Way is our cosmic home. Spanning 100,000 light-years across, it contains an estimated 100 to 400 billion stars, interstellar gas, and dark matter.",
+      "keyMetrics": [
+        { "label": "CLASSIFICATION", "value": "Barred Spiral (SBbc)" },
+        { "label": "DISTANCE FROM EARTH", "value": "0 Light Years (We Live Here!)" },
+        { "label": "ESTIMATED STARS", "value": "100 - 400 Billion" },
+        { "label": "GALACTIC CORE", "value": "Sagittarius A*" }
+      ],
+      "visualPlaceholder": {
+        "title": "Milky Way Panoramic Composite",
+        "caption": "All-sky infrared survey of the Milky Way galaxy disk captured by NASA telescopes.",
+        "assetType": "TELESCOPE_IMAGE",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/43/ESO-VLT-Laser-phot-33a-07_composite.jpg"
+      }
+    },
+    {
+      "id": "milky-way-card-2",
+      "title": "Formation & Cosmic Timeline",
+      "subtitle": "13.6 Billion Years of Stellar Assembly",
+      "category": "FORMATION",
+      "body": "The Milky Way began assembling ~13.6 billion years ago. Primal hydrogen gas clouds collapsed into proto-galaxies that merged over cosmic time.",
+      "bulletPoints": [
+        "First generation Population III stars formed within 200 million years of the Big Bang.",
+        "Accreted smaller satellite galaxies like Gaia-Enceladus during early major mergers.",
+        "Continuous star formation maintained by gas falling in from galactic filaments."
+      ],
+      "visualPlaceholder": {
+        "title": "Early Assembly Simulation",
+        "caption": "Supercomputer model depicting gas condensation and galactic halo assembly.",
+        "assetType": "FORMATION_DIAGRAM"
+      }
+    },
+    {
+      "id": "milky-way-card-3",
+      "title": "Spiral Morphology & Central Black Hole",
+      "subtitle": "Sagittarius A* and Galactic Disk Structure",
+      "category": "STRUCTURE",
+      "body": "At the exact center of our galaxy lies Sagittarius A*, a supermassive black hole with a mass of 4.1 million Suns. Surrounding it is a dense bar of stars feeding two major spiral arms.",
+      "keyMetrics": [
+        { "label": "BLACK HOLE MASS", "value": "4.1 Million Solar Masses" },
+        { "label": "GALACTIC YEAR", "value": "230 Million Earth Years" }
+      ],
+      "bulletPoints": [
+        "Major Spiral Arms: Scutum-Centaurus Arm and Perseus Arm.",
+        "Our Sun resides in the Orion-Cygnus Spur, ~27,000 light-years from the core.",
+        "Surrounded by a halo containing over 150 ancient globular star clusters."
+      ],
+      "visualPlaceholder": {
+        "title": "Event Horizon Telescope Sgr A*",
+        "caption": "Radio interferometry image showing the shadow of Sagittarius A*.",
+        "assetType": "SPECTRAL_CHART"
+      }
+    },
+    {
+      "id": "milky-way-card-4",
+      "title": "Observation & Naked-Eye Astronomy",
+      "subtitle": "Viewing the Milky Way Band",
+      "category": "HISTORY",
+      "body": "Galileo Galilei first resolved the hazy band of the Milky Way into individual stars using his telescope in 1610.",
+      "bulletPoints": [
+        "Appears as a luminous band across the sky containing dark nebula lanes like the Great Rift.",
+        "Best observed during Summer when the bright galactic core in Sagittarius is visible.",
+        "Requires dark sky sites (Bortle Class 1-3) to see fine dust lane detail with the naked eye."
+      ],
+      "visualPlaceholder": {
+        "title": "Ground-Based Panoramic Survey",
+        "caption": "Night sky view of the galactic arch over a mountain observatory.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "milky-way-card-5",
+      "title": "Key Astrophysical Curiosities",
+      "subtitle": "Fermi Bubbles & Future Cosmic Collision",
+      "category": "FACTS",
+      "body": "The Milky Way is surrounded by colossal Fermi Bubbles extending 25,000 light-years above and below the galactic plane, emitting high-energy gamma rays.",
+      "bulletPoints": [
+        "Fermi Bubbles were created by an energetic eruption from Sgr A* millions of years ago.",
+        "The Milky Way is currently consuming the Sagittarius Dwarf Spheroidal Galaxy.",
+        "In ~4.5 billion years, the Milky Way and Andromeda will merge into 'Milkomeda'."
+      ],
+      "visualPlaceholder": {
+        "title": "Fermi Gamma-Ray Bubble Map",
+        "caption": "Space telescope gamma-ray emission map extending perpendicular to disk.",
+        "assetType": "ARTIST_CONCEPT"
+      }
+    }
+  ]
+}

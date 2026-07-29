@@ -10,6 +10,7 @@ import RadarHUD from './hud/RadarHUD';
 import PilotDashboardModal from './hud/PilotDashboardModal';
 import GameOverModal from './hud/GameOverModal';
 import DiscoveryOverlay from './hud/DiscoveryOverlay';
+import LearningBriefingModal from './hud/LearningBriefingModal';
 import GameContainer from './common/GameContainer';
 import { eventBus } from '../core/events';
 
@@ -628,6 +629,9 @@ export default function GameCanvas({
 
       {/* Discovery Experience AURA & Metadata Overlay */}
       <DiscoveryOverlay />
+
+      {/* Educational Briefing Learning Layer Modal */}
+      <LearningBriefingModal />
 
       {/* 3. Bottom Right Radar & Map Navigation */}
       <RadarHUD

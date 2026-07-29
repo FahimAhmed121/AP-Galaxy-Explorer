@@ -19,6 +19,9 @@ export type GameEventType =
   | 'DISCOVERY_OVERLAY_SHOWN'
   | 'DISCOVERY_READY'
   | 'DISCOVERY_FINISHED'
+  | 'LEARNING_STARTED'
+  | 'LEARNING_CARD_CHANGED'
+  | 'LEARNING_COMPLETED'
   | 'WARP_JUMP_TRIGGERED'
   | 'GAME_OVER_TRIGGERED';
 
@@ -41,6 +44,9 @@ export interface GameEventPayloads {
   DISCOVERY_OVERLAY_SHOWN: { galaxyData: Galaxy; auraText: string };
   DISCOVERY_READY: { galaxyData: Galaxy };
   DISCOVERY_FINISHED: { galaxyId: string };
+  LEARNING_STARTED: { galaxyId: string; galaxyName: string; totalCards: number; content: any };
+  LEARNING_CARD_CHANGED: { galaxyId: string; currentCardIndex: number; totalCards: number; progressPercentage: number };
+  LEARNING_COMPLETED: { galaxyId: string; galaxyData: Galaxy; timeSpentSeconds: number };
   WARP_JUMP_TRIGGERED: { targetGalaxyId: string };
   GAME_OVER_TRIGGERED: { finalScore: number };
 }

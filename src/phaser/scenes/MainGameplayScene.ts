@@ -10,6 +10,7 @@ import { DebugOverlaySystem } from '../systems/DebugOverlaySystem';
 import { ScannerSystem } from '../systems/ScannerSystem';
 import { ScannerVisualSystem } from '../systems/ScannerVisualSystem';
 import { DiscoveryController } from '../systems/DiscoveryController';
+import { LearningController } from '../systems/LearningController';
 
 export class MainGameplayScene extends Phaser.Scene {
   private isPaused: boolean = false;
@@ -22,6 +23,7 @@ export class MainGameplayScene extends Phaser.Scene {
   private scannerSystem?: ScannerSystem;
   private scannerVisuals?: ScannerVisualSystem;
   private discoveryController?: DiscoveryController;
+  private learningController?: LearningController;
 
   // Entities
   private playerShip?: PlayerShip;
@@ -46,9 +48,10 @@ export class MainGameplayScene extends Phaser.Scene {
     this.scannerSystem = new ScannerSystem();
     this.scannerVisuals = new ScannerVisualSystem(this);
 
-    // 5. Initialize Discovery Controller System
+    // 5. Initialize Discovery & Learning Systems
     this.discoveryController = new DiscoveryController();
     this.discoveryController.setCamera(this.cameras.main);
+    this.learningController = new LearningController();
 
     // 6. Spawn Player Ship at World Center
     const spawnX = GAME_CONFIG.world.width / 2;
@@ -178,5 +181,6 @@ export class MainGameplayScene extends Phaser.Scene {
     if (this.scannerSystem) this.scannerSystem.destroy();
     if (this.scannerVisuals) this.scannerVisuals.destroy();
     if (this.discoveryController) this.discoveryController.destroy();
+    if (this.learningController) this.learningController.destroy();
   }
 }

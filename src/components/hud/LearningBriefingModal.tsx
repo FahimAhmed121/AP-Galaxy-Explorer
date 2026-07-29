@@ -1,0 +1,353 @@
+import React, { useEffect, useState, useCallback } from 'react';
+import {
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  Cpu,
+  CheckCircle,
+  Radio,
+  X,
+  Volume2,
+  Sparkles,
+  Compass,
+  Layers,
+  Image as ImageIcon,
+  Activity,
+  Award,
+} from 'lucide-react';
+import { EducationalContent, LearningCard } from '../../data/educational/types';
+import { eventBus } from '../../core/events';
+
+export const LearningBriefingModal: React.FC = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [content, setContent] = useState<EducationalContent | null>(null);
+  const [activeCardIndex, setActiveCardIndex] = useState<number>(0);
+
+  useEffect(() => {
+    const handleStarted = (payload: { galaxyId: string; galaxyName: string; totalCards: number; content: EducationalContent }) => {
+      setContent(payload.content);
+      setActiveCardIndex(0);
+      setIsOpen(true);
+    };
+
+    const handleCardChanged = (payload: { currentCardIndex: number }) => {
+      setActiveCardIndex(payload.currentCardIndex);
+    };
+
+    const handleCompleted = () => {
+      setIsOpen(false);
+      setContent(null);
+      setActiveCardIndex(0);
+    };
+
+    eventBus.on('LEARNING_STARTED', handleStarted);
+    eventBus.on('LEARNING_CARD_CHANGED', handleCardChanged);
+    eventBus.on('LEARNING_COMPLETED', handleCompleted);
+
+    return () => {
+      eventBus.off('LEARNING_STARTED', handleStarted);
+      eventBus.off('LEARNING_CARD_CHANGED', handleCardChanged);
+      eventBus.off('LEARNING_COMPLETED', handleCompleted);
+    };
+  }, []);
+
+  const handleNext = useCallback(() => {
+    if (!content) return;
+    if (activeCardIndex < content.cards.length - 1) {
+      const nextIdx = activeCardIndex + 1;
+      setActiveCardIndex(nextIdx);
+      const total = content.cards.length;
+      eventBus.emit('LEARNING_CARD_CHANGED', {
+        galaxyId: content.galaxyId,
+        currentCardIndex: nextIdx,
+        totalCards: total,
+        progressPercentage: Math.round(((nextIdx + 1) / total) * 100),
+      });
+    } else {
+      handleComplete();
+    }
+  }, [content, activeCardIndex]);
+
+  const handlePrev = useCallback(() => {
+    if (!content || activeCardIndex === 0) return;
+    const prevIdx = activeCardIndex - 1;
+    setActiveCardIndex(prevIdx);
+    const total = content.cards.length;
+    eventBus.emit('LEARNING_CARD_CHANGED', {
+      galaxyId: content.galaxyId,
+      currentCardIndex: prevIdx,
+      totalCards: total,
+      progressPercentage: Math.round(((prevIdx + 1) / total) * 100),
+    });
+  }, [content, activeCardIndex]);
+
+  const handleComplete = useCallback(() => {
+    if (!content) return;
+    eventBus.emit('LEARNING_COMPLETED', {
+      galaxyId: content.galaxyId,
+      galaxyData: {
+        id: content.galaxyId,
+        name: content.galaxyName,
+        type: content.structure,
+        distance: content.distance,
+        diameter: content.diameter,
+        constellation: content.constellation,
+        age: content.age,
+        description: content.overview,
+        funFacts: content.funFacts,
+        visualColor: '#00d2ff',
+        iconStyle: 'spiral',
+        x: 0,
+        y: 0,
+        radius: 100,
+        quizzes: [],
+      },
+      timeSpentSeconds: 15,
+    });
+    setIsOpen(false);
+  }, [content]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'd') {
+        e.preventDefault();
+        handleNext();
+      } else if (e.key === 'ArrowLeft' || e.key === 'a') {
+        e.preventDefault();
+        handlePrev();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        handleComplete();
+      } else if (e.key === 'Enter' && content && activeCardIndex === content.cards.length - 1) {
+        e.preventDefault();
+        handleComplete();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, handleNext, handlePrev, handleComplete, content, activeCardIndex]);
+
+  if (!isOpen || !content) return null;
+
+  const currentCard: LearningCard = content.cards[activeCardIndex] || content.cards[0];
+  const totalCards = content.cards.length;
+  const progressPercentage = Math.round(((activeCardIndex + 1) / totalCards) * 100);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-slate-950/90 backdrop-blur-2xl select-none font-sans overflow-y-auto">
+      
+      {/* Container Frame */}
+      <div className="w-full max-w-5xl rounded-xl bg-slate-900/95 border border-cyan-500/40 shadow-2xl flex flex-col overflow-hidden relative text-slate-100 my-auto">
+        
+        {/* Background Tech Scanline Effect */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(56,189,248,0.02)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none" />
+
+        {/* 1. TOP HEADER - NASA MISSION CONTROL TITLE & AURA STATUS */}
+        <div className="flex items-center justify-between px-6 py-4 bg-slate-950/80 border-b border-cyan-500/30">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-cyan-950/80 border border-cyan-400/60 flex items-center justify-center text-cyan-300 shadow-md">
+              <BookOpen size={20} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 font-bold">NASA SCIENTIFIC BRIEFING</span>
+                <span className="text-xs text-slate-600">/</span>
+                <span className="text-[10px] font-mono text-emerald-400 uppercase">CLASSIFIED RESEARCH</span>
+              </div>
+              <h1 className="text-lg md:text-xl font-serif italic font-bold text-white tracking-wide">
+                {content.galaxyName}
+              </h1>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded bg-cyan-950/40 border border-cyan-500/30 text-cyan-300 font-mono text-xs">
+              <Radio size={14} className="animate-pulse text-cyan-400" />
+              <span>AURA BRIEFING ACTIVE</span>
+            </div>
+
+            <button
+              onClick={handleComplete}
+              className="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors border border-slate-700"
+              title="Close Briefing (Esc)"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* 2. MAIN BODY - AURA ASSISTANT HEADER + CARD CONTENT */}
+        <div className="p-6 md:p-8 space-y-6 flex-1 overflow-y-auto">
+          
+          {/* A. AURA Dialogue & Holographic Panel */}
+          <div className="p-4 rounded-lg bg-cyan-950/30 border border-cyan-500/30 flex items-start gap-4 relative overflow-hidden backdrop-blur-sm">
+            <div className="relative flex-shrink-0 w-12 h-12 rounded-full bg-cyan-900/60 border border-cyan-400 flex items-center justify-center text-cyan-300 shadow-lg">
+              <Cpu size={24} className="animate-pulse" />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-[10px] font-mono text-cyan-400 tracking-wider uppercase font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                <span>AURA RESEARCH ASSISTANT // BRIEFING PROTOCOL</span>
+              </div>
+              <p className="text-xs md:text-sm text-slate-200 italic font-sans">
+                "{content.auraIntro}"
+              </p>
+            </div>
+          </div>
+
+          {/* B. Active Learning Card Area */}
+          <div className="p-6 md:p-8 rounded-xl bg-slate-950/70 border border-slate-800 shadow-inner space-y-6 relative">
+            
+            {/* Card Category & Title Header */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div className="space-y-1">
+                <span className="px-2.5 py-1 rounded bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 font-mono text-[10px] uppercase tracking-wider font-bold">
+                  CARD {activeCardIndex + 1} OF {totalCards} : {currentCard.category}
+                </span>
+                <h2 className="text-xl md:text-2xl font-serif italic font-bold text-white mt-1">
+                  {currentCard.title}
+                </h2>
+                <p className="text-xs font-mono text-slate-400">
+                  {currentCard.subtitle}
+                </p>
+              </div>
+
+              <div className="text-right font-mono text-xs text-slate-400">
+                <span className="text-cyan-400 font-bold">{progressPercentage}%</span>
+                <span className="block text-[10px] text-slate-500">COMPLETED</span>
+              </div>
+            </div>
+
+            {/* Main Card Body Narrative */}
+            <p className="text-sm md:text-base text-slate-200 leading-relaxed font-sans">
+              {currentCard.body}
+            </p>
+
+            {/* Key Metrics Grid (If Present) */}
+            {currentCard.keyMetrics && currentCard.keyMetrics.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                {currentCard.keyMetrics.map((metric, idx) => (
+                  <div key={idx} className="p-3 rounded-lg bg-black/50 border border-slate-800/80 space-y-0.5">
+                    <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider block">{metric.label}</span>
+                    <span className="text-xs font-mono font-bold text-cyan-300 block truncate">{metric.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Bullet Points List (If Present) */}
+            {currentCard.bulletPoints && currentCard.bulletPoints.length > 0 && (
+              <div className="space-y-2 pt-2">
+                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest block font-bold">
+                  KEY SCIENTIFIC TAKEAWAYS:
+                </span>
+                <ul className="space-y-2 text-xs md:text-sm text-slate-300 font-sans">
+                  {currentCard.bulletPoints.map((pt, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1.5 flex-shrink-0" />
+                      <span>{pt}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Visual Placeholder Component */}
+            {currentCard.visualPlaceholder && (
+              <div className="p-4 rounded-lg bg-black/60 border border-cyan-500/20 flex flex-col md:flex-row items-center gap-4 text-xs font-mono">
+                <div className="w-16 h-16 rounded bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-center text-cyan-400 flex-shrink-0">
+                  <ImageIcon size={28} />
+                </div>
+                <div className="space-y-1 text-center md:text-left">
+                  <span className="text-cyan-300 font-bold block">{currentCard.visualPlaceholder.title}</span>
+                  <p className="text-slate-400 text-[11px] font-sans italic">{currentCard.visualPlaceholder.caption}</p>
+                </div>
+              </div>
+            )}
+
+          </div>
+
+        </div>
+
+        {/* 3. FOOTER - PROGRESS BAR & NAVIGATION CONTROLS */}
+        <div className="px-6 py-4 bg-slate-950/90 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+          
+          {/* Progress Indicator Dots & Bar */}
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <div className="flex items-center gap-1.5">
+              {content.cards.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setActiveCardIndex(idx);
+                    eventBus.emit('LEARNING_CARD_CHANGED', {
+                      galaxyId: content.galaxyId,
+                      currentCardIndex: idx,
+                      totalCards,
+                      progressPercentage: Math.round(((idx + 1) / totalCards) * 100),
+                    });
+                  }}
+                  className={`h-2 rounded-full transition-all ${
+                    idx === activeCardIndex
+                      ? 'w-6 bg-cyan-400 shadow-sm shadow-cyan-400'
+                      : idx < activeCardIndex
+                      ? 'w-2 bg-emerald-400'
+                      : 'w-2 bg-slate-800'
+                  }`}
+                  title={`Card ${idx + 1}`}
+                />
+              ))}
+            </div>
+
+            <span className="text-xs font-mono text-slate-400 whitespace-nowrap">
+              {activeCardIndex + 1} / {totalCards} Cards
+            </span>
+          </div>
+
+          {/* Navigation Action Buttons */}
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <button
+              onClick={handlePrev}
+              disabled={activeCardIndex === 0}
+              className={`px-4 py-2 rounded-lg font-mono text-xs flex items-center gap-1.5 border transition-all ${
+                activeCardIndex === 0
+                  ? 'opacity-40 cursor-not-allowed border-slate-800 text-slate-600'
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+              }`}
+            >
+              <ChevronLeft size={16} />
+              <span>PREVIOUS</span>
+            </button>
+
+            {activeCardIndex < totalCards - 1 ? (
+              <button
+                onClick={handleNext}
+                className="px-5 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 transition-all"
+              >
+                <span>NEXT CARD</span>
+                <ChevronRight size={16} />
+              </button>
+            ) : (
+              <button
+                onClick={handleComplete}
+                className="px-6 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono text-xs font-bold flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all animate-pulse"
+              >
+                <CheckCircle size={16} />
+                <span>COMPLETE BRIEFING</span>
+              </button>
+            )}
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  );
+};
+
+export default LearningBriefingModal;

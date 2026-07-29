@@ -1,0 +1,112 @@
+{
+  "galaxyId": "andromeda",
+  "galaxyName": "Andromeda Galaxy (M31)",
+  "auraIntro": "Explorer, Andromeda briefing loaded. Review the metrics for our nearest major galactic neighbor.",
+  "overview": "The Andromeda Galaxy (Messier 31) is a massive spiral galaxy located approximately 2.5 million light-years from Earth. It is the largest galaxy in our Local Group.",
+  "formation": "Assembled through past galactic collisions approximately 10 billion years ago.",
+  "structure": "Classic spiral galaxy with a double nucleus containing a supermassive black hole.",
+  "distance": "2.5 Million Light Years",
+  "diameter": "220,000 Light Years",
+  "age": "10 Billion Years",
+  "constellation": "Andromeda",
+  "discoveryHistory": "Cataloged by Persian astronomer Abd al-Rahman al-Sufi in 964 CE as a 'small cloud'.",
+  "observationTips": "Visible to the naked eye as a fuzzy smudge under dark skies; stunning through binoculars.",
+  "funFacts": [
+    "Andromeda contains over 1 trillion stars—more than twice as many as the Milky Way.",
+    "It is traveling toward our galaxy at 110 kilometers per second."
+  ],
+  "quizReferences": ["andromeda-q1", "andromeda-q2"],
+  "cards": [
+    {
+      "id": "andromeda-card-1",
+      "title": "Messier 31 Overview",
+      "subtitle": "Colossus of the Local Group",
+      "category": "OVERVIEW",
+      "body": "Spanning over 220,000 light-years, Andromeda is the largest galaxy in the Local Group. It hosts over 1 trillion stars and is surrounded by a swarm of satellite dwarf galaxies.",
+      "keyMetrics": [
+        { "label": "CLASSIFICATION", "value": "SA(s)b Spiral Galaxy" },
+        { "label": "DISTANCE FROM EARTH", "value": "2.5 Million Light Years" },
+        { "label": "DIAMETER", "value": "220,000 Light Years" },
+        { "label": "ESTIMATED STARS", "value": "1 Trillion" }
+      ],
+      "visualPlaceholder": {
+        "title": "Andromeda Optical Mosaic",
+        "caption": "High-resolution mosaic captured by the Hubble Space Telescope.",
+        "assetType": "TELESCOPE_IMAGE",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Andromeda_galaxy_2.jpg"
+      }
+    },
+    {
+      "id": "andromeda-card-2",
+      "title": "Formation & Ancient Mergers",
+      "subtitle": "Cosmic Collision History",
+      "category": "FORMATION",
+      "body": "Studies indicate Andromeda experienced a major merger approximately 2 to 3 billion years ago, shaping its prominent stellar halo and outer gas rings.",
+      "bulletPoints": [
+        "Constructed from two smaller proto-galaxies that collided between 5 and 9 billion years ago.",
+        "Outer disk exhibits a subtle warp caused by gravitational tugs from M32 and M110.",
+        "Enormous gas halo extends halfway to the Milky Way."
+      ],
+      "visualPlaceholder": {
+        "title": "Galactic Collision Simulation",
+        "caption": "Hydrodynamic computer model simulating galactic merger physics.",
+        "assetType": "FORMATION_DIAGRAM"
+      }
+    },
+    {
+      "id": "andromeda-card-3",
+      "title": "Double Nucleus & Stellar Halo",
+      "subtitle": "P1 and P2 Central Supermassive Core",
+      "category": "STRUCTURE",
+      "body": "Hubble observations revealed Andromeda has a double optical nucleus (P1 and P2). The core houses a supermassive black hole with a mass of 100 million Suns.",
+      "keyMetrics": [
+        { "label": "BLACK HOLE MASS", "value": "100 Million Solar Masses" },
+        { "label": "CONSTELLATION", "value": "Andromeda" }
+      ],
+      "bulletPoints": [
+        "P1 and P2 cores result from an eccentric ring of aging blue stars orbiting the black hole.",
+        "Extensive stellar stream in halo represents remnants of disrupted satellite galaxies.",
+        "Contains over 460 globular clusters, including Mayall II (G1)."
+      ],
+      "visualPlaceholder": {
+        "title": "Hubble Core Spectrograph",
+        "caption": "Ultra-deep UV and optical resolution of the central nucleus.",
+        "assetType": "SPECTRAL_CHART"
+      }
+    },
+    {
+      "id": "andromeda-card-4",
+      "title": "Historical Discovery & Edwin Hubble",
+      "subtitle": "Unlocking the Extragalactic Universe",
+      "category": "HISTORY",
+      "body": "In 1923, Edwin Hubble identified Cepheid variable stars in Andromeda, proving for the first time that M31 was an independent galaxy far beyond the Milky Way.",
+      "bulletPoints": [
+        "First recorded by Abd al-Rahman al-Sufi in 964 CE as a 'little cloud'.",
+        "Charles Messier cataloged it as M31 in 1764.",
+        "Hubble's 1923 discovery settled the famous 'Great Debate' about the scale of the cosmos."
+      ],
+      "visualPlaceholder": {
+        "title": "Hubble 1923 VAR Glass Plate",
+        "caption": "Historic photographic plate where Edwin Hubble wrote 'VAR!' discovering Cepheid variables.",
+        "assetType": "ARTIST_CONCEPT"
+      }
+    },
+    {
+      "id": "andromeda-card-5",
+      "title": "The Milky Way - Andromeda Collision",
+      "subtitle": "Inseparable Cosmic Destiny",
+      "category": "FACTS",
+      "body": "Andromeda is moving toward the Milky Way at 110 km/s. In approximately 4.5 billion years, both giants will collide and merge to form a massive elliptical galaxy.",
+      "bulletPoints": [
+        "Stellar distances are so vast that individual stars will likely pass each other without colliding.",
+        "Interstellar gas clouds will compress, triggering intense starburst activity.",
+        "The Solar System will likely be flung into a new outer orbit in the merged galaxy."
+      ],
+      "visualPlaceholder": {
+        "title": "Future Collision Render",
+        "caption": "NASA visualization of night sky during the merger epoch.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    }
+  ]
+}
