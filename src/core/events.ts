@@ -1,4 +1,8 @@
 export type GameEventType =
+  | 'PHASER_READY'
+  | 'PHASER_DESTROYED'
+  | 'PAUSE_GAMEPLAY'
+  | 'RESUME_GAMEPLAY'
   | 'SHIP_HEALTH_CHANGED'
   | 'SHIP_SHIELD_CHANGED'
   | 'STARDUST_COLLECTED'
@@ -8,6 +12,10 @@ export type GameEventType =
   | 'GAME_OVER_TRIGGERED';
 
 export interface GameEventPayloads {
+  PHASER_READY: { sceneKey: string };
+  PHASER_DESTROYED: void;
+  PAUSE_GAMEPLAY: void;
+  RESUME_GAMEPLAY: void;
   SHIP_HEALTH_CHANGED: { current: number; max: number };
   SHIP_SHIELD_CHANGED: { current: number; max: number };
   STARDUST_COLLECTED: { amount: number; total: number };

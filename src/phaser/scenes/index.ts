@@ -1,2 +1,2 @@
-// Phaser Scenes Module Entry
-export {};
+export { BootScene } from './BootScene';
+export { MainGameplayScene } from './MainGameplayScene';

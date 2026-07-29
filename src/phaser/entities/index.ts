@@ -1,2 +1,1 @@
-// Phaser Entities Module Entry
-export {};
+export { PlayerShip } from './PlayerShip';

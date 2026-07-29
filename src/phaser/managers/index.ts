@@ -1,2 +1,2 @@
-// Phaser Managers Module Entry
-export {};
+export { AssetManager } from './AssetManager';
+export { WorldManager } from './WorldManager';

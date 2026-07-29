@@ -9,6 +9,8 @@ import ShipStatusHUD from './hud/ShipStatusHUD';
 import RadarHUD from './hud/RadarHUD';
 import PilotDashboardModal from './hud/PilotDashboardModal';
 import GameOverModal from './hud/GameOverModal';
+import GameContainer from './common/GameContainer';
+import { eventBus } from '../core/events';
 
 interface GameCanvasProps {
   onDiscoverGalaxy: (galaxyId: string) => void;
@@ -612,8 +614,8 @@ export default function GameCanvas({
 
   return (
     <div ref={containerRef} className="relative w-full h-screen overflow-hidden bg-[#050508] select-none font-sans">
-      {/* 1. Canvas Render Target */}
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block z-0 cursor-crosshair" />
+      {/* 1. Phaser 3 Game Engine Canvas */}
+      <GameContainer className="absolute inset-0 z-0" />
 
       {/* 2. Top Status HUD Bar */}
       <ShipStatusHUD

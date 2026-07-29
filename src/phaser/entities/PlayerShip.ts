@@ -1,0 +1,227 @@
+import Phaser from 'phaser';
+import { GAME_CONFIG } from '../../core/config';
+import { InputState } from '../systems/InputSystem';
+import { eventBus } from '../../core/events';
+import { logger } from '../../core/logger';
+
+export class PlayerShip extends Phaser.GameObjects.Container {
+  public body!: Phaser.Physics.Arcade.Body;
+
+  // Ship Stats
+  public health: number = 100;
+  public maxHealth: number = 100;
+  public shield: number = 100;
+  public maxShield: number = 100;
+  public stardust: number = 0;
+  public score: number = 0;
+
+  // Visual Components
+  private shipGraphics: Phaser.GameObjects.Graphics;
+  private thrusterGraphics: Phaser.GameObjects.Graphics;
+  private particleEmitter?: Phaser.GameObjects.Particles.ParticleEmitter;
+
+  // Physics Control Variables
+  private turnSpeed: number = GAME_CONFIG.physics.turnSpeed;
+  private accelerationRate: number = GAME_CONFIG.physics.baseAcceleration;
+  private maxSpeed: number = 420;
+  private dragCoefficient: number = 0.985;
+
+  private isThrusting: boolean = false;
+
+  constructor(scene: Phaser.Scene, x: number, y: number) {
+    super(scene, x, y);
+
+    this.scene.add.existing(this);
+    this.scene.physics.add.existing(this);
+
+    // Setup Arcade Physics Body
+    this.body.setCircle(22, -22, -22);
+    this.body.setCollideWorldBounds(true);
+    this.body.setBounce(0.2, 0.2);
+
+    // Render Vector Graphics Ship Body
+    this.shipGraphics = this.scene.add.graphics();
+    this.thrusterGraphics = this.scene.add.graphics();
+    this.add([this.thrusterGraphics, this.shipGraphics]);
+
+    this.drawShipShape();
+    this.createThrusterParticles();
+
+    logger.info(`PlayerShip: Spawned at (${x}, ${y}) with Arcade Physics body.`);
+  }
+
+  private drawShipShape(): void {
+    const g = this.shipGraphics;
+    g.clear();
+
+    // 1. Outer Glow/Shield Ring
+    g.lineStyle(2, 0x38bdf8, 0.3);
+    g.strokeCircle(0, 0, 26);
+
+    // 2. Main Wings (Blue/Indigo)
+    g.fillStyle(0x1e3a8a, 1);
+    g.beginPath();
+    g.moveTo(22, 0);       // Nose
+    g.lineTo(-18, -20);    // Left Wing Tip
+    g.lineTo(-10, -8);     // Left Wing Inset
+    g.lineTo(-18, 20);     // Right Wing Tip
+    g.closePath();
+    g.fillPath();
+
+    // 3. Central Hull (Cyan)
+    g.fillStyle(0x06b6d4, 1);
+    g.beginPath();
+    g.moveTo(24, 0);
+    g.lineTo(-12, -10);
+    g.lineTo(-16, 0);
+    g.lineTo(-12, 10);
+    g.closePath();
+    g.fillPath();
+
+    // 4. Cockpit Canopy (Gold / Amber Glow)
+    g.fillStyle(0xf59e0b, 0.9);
+    g.beginPath();
+    g.moveTo(10, 0);
+    g.lineTo(-2, -5);
+    g.lineTo(-5, 0);
+    g.lineTo(-2, 5);
+    g.closePath();
+    g.fillPath();
+
+    // 5. Wing Edge Accents (Light Cyan)
+    g.lineStyle(1.5, 0x22d3ee, 0.8);
+    g.beginPath();
+    g.moveTo(22, 0);
+    g.lineTo(-18, -20);
+    g.moveTo(22, 0);
+    g.lineTo(-18, 20);
+    g.strokePath();
+
+    // Set container depth
+    this.setDepth(10);
+  }
+
+  private createThrusterParticles(): void {
+    // Generate small circular texture for thruster particles if not cached
+    if (!this.scene.textures.exists('thruster_particle')) {
+      const pGraphics = this.scene.make.graphics({ x: 0, y: 0 });
+      pGraphics.fillStyle(0x38bdf8, 1);
+      pGraphics.fillCircle(4, 4, 4);
+      pGraphics.generateTexture('thruster_particle', 8, 8);
+      pGraphics.destroy();
+    }
+
+    this.particleEmitter = this.scene.add.particles(0, 0, 'thruster_particle', {
+      speed: { min: 80, max: 180 },
+      angle: { min: 160, max: 200 },
+      scale: { start: 0.8, end: 0 },
+      alpha: { start: 0.9, end: 0 },
+      lifespan: 250,
+      blendMode: 'ADD',
+      frequency: 30,
+      emitting: false,
+    });
+
+    this.particleEmitter.setDepth(9);
+  }
+
+  public handleInput(input: InputState, delta: number): void {
+    const dt = delta / 1000; // convert to seconds
+    this.isThrusting = input.forward;
+
+    // 1. Rotation Logic
+    if (input.left) {
+      this.rotation -= this.turnSpeed * dt;
+    } else if (input.right) {
+      this.rotation += this.turnSpeed * dt;
+    }
+
+    // 2. Thrust & Acceleration
+    if (input.forward) {
+      const currentBoost = input.boost ? 1.6 : 1.0;
+      const accel = this.accelerationRate * currentBoost;
+
+      // Calculate direction vector based on rotation angle
+      const forwardX = Math.cos(this.rotation);
+      const forwardY = Math.sin(this.rotation);
+
+      this.body.velocity.x += forwardX * accel * dt;
+      this.body.velocity.y += forwardY * accel * dt;
+
+      // Thruster Visual Effect
+      this.drawThrusterGlow(true, input.boost);
+      if (this.particleEmitter) {
+        const offsetDist = 18;
+        const emitterX = this.x - Math.cos(this.rotation) * offsetDist;
+        const emitterY = this.y - Math.sin(this.rotation) * offsetDist;
+
+        this.particleEmitter.setPosition(emitterX, emitterY);
+        const particleAngle = Phaser.Math.RadToDeg(this.rotation) + 180;
+        this.particleEmitter.setAngle(particleAngle);
+        this.particleEmitter.emitting = true;
+      }
+    } else {
+      this.drawThrusterGlow(false, false);
+      if (this.particleEmitter) {
+        this.particleEmitter.emitting = false;
+      }
+    }
+
+    // 3. Reverse / Braking Damping
+    if (input.backward) {
+      this.body.velocity.x *= 0.94;
+      this.body.velocity.y *= 0.94;
+    } else {
+      // Natural Space Drag/Damping
+      this.body.velocity.x *= this.dragCoefficient;
+      this.body.velocity.y *= this.dragCoefficient;
+    }
+
+    // 4. Cap Velocity to Max Speed
+    const currentSpeed = Math.hypot(this.body.velocity.x, this.body.velocity.y);
+    const topSpeed = input.boost ? this.maxSpeed * 1.5 : this.maxSpeed;
+    if (currentSpeed > topSpeed) {
+      const scale = topSpeed / currentSpeed;
+      this.body.velocity.x *= scale;
+      this.body.velocity.y *= scale;
+    }
+  }
+
+  private drawThrusterGlow(active: boolean, boost: boolean): void {
+    const tg = this.thrusterGraphics;
+    tg.clear();
+
+    if (!active) return;
+
+    const length = boost ? 28 : 18;
+    const color = boost ? 0xf59e0b : 0x06b6d4;
+
+    tg.fillStyle(color, 0.9);
+    tg.beginPath();
+    tg.moveTo(-16, -6);
+    tg.lineTo(-16 - length, 0);
+    tg.lineTo(-16, 6);
+    tg.closePath();
+    tg.fillPath();
+
+    tg.fillStyle(0xffffff, 0.8);
+    tg.beginPath();
+    tg.moveTo(-16, -3);
+    tg.lineTo(-16 - (length * 0.5), 0);
+    tg.lineTo(-16, 3);
+    tg.closePath();
+    tg.fillPath();
+  }
+
+  public syncState(): void {
+    eventBus.emit('SHIP_HEALTH_CHANGED', { current: this.health, max: this.maxHealth });
+    eventBus.emit('SHIP_SHIELD_CHANGED', { current: this.shield, max: this.maxShield });
+  }
+
+  public destroy(fromScene?: boolean): void {
+    if (this.particleEmitter) {
+      this.particleEmitter.destroy();
+    }
+    super.destroy(fromScene);
+  }
+}
