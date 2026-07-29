@@ -1,0 +1,6 @@
+{
+  "name": "AP Galaxy Explorer",
+  "description": "An educational 2D space exploration game where players discover galaxies, learn astronomy facts, complete quizzes, and earn certificates.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

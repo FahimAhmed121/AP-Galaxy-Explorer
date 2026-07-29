@@ -1,11 +1,54 @@
-<div align="center">
+# AP Galaxy Explorer V2 — Astronomy Pathshala
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+An interactive 2D astronomy exploration game and educational platform built with React, TypeScript, Phaser 3, Zustand, and Tailwind CSS. Designed for cross-platform Web and Electron Desktop deployment.
 
-  <h1>Built with AI Studio</h2>
+---
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## 🚀 Architecture & Folder Structure
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+```
+/
+├── electron/               # Electron Desktop Main & Preload Scripts
+│   ├── main.ts
+│   └── preload.ts
+├── docs/                   # Architectural & Engineering Documentation
+│   └── ENGINEERING_STANDARDS.md
+└── src/
+    ├── core/               # Shared Core Foundation
+    │   ├── constants.ts    # Application Constants & World Bounds
+    │   ├── config.ts       # Physics, World, and Combat Configurations
+    │   ├── errors.ts       # Custom Error Classes
+    │   ├── events.ts       # EventBus & System Contracts
+    │   ├── logger.ts       # Centralized Logger Utility
+    │   └── types.ts        # Pure TypeScript Contracts & Schemas
+    ├── components/         # React UI Component Hierarchy
+    │   ├── common/         # Reusable UI Elements (Logo, About/Credits)
+    │   ├── educational/    # Astronomy Spec Cards, Quiz Modals, Certificates
+    │   ├── hud/            # Heads-Up Displays & Modals (Status, Radar, Pilot Dashboard)
+    │   └── views/          # Screen Views (MainMenu, Archive, Settings)
+    ├── data/               # Data Registries (Galaxies, Quizzes, Ships)
+    │   └── galaxies.ts
+    ├── engine/             # Core Engines (Synthesizer Audio Engine)
+    │   └── audioEngine.ts
+    ├── phaser/             # Phaser 3 Engine Architecture (V2 Gameplay Foundation)
+    │   ├── scenes/
+    │   ├── systems/
+    │   ├── entities/
+    │   └── managers/
+    ├── store/              # State Management (Zustand)
+    │   └── useGameStore.ts
+    ├── utils/              # Math & Helper Utilities
+    │   └── mathUtils.ts
+    ├── App.tsx             # Main App Shell & State Switcher
+    └── main.tsx            # DOM Entry Point
+```
 
-</div>
+---
+
+## 🛠️ Tech Stack
+
+- **UI & Application Shell:** React 18, Tailwind CSS, Lucide React
+- **Game Engine & Renderer:** HTML5 Canvas / Phaser 3 Architecture
+- **State Engine:** Zustand with `localStorage` persistence
+- **Audio Synthesizer:** Web Audio API (`audioEngine.ts`)
+- **Desktop Target:** Electron Framework
