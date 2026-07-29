@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { PlayerShip } from '../entities/PlayerShip';
 import { UniverseManager } from '../managers/UniverseManager';
+import { GalaxyManager } from '../managers/GalaxyManager';
 
 export class DebugOverlaySystem {
   private container: Phaser.GameObjects.Container;
@@ -18,8 +19,8 @@ export class DebugOverlaySystem {
     this.background = scene.add.graphics();
     this.background.fillStyle(0x0f172a, 0.88);
     this.background.lineStyle(1, 0x38bdf8, 0.5);
-    this.background.fillRoundedRect(0, 0, 290, 195, 6);
-    this.background.strokeRoundedRect(0, 0, 290, 195, 6);
+    this.background.fillRoundedRect(0, 0, 310, 260, 6);
+    this.background.strokeRoundedRect(0, 0, 310, 260, 6);
 
     // Text Display
     this.debugText = scene.add.text(12, 10, '', {
@@ -37,7 +38,11 @@ export class DebugOverlaySystem {
     this.container.setVisible(this.isVisible);
   }
 
-  public update(playerShip?: PlayerShip, universeManager?: UniverseManager): void {
+  public update(
+    playerShip?: PlayerShip,
+    universeManager?: UniverseManager,
+    galaxyManager?: GalaxyManager
+  ): void {
     if (!this.isVisible) return;
 
     const fps = Math.round(this.container.scene.game.loop.actualFps);
@@ -74,6 +79,26 @@ export class DebugOverlaySystem {
       seed = universeManager.getSeed();
     }
 
+    let activeGalaxies = 0;
+    let loadedGalaxyNames = 'None';
+    let nearestGalaxyName = 'N/A';
+    let nearestDistance = 'N/A';
+    let discoveryState = 'OUTSIDE';
+
+    if (galaxyManager) {
+      activeGalaxies = galaxyManager.getActiveGalaxyCount();
+      const ids = galaxyManager.getLoadedGalaxyIds();
+      loadedGalaxyNames = ids.length > 0 ? ids.join(', ') : 'None';
+
+      const nearest = galaxyManager.getNearestGalaxy(posX, posY);
+      if (nearest) {
+        nearestGalaxyName = nearest.galaxy.name;
+        nearestDistance = `${nearest.distance} px`;
+        const radius = nearest.galaxy.discoveryRadius || 280;
+        discoveryState = nearest.distance <= radius ? 'INSIDE RANGE' : `OUTSIDE (${radius}px)`;
+      }
+    }
+
     const lines = [
       `[DEBUG SYSTEM OVERLAY - ~ to toggle]`,
       `FPS        : ${fps}`,
@@ -85,8 +110,13 @@ export class DebugOverlaySystem {
       `--- UNIVERSE SYSTEM ---`,
       `SEED       : ${seed}`,
       `SECTOR     : ${sectorCoords} [${sectorType}]`,
-      `ACTIVE SEC : ${loadedSectors} loaded`,
-      `ENV OBJECTS: ${totalObjects} rendered`,
+      `ACTIVE SEC : ${loadedSectors} loaded | ${totalObjects} objects`,
+      `--- GALAXY SYSTEM ---`,
+      `ACTIVE GAL : ${activeGalaxies} loaded`,
+      `LOADED IDs : ${loadedGalaxyNames}`,
+      `NEAREST GAL: ${nearestGalaxyName}`,
+      `DISTANCE   : ${nearestDistance}`,
+      `DISCOVERY  : ${discoveryState}`,
     ];
 
     this.debugText.setText(lines.join('\n'));

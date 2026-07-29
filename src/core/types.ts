@@ -61,6 +61,21 @@ export interface StardustItem {
   size: number;
 }
 
+export interface GalaxyVisualTheme {
+  coreColor: number;
+  armColor: number;
+  armCount: number;
+  coreRadius: number;
+  rotationSpeed: number;
+}
+
+export interface GalaxySpawnRules {
+  minDistance: number;
+  rarityWeight: number;
+  sectorX: number;
+  sectorY: number;
+}
+
 export interface Galaxy {
   id: string;
   name: string;
@@ -76,6 +91,11 @@ export interface Galaxy {
   x: number; // World map coordinates
   y: number;
   radius: number;
+  discoveryRadius?: number;
+  labelRadius?: number;
+  rarity?: 'COMMON' | 'RARE' | 'LEGENDARY' | 'MYTHIC';
+  spawnRules?: GalaxySpawnRules;
+  visualTheme?: GalaxyVisualTheme;
   quizzes: QuizQuestion[];
   realImageUrl?: string;
   youtubeVideoId?: string;

@@ -1,3 +1,4 @@
 export { PlayerShip } from './PlayerShip';
 export { Sector, type SectorType } from './Sector';
+export { GalaxyEntity } from './GalaxyEntity';
 

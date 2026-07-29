@@ -75,9 +75,9 @@ export class MainGameplayScene extends Phaser.Scene {
     // 3. Update Player Ship Movement & Physics
     this.playerShip.handleInput(inputState, delta);
 
-    // 4. Update World & Universe Sector Streaming
+    // 4. Update World, Universe & Galaxy Streaming
     if (this.worldManager) {
-      this.worldManager.update(this.playerShip.x, this.playerShip.y);
+      this.worldManager.update(this.playerShip.x, this.playerShip.y, delta);
     }
 
     // 5. Update Audio Engine Feedback
@@ -92,7 +92,8 @@ export class MainGameplayScene extends Phaser.Scene {
     if (this.debugOverlay) {
       this.debugOverlay.update(
         this.playerShip,
-        this.worldManager ? this.worldManager.getUniverseManager() : undefined
+        this.worldManager ? this.worldManager.getUniverseManager() : undefined,
+        this.worldManager ? this.worldManager.getGalaxyManager() : undefined
       );
     }
 

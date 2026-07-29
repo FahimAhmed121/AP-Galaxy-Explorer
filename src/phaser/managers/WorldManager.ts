@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '../../core/config';
 import { UniverseManager } from './UniverseManager';
+import { GalaxyManager } from './GalaxyManager';
 import { logger } from '../../core/logger';
 
 export class WorldManager {
@@ -9,6 +10,7 @@ export class WorldManager {
   private height: number;
 
   private universeManager: UniverseManager;
+  private galaxyManager: GalaxyManager;
   private boundaryGraphics?: Phaser.GameObjects.Graphics;
 
   constructor(scene: Phaser.Scene) {
@@ -18,9 +20,10 @@ export class WorldManager {
 
     this.initWorldBounds();
     this.universeManager = new UniverseManager(scene);
+    this.galaxyManager = new GalaxyManager(scene);
     this.renderWorldBoundaries();
 
-    logger.info(`WorldManager: Configured universe world bounds (${this.width}x${this.height}).`);
+    logger.info(`WorldManager: Configured universe world bounds (${this.width}x${this.height}) and GalaxyManager.`);
   }
 
   private initWorldBounds(): void {
@@ -41,12 +44,17 @@ export class WorldManager {
     g.strokeRect(0, 0, this.width, this.height);
   }
 
-  public update(playerX: number, playerY: number): void {
+  public update(playerX: number, playerY: number, delta: number): void {
     this.universeManager.update(playerX, playerY);
+    this.galaxyManager.update(playerX, playerY, delta);
   }
 
   public getUniverseManager(): UniverseManager {
     return this.universeManager;
+  }
+
+  public getGalaxyManager(): GalaxyManager {
+    return this.galaxyManager;
   }
 
   public getBounds(): { width: number; height: number } {
@@ -56,5 +64,6 @@ export class WorldManager {
   public destroy(): void {
     if (this.boundaryGraphics) this.boundaryGraphics.destroy();
     this.universeManager.destroy();
+    this.galaxyManager.destroy();
   }
 }
