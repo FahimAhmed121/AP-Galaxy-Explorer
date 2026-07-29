@@ -15,6 +15,10 @@ export type GameEventType =
   | 'SCAN_CANCELLED'
   | 'SCAN_COMPLETED'
   | 'GALAXY_DISCOVERED'
+  | 'DISCOVERY_STARTED'
+  | 'DISCOVERY_OVERLAY_SHOWN'
+  | 'DISCOVERY_READY'
+  | 'DISCOVERY_FINISHED'
   | 'WARP_JUMP_TRIGGERED'
   | 'GAME_OVER_TRIGGERED';
 
@@ -33,6 +37,10 @@ export interface GameEventPayloads {
   SCAN_CANCELLED: { targetId: string; reason: string };
   SCAN_COMPLETED: { targetId: string; galaxyData: Galaxy };
   GALAXY_DISCOVERED: { galaxyId: string; galaxyName: string };
+  DISCOVERY_STARTED: { galaxyId: string; galaxyName: string; galaxyData: Galaxy };
+  DISCOVERY_OVERLAY_SHOWN: { galaxyData: Galaxy; auraText: string };
+  DISCOVERY_READY: { galaxyData: Galaxy };
+  DISCOVERY_FINISHED: { galaxyId: string };
   WARP_JUMP_TRIGGERED: { targetGalaxyId: string };
   GAME_OVER_TRIGGERED: { finalScore: number };
 }

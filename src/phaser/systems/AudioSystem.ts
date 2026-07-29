@@ -26,6 +26,18 @@ export class AudioSystem {
     audioEngine.playSound('scan-cancel');
   };
 
+  private handleDiscoveryStarted = () => {
+    audioEngine.playSound('discovery-start');
+  };
+
+  private handleDiscoveryOverlayShown = () => {
+    audioEngine.playSound('aura-speak');
+  };
+
+  private handleDiscoveryReady = () => {
+    audioEngine.playSound('discovery-ready');
+  };
+
   constructor() {
     logger.info('AudioSystem: Game Audio System initialized.');
     this.setupListeners();
@@ -36,6 +48,9 @@ export class AudioSystem {
     eventBus.on('SCAN_PROGRESS', this.handleScanProgress);
     eventBus.on('SCAN_COMPLETED', this.handleScanCompleted);
     eventBus.on('SCAN_CANCELLED', this.handleScanCancelled);
+    eventBus.on('DISCOVERY_STARTED', this.handleDiscoveryStarted);
+    eventBus.on('DISCOVERY_OVERLAY_SHOWN', this.handleDiscoveryOverlayShown);
+    eventBus.on('DISCOVERY_READY', this.handleDiscoveryReady);
   }
 
   public updateThrustSound(isThrusting: boolean, _isBoosting: boolean): void {
@@ -68,6 +83,9 @@ export class AudioSystem {
     eventBus.off('SCAN_PROGRESS', this.handleScanProgress);
     eventBus.off('SCAN_COMPLETED', this.handleScanCompleted);
     eventBus.off('SCAN_CANCELLED', this.handleScanCancelled);
+    eventBus.off('DISCOVERY_STARTED', this.handleDiscoveryStarted);
+    eventBus.off('DISCOVERY_OVERLAY_SHOWN', this.handleDiscoveryOverlayShown);
+    eventBus.off('DISCOVERY_READY', this.handleDiscoveryReady);
     this.isThrustPlaying = false;
   }
 }

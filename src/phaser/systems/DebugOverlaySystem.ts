@@ -3,6 +3,7 @@ import { PlayerShip } from '../entities/PlayerShip';
 import { UniverseManager } from '../managers/UniverseManager';
 import { GalaxyManager } from '../managers/GalaxyManager';
 import { ScannerSystem } from './ScannerSystem';
+import { DiscoveryController } from './DiscoveryController';
 
 export class DebugOverlaySystem {
   private container: Phaser.GameObjects.Container;
@@ -20,8 +21,8 @@ export class DebugOverlaySystem {
     this.background = scene.add.graphics();
     this.background.fillStyle(0x0f172a, 0.90);
     this.background.lineStyle(1, 0x38bdf8, 0.5);
-    this.background.fillRoundedRect(0, 0, 330, 320, 6);
-    this.background.strokeRoundedRect(0, 0, 330, 320, 6);
+    this.background.fillRoundedRect(0, 0, 330, 360, 6);
+    this.background.strokeRoundedRect(0, 0, 330, 360, 6);
 
     // Text Display
     this.debugText = scene.add.text(12, 10, '', {
@@ -43,7 +44,8 @@ export class DebugOverlaySystem {
     playerShip?: PlayerShip,
     universeManager?: UniverseManager,
     galaxyManager?: GalaxyManager,
-    scannerSystem?: ScannerSystem
+    scannerSystem?: ScannerSystem,
+    discoveryController?: DiscoveryController
   ): void {
     if (!this.isVisible) return;
 
@@ -117,6 +119,15 @@ export class DebugOverlaySystem {
       scanRadius = `${scannerSystem.getScanRadius()} px`;
     }
 
+    let discoveryCtrlState = 'IDLE';
+    let discoveryTarget = 'None';
+
+    if (discoveryController) {
+      discoveryCtrlState = discoveryController.getState();
+      const curTarget = discoveryController.getCurrentTarget();
+      discoveryTarget = curTarget ? curTarget.name : 'None';
+    }
+
     const lines = [
       `[DEBUG SYSTEM OVERLAY - ~ to toggle]`,
       `FPS        : ${fps}`,
@@ -141,6 +152,9 @@ export class DebugOverlaySystem {
       `PROGRESS   : ${scanPct}`,
       `COOLDOWN   : ${cooldownRem}`,
       `SCAN RADIUS: ${scanRadius}`,
+      `--- DISCOVERY CONTROLLER ---`,
+      `DISCOVERY  : ${discoveryCtrlState}`,
+      `DISC TARGET: ${discoveryTarget}`,
     ];
 
     this.debugText.setText(lines.join('\n'));

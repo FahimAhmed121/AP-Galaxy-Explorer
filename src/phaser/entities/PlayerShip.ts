@@ -125,6 +125,8 @@ export class PlayerShip extends Phaser.GameObjects.Container {
     this.particleEmitter.setDepth(9);
   }
 
+  public isControlsLocked: boolean = false;
+
   public applyVibration(intensity: number = 1.5): void {
     const offsetX = (Math.random() - 0.5) * intensity;
     const offsetY = (Math.random() - 0.5) * intensity;
@@ -133,10 +135,21 @@ export class PlayerShip extends Phaser.GameObjects.Container {
 
   public handleInput(input: InputState, delta: number): void {
     const dt = delta / 1000; // convert to seconds
-    this.isThrusting = input.forward;
 
     // Reset graphics vibration offset when normal
     this.shipGraphics.setPosition(0, 0);
+
+    if (this.isControlsLocked) {
+      this.isThrusting = false;
+      this.drawThrusterGlow(false, false);
+      if (this.particleEmitter) this.particleEmitter.stop();
+      // Smoothly dampen ship movement
+      this.body.velocity.x *= Math.pow(0.85, dt * 60);
+      this.body.velocity.y *= Math.pow(0.85, dt * 60);
+      return;
+    }
+
+    this.isThrusting = input.forward;
 
     // 1. Rotation Logic
     if (input.left) {

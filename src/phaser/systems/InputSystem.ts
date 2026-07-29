@@ -9,6 +9,7 @@ export interface InputState {
   boost: boolean;
   scanRequested: boolean;
   scanJustPressed: boolean;
+  skipJustPressed: boolean;
   debugToggle: boolean;
 }
 
@@ -20,6 +21,7 @@ export class InputSystem {
   private keyS?: Phaser.Input.Keyboard.Key;
   private keyD?: Phaser.Input.Keyboard.Key;
   private keyE?: Phaser.Input.Keyboard.Key;
+  private keyEsc?: Phaser.Input.Keyboard.Key;
   private keySpace?: Phaser.Input.Keyboard.Key;
   private keyTilde?: Phaser.Input.Keyboard.Key;
   private keyF2?: Phaser.Input.Keyboard.Key;
@@ -41,11 +43,12 @@ export class InputSystem {
     this.keyS = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.keyD = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.keyE = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    this.keyEsc = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.keyTilde = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.BACKTICK);
     this.keyF2 = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F2);
 
-    logger.info('InputSystem: Keyboard keys mapped successfully (W, A, S, D, E, Space).');
+    logger.info('InputSystem: Keyboard keys mapped successfully (W, A, S, D, E, Esc, Space).');
   }
 
   public getInputState(): InputState {
@@ -67,6 +70,7 @@ export class InputSystem {
 
     const scanRequested = Boolean(this.keyE && this.keyE.isDown);
     const scanJustPressed = Boolean(this.keyE && Phaser.Input.Keyboard.JustDown(this.keyE));
+    const skipJustPressed = Boolean(this.keyEsc && Phaser.Input.Keyboard.JustDown(this.keyEsc));
 
     const debugPressed = Boolean(
       (this.keyTilde && Phaser.Input.Keyboard.JustDown(this.keyTilde)) ||
@@ -81,6 +85,7 @@ export class InputSystem {
       boost,
       scanRequested,
       scanJustPressed,
+      skipJustPressed,
       debugToggle: debugPressed,
     };
   }

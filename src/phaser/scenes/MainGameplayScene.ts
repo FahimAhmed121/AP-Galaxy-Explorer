@@ -9,6 +9,7 @@ import { AudioSystem } from '../systems/AudioSystem';
 import { DebugOverlaySystem } from '../systems/DebugOverlaySystem';
 import { ScannerSystem } from '../systems/ScannerSystem';
 import { ScannerVisualSystem } from '../systems/ScannerVisualSystem';
+import { DiscoveryController } from '../systems/DiscoveryController';
 
 export class MainGameplayScene extends Phaser.Scene {
   private isPaused: boolean = false;
@@ -20,6 +21,7 @@ export class MainGameplayScene extends Phaser.Scene {
   private debugOverlay?: DebugOverlaySystem;
   private scannerSystem?: ScannerSystem;
   private scannerVisuals?: ScannerVisualSystem;
+  private discoveryController?: DiscoveryController;
 
   // Entities
   private playerShip?: PlayerShip;
@@ -44,7 +46,11 @@ export class MainGameplayScene extends Phaser.Scene {
     this.scannerSystem = new ScannerSystem();
     this.scannerVisuals = new ScannerVisualSystem(this);
 
-    // 5. Spawn Player Ship at World Center
+    // 5. Initialize Discovery Controller System
+    this.discoveryController = new DiscoveryController();
+    this.discoveryController.setCamera(this.cameras.main);
+
+    // 6. Spawn Player Ship at World Center
     const spawnX = GAME_CONFIG.world.width / 2;
     const spawnY = GAME_CONFIG.world.height / 2;
     this.playerShip = new PlayerShip(this, spawnX, spawnY);
@@ -106,21 +112,32 @@ export class MainGameplayScene extends Phaser.Scene {
       }
     }
 
-    // 6. Update Audio Engine Feedback
+    // 6. Update Cinematic Discovery Controller
+    if (this.discoveryController && this.playerShip) {
+      this.discoveryController.update(
+        delta,
+        this.playerShip,
+        this.cameras.main,
+        inputState.skipJustPressed
+      );
+    }
+
+    // 7. Update Audio Engine Feedback
     if (this.audioSystem) {
       this.audioSystem.updateThrustSound(inputState.forward, inputState.boost);
     }
 
-    // 7. Sync Player State to UI EventBus
+    // 8. Sync Player State to UI EventBus
     this.playerShip.syncState();
 
-    // 8. Update Debug Overlay Stats
+    // 9. Update Debug Overlay Stats
     if (this.debugOverlay) {
       this.debugOverlay.update(
         this.playerShip,
         this.worldManager ? this.worldManager.getUniverseManager() : undefined,
         this.worldManager ? this.worldManager.getGalaxyManager() : undefined,
-        this.scannerSystem
+        this.scannerSystem,
+        this.discoveryController
       );
     }
   }
@@ -160,5 +177,6 @@ export class MainGameplayScene extends Phaser.Scene {
     if (this.debugOverlay) this.debugOverlay.destroy();
     if (this.scannerSystem) this.scannerSystem.destroy();
     if (this.scannerVisuals) this.scannerVisuals.destroy();
+    if (this.discoveryController) this.discoveryController.destroy();
   }
 }

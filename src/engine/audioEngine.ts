@@ -130,6 +130,32 @@ class AudioEngine {
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
         osc.start(now);
         osc.stop(now + 0.25);
+      } else if (type === 'discovery-start') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(329.63, now); // E4
+        osc.frequency.setValueAtTime(440.00, now + 0.15); // A4
+        osc.frequency.setValueAtTime(554.37, now + 0.30); // C#5
+        osc.frequency.setValueAtTime(659.25, now + 0.45); // E5
+        gain.gain.setValueAtTime(baseGain * 1.6, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+        osc.start(now);
+        osc.stop(now + 1.2);
+      } else if (type === 'aura-speak') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.setValueAtTime(1108.73, now + 0.08);
+        gain.gain.setValueAtTime(baseGain * 0.5, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+        osc.start(now);
+        osc.stop(now + 0.2);
+      } else if (type === 'discovery-ready') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(659.25, now); // E5
+        osc.frequency.setValueAtTime(880.00, now + 0.12); // A5
+        gain.gain.setValueAtTime(baseGain * 1.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+        osc.start(now);
+        osc.stop(now + 0.6);
       }
     } catch (e) {
       console.warn('Audio play failed', e);

@@ -9,6 +9,7 @@ import ShipStatusHUD from './hud/ShipStatusHUD';
 import RadarHUD from './hud/RadarHUD';
 import PilotDashboardModal from './hud/PilotDashboardModal';
 import GameOverModal from './hud/GameOverModal';
+import DiscoveryOverlay from './hud/DiscoveryOverlay';
 import GameContainer from './common/GameContainer';
 import { eventBus } from '../core/events';
 
@@ -624,6 +625,9 @@ export default function GameCanvas({
         onOpenArchive={onOpenArchive}
         onOpenSettings={onOpenSettings}
       />
+
+      {/* Discovery Experience AURA & Metadata Overlay */}
+      <DiscoveryOverlay />
 
       {/* 3. Bottom Right Radar & Map Navigation */}
       <RadarHUD
