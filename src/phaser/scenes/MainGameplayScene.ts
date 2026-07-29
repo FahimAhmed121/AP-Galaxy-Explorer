@@ -75,18 +75,27 @@ export class MainGameplayScene extends Phaser.Scene {
     // 3. Update Player Ship Movement & Physics
     this.playerShip.handleInput(inputState, delta);
 
-    // 4. Update Audio Engine Feedback
+    // 4. Update World & Universe Sector Streaming
+    if (this.worldManager) {
+      this.worldManager.update(this.playerShip.x, this.playerShip.y);
+    }
+
+    // 5. Update Audio Engine Feedback
     if (this.audioSystem) {
       this.audioSystem.updateThrustSound(inputState.forward, inputState.boost);
     }
 
-    // 5. Sync Player State to UI EventBus
+    // 6. Sync Player State to UI EventBus
     this.playerShip.syncState();
 
-    // 6. Update Debug Overlay Stats
+    // 7. Update Debug Overlay Stats
     if (this.debugOverlay) {
-      this.debugOverlay.update(this.playerShip);
+      this.debugOverlay.update(
+        this.playerShip,
+        this.worldManager ? this.worldManager.getUniverseManager() : undefined
+      );
     }
+
   }
 
   private setupEventBus(): void {
