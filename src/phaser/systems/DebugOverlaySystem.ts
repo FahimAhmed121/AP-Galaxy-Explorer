@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { PlayerShip } from '../entities/PlayerShip';
 import { UniverseManager } from '../managers/UniverseManager';
 import { GalaxyManager } from '../managers/GalaxyManager';
+import { ScannerSystem } from './ScannerSystem';
 
 export class DebugOverlaySystem {
   private container: Phaser.GameObjects.Container;
@@ -17,17 +18,17 @@ export class DebugOverlaySystem {
 
     // Background Panel
     this.background = scene.add.graphics();
-    this.background.fillStyle(0x0f172a, 0.88);
+    this.background.fillStyle(0x0f172a, 0.90);
     this.background.lineStyle(1, 0x38bdf8, 0.5);
-    this.background.fillRoundedRect(0, 0, 310, 260, 6);
-    this.background.strokeRoundedRect(0, 0, 310, 260, 6);
+    this.background.fillRoundedRect(0, 0, 330, 320, 6);
+    this.background.strokeRoundedRect(0, 0, 330, 320, 6);
 
     // Text Display
     this.debugText = scene.add.text(12, 10, '', {
       fontFamily: 'monospace',
-      fontSize: '11px',
+      fontSize: '10px',
       color: '#38bdf8',
-      lineSpacing: 3,
+      lineSpacing: 2,
     });
 
     this.container.add([this.background, this.debugText]);
@@ -41,7 +42,8 @@ export class DebugOverlaySystem {
   public update(
     playerShip?: PlayerShip,
     universeManager?: UniverseManager,
-    galaxyManager?: GalaxyManager
+    galaxyManager?: GalaxyManager,
+    scannerSystem?: ScannerSystem
   ): void {
     if (!this.isVisible) return;
 
@@ -95,8 +97,24 @@ export class DebugOverlaySystem {
         nearestGalaxyName = nearest.galaxy.name;
         nearestDistance = `${nearest.distance} px`;
         const radius = nearest.galaxy.discoveryRadius || 280;
-        discoveryState = nearest.distance <= radius ? 'INSIDE RANGE' : `OUTSIDE (${radius}px)`;
+        const gState = galaxyManager.getDiscoveryState(nearest.galaxy.id);
+        discoveryState = `${gState} (${nearest.distance <= radius ? 'IN RANGE' : 'OUTSIDE'})`;
       }
+    }
+
+    let scanState = 'IDLE';
+    let targetName = 'None';
+    let scanPct = '0.0%';
+    let cooldownRem = '0.0s';
+    let scanRadius = '350 px';
+
+    if (scannerSystem) {
+      scanState = scannerSystem.getState();
+      const curTarget = scannerSystem.getCurrentTarget() || scannerSystem.getNearbyTarget();
+      targetName = curTarget ? curTarget.name : 'None';
+      scanPct = `${(scannerSystem.getScanProgress() * 100).toFixed(1)}%`;
+      cooldownRem = `${scannerSystem.getCooldownRemaining().toFixed(1)}s`;
+      scanRadius = `${scannerSystem.getScanRadius()} px`;
     }
 
     const lines = [
@@ -116,7 +134,13 @@ export class DebugOverlaySystem {
       `LOADED IDs : ${loadedGalaxyNames}`,
       `NEAREST GAL: ${nearestGalaxyName}`,
       `DISTANCE   : ${nearestDistance}`,
-      `DISCOVERY  : ${discoveryState}`,
+      `STATE      : ${discoveryState}`,
+      `--- SCANNER SYSTEM ---`,
+      `TARGET     : ${targetName}`,
+      `SCAN STATE : ${scanState}`,
+      `PROGRESS   : ${scanPct}`,
+      `COOLDOWN   : ${cooldownRem}`,
+      `SCAN RADIUS: ${scanRadius}`,
     ];
 
     this.debugText.setText(lines.join('\n'));

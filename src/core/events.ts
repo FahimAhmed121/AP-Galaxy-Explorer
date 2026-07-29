@@ -1,3 +1,5 @@
+import { Galaxy } from './types';
+
 export type GameEventType =
   | 'PHASER_READY'
   | 'PHASER_DESTROYED'
@@ -8,6 +10,11 @@ export type GameEventType =
   | 'STARDUST_COLLECTED'
   | 'GALAXY_PROXIMITY_ENTER'
   | 'GALAXY_PROXIMITY_EXIT'
+  | 'SCAN_STARTED'
+  | 'SCAN_PROGRESS'
+  | 'SCAN_CANCELLED'
+  | 'SCAN_COMPLETED'
+  | 'GALAXY_DISCOVERED'
   | 'WARP_JUMP_TRIGGERED'
   | 'GAME_OVER_TRIGGERED';
 
@@ -21,6 +28,11 @@ export interface GameEventPayloads {
   STARDUST_COLLECTED: { amount: number; total: number };
   GALAXY_PROXIMITY_ENTER: { galaxyId: string; galaxyName: string };
   GALAXY_PROXIMITY_EXIT: { galaxyId: string };
+  SCAN_STARTED: { targetId: string; targetName: string; duration: number };
+  SCAN_PROGRESS: { targetId: string; progress: number; elapsed: number; total: number };
+  SCAN_CANCELLED: { targetId: string; reason: string };
+  SCAN_COMPLETED: { targetId: string; galaxyData: Galaxy };
+  GALAXY_DISCOVERED: { galaxyId: string; galaxyName: string };
   WARP_JUMP_TRIGGERED: { targetGalaxyId: string };
   GAME_OVER_TRIGGERED: { finalScore: number };
 }

@@ -53,3 +53,13 @@ export const UNIVERSE_CONFIG = {
   ],
 };
 
+export const SCANNER_CONFIG = {
+  scanDuration: 5.0,           // Scan duration in seconds
+  scanRadius: 350,             // Distance threshold from galaxy center to allow scanning
+  cooldownDuration: 1.5,       // Cooldown in seconds after scan completes or cancels
+  pulseSpeed: 2.5,             // Visual rotation and pulse frequency
+  ringSizeMultiplier: 1.25,    // Visual target ring scale relative to galaxy radius
+  shipVibrationIntensity: 1.5, // Subtle ship jitter intensity during scan
+};
+
+

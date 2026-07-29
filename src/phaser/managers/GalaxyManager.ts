@@ -10,6 +10,7 @@ export class GalaxyManager {
   private galaxyCatalog: Galaxy[] = [];
   private activeEntities: Map<string, GalaxyEntity> = new Map();
   private proximitySet: Set<string> = new Set(); // Track galaxies player is currently inside discovery radius of
+  private discoveryStates: Map<string, 'UNDISCOVERED' | 'SCANNING' | 'DISCOVERED'> = new Map();
 
   private spawnDistanceThreshold: number = 2200; // Load galaxies within 2200px of player
 
@@ -17,7 +18,49 @@ export class GalaxyManager {
     this.scene = scene;
     this.galaxyCatalog = GALAXIES;
 
+    for (const g of this.galaxyCatalog) {
+      this.discoveryStates.set(g.id, g.discoveryState || 'UNDISCOVERED');
+    }
+
     logger.info(`GalaxyManager: Initialized with ${this.galaxyCatalog.length} catalog galaxies.`);
+  }
+
+  public getDiscoveryState(galaxyId: string): 'UNDISCOVERED' | 'SCANNING' | 'DISCOVERED' {
+    return this.discoveryStates.get(galaxyId) || 'UNDISCOVERED';
+  }
+
+  public setDiscoveryState(galaxyId: string, state: 'UNDISCOVERED' | 'SCANNING' | 'DISCOVERED', progress: number = 0): void {
+    this.discoveryStates.set(galaxyId, state);
+
+    const catalogGalaxy = this.galaxyCatalog.find((g) => g.id === galaxyId);
+    if (catalogGalaxy) {
+      catalogGalaxy.discoveryState = state;
+    }
+
+    const entity = this.activeEntities.get(galaxyId);
+    if (entity) {
+      entity.setDiscoveryState(state, progress);
+    }
+  }
+
+  public getScannableGalaxyNear(playerX: number, playerY: number, maxRadius: number): Galaxy | null {
+    let nearest: Galaxy | null = null;
+    let minDistance = Infinity;
+
+    for (const g of this.galaxyCatalog) {
+      const state = this.getDiscoveryState(g.id);
+      if (state === 'DISCOVERED') continue; // Skip already discovered galaxies
+
+      const dist = Phaser.Math.Distance.Between(g.x, g.y, playerX, playerY);
+      const effectiveScanRadius = g.discoveryRadius || maxRadius;
+
+      if (dist <= effectiveScanRadius && dist < minDistance) {
+        minDistance = dist;
+        nearest = g;
+      }
+    }
+
+    return nearest;
   }
 
   public update(playerX: number, playerY: number, delta: number): void {
@@ -35,7 +78,11 @@ export class GalaxyManager {
 
       if (dist <= this.spawnDistanceThreshold) {
         if (!this.activeEntities.has(data.id)) {
-          const entity = new GalaxyEntity(this.scene, data);
+          const currentState = this.getDiscoveryState(data.id);
+          const entity = new GalaxyEntity(this.scene, {
+            ...data,
+            discoveryState: currentState,
+          });
           this.activeEntities.set(data.id, entity);
           logger.debug(`GalaxyManager: Spawned galaxy [${data.name}] at (${data.x}, ${data.y})`);
         }

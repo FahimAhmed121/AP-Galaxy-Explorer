@@ -7,6 +7,8 @@ import { WorldManager } from '../managers/WorldManager';
 import { InputSystem } from '../systems/InputSystem';
 import { AudioSystem } from '../systems/AudioSystem';
 import { DebugOverlaySystem } from '../systems/DebugOverlaySystem';
+import { ScannerSystem } from '../systems/ScannerSystem';
+import { ScannerVisualSystem } from '../systems/ScannerVisualSystem';
 
 export class MainGameplayScene extends Phaser.Scene {
   private isPaused: boolean = false;
@@ -16,6 +18,8 @@ export class MainGameplayScene extends Phaser.Scene {
   private inputSystem?: InputSystem;
   private audioSystem?: AudioSystem;
   private debugOverlay?: DebugOverlaySystem;
+  private scannerSystem?: ScannerSystem;
+  private scannerVisuals?: ScannerVisualSystem;
 
   // Entities
   private playerShip?: PlayerShip;
@@ -36,27 +40,31 @@ export class MainGameplayScene extends Phaser.Scene {
     // 3. Initialize Audio System
     this.audioSystem = new AudioSystem();
 
-    // 4. Spawn Player Ship at World Center
+    // 4. Initialize Scanner System & Visuals
+    this.scannerSystem = new ScannerSystem();
+    this.scannerVisuals = new ScannerVisualSystem(this);
+
+    // 5. Spawn Player Ship at World Center
     const spawnX = GAME_CONFIG.world.width / 2;
     const spawnY = GAME_CONFIG.world.height / 2;
     this.playerShip = new PlayerShip(this, spawnX, spawnY);
 
-    // 5. Configure Camera Follow & Lerp
+    // 6. Configure Camera Follow & Lerp
     const camera = this.cameras.main;
     camera.setBounds(0, 0, GAME_CONFIG.world.width, GAME_CONFIG.world.height);
     camera.startFollow(this.playerShip, true, 0.08, 0.08);
     camera.setZoom(1.0);
 
-    // 6. Initialize Debug Overlay System
+    // 7. Initialize Debug Overlay System
     this.debugOverlay = new DebugOverlaySystem(this);
 
-    // 7. Setup EventBus Listeners
+    // 8. Setup EventBus Listeners
     this.setupEventBus();
 
-    // 8. Handle Resize Events
+    // 9. Handle Resize Events
     this.scale.on('resize', this.handleResize, this);
 
-    // 9. Notify React Shell of Readiness
+    // 10. Notify React Shell of Readiness
     eventBus.emit('PHASER_READY', { sceneKey: 'MainGameplayScene' });
     logger.info('MainGameplayScene: Player entity active and camera locked.');
   }
@@ -80,23 +88,41 @@ export class MainGameplayScene extends Phaser.Scene {
       this.worldManager.update(this.playerShip.x, this.playerShip.y, delta);
     }
 
-    // 5. Update Audio Engine Feedback
+    // 5. Update Scanner System Logic & Visual FX
+    if (this.scannerSystem && this.worldManager) {
+      const galaxyManager = this.worldManager.getGalaxyManager();
+      this.scannerSystem.update(
+        this.playerShip.x,
+        this.playerShip.y,
+        delta,
+        inputState.scanJustPressed,
+        inputState.scanRequested,
+        galaxyManager,
+        this.playerShip
+      );
+
+      if (this.scannerVisuals) {
+        this.scannerVisuals.update(delta, this.scannerSystem, this.playerShip);
+      }
+    }
+
+    // 6. Update Audio Engine Feedback
     if (this.audioSystem) {
       this.audioSystem.updateThrustSound(inputState.forward, inputState.boost);
     }
 
-    // 6. Sync Player State to UI EventBus
+    // 7. Sync Player State to UI EventBus
     this.playerShip.syncState();
 
-    // 7. Update Debug Overlay Stats
+    // 8. Update Debug Overlay Stats
     if (this.debugOverlay) {
       this.debugOverlay.update(
         this.playerShip,
         this.worldManager ? this.worldManager.getUniverseManager() : undefined,
-        this.worldManager ? this.worldManager.getGalaxyManager() : undefined
+        this.worldManager ? this.worldManager.getGalaxyManager() : undefined,
+        this.scannerSystem
       );
     }
-
   }
 
   private setupEventBus(): void {
@@ -132,5 +158,7 @@ export class MainGameplayScene extends Phaser.Scene {
     if (this.inputSystem) this.inputSystem.destroy();
     if (this.audioSystem) this.audioSystem.destroy();
     if (this.debugOverlay) this.debugOverlay.destroy();
+    if (this.scannerSystem) this.scannerSystem.destroy();
+    if (this.scannerVisuals) this.scannerVisuals.destroy();
   }
 }

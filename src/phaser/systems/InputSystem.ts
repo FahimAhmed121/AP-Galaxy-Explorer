@@ -7,6 +7,8 @@ export interface InputState {
   left: boolean;
   right: boolean;
   boost: boolean;
+  scanRequested: boolean;
+  scanJustPressed: boolean;
   debugToggle: boolean;
 }
 
@@ -17,11 +19,10 @@ export class InputSystem {
   private keyA?: Phaser.Input.Keyboard.Key;
   private keyS?: Phaser.Input.Keyboard.Key;
   private keyD?: Phaser.Input.Keyboard.Key;
+  private keyE?: Phaser.Input.Keyboard.Key;
   private keySpace?: Phaser.Input.Keyboard.Key;
   private keyTilde?: Phaser.Input.Keyboard.Key;
   private keyF2?: Phaser.Input.Keyboard.Key;
-
-  private isDebugJustPressed = false;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -39,11 +40,12 @@ export class InputSystem {
     this.keyA = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.keyS = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.keyD = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    this.keyE = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
     this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.keyTilde = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.BACKTICK);
     this.keyF2 = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F2);
 
-    logger.info('InputSystem: Keyboard keys mapped successfully.');
+    logger.info('InputSystem: Keyboard keys mapped successfully (W, A, S, D, E, Space).');
   }
 
   public getInputState(): InputState {
@@ -63,6 +65,9 @@ export class InputSystem {
       (this.keySpace && this.keySpace.isDown) || (this.cursors && this.cursors.space.isDown)
     );
 
+    const scanRequested = Boolean(this.keyE && this.keyE.isDown);
+    const scanJustPressed = Boolean(this.keyE && Phaser.Input.Keyboard.JustDown(this.keyE));
+
     const debugPressed = Boolean(
       (this.keyTilde && Phaser.Input.Keyboard.JustDown(this.keyTilde)) ||
       (this.keyF2 && Phaser.Input.Keyboard.JustDown(this.keyF2))
@@ -74,6 +79,8 @@ export class InputSystem {
       left,
       right,
       boost,
+      scanRequested,
+      scanJustPressed,
       debugToggle: debugPressed,
     };
   }

@@ -125,9 +125,18 @@ export class PlayerShip extends Phaser.GameObjects.Container {
     this.particleEmitter.setDepth(9);
   }
 
+  public applyVibration(intensity: number = 1.5): void {
+    const offsetX = (Math.random() - 0.5) * intensity;
+    const offsetY = (Math.random() - 0.5) * intensity;
+    this.shipGraphics.setPosition(offsetX, offsetY);
+  }
+
   public handleInput(input: InputState, delta: number): void {
     const dt = delta / 1000; // convert to seconds
     this.isThrusting = input.forward;
+
+    // Reset graphics vibration offset when normal
+    this.shipGraphics.setPosition(0, 0);
 
     // 1. Rotation Logic
     if (input.left) {

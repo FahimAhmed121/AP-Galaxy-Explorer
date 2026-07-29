@@ -94,6 +94,7 @@ export interface Galaxy {
   discoveryRadius?: number;
   labelRadius?: number;
   rarity?: 'COMMON' | 'RARE' | 'LEGENDARY' | 'MYTHIC';
+  discoveryState?: 'UNDISCOVERED' | 'SCANNING' | 'DISCOVERED';
   spawnRules?: GalaxySpawnRules;
   visualTheme?: GalaxyVisualTheme;
   quizzes: QuizQuestion[];
