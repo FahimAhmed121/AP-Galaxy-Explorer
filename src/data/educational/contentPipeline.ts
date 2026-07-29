@@ -3,6 +3,7 @@ import { EducationalContent, LearningCard } from './types';
 
 import milkyWayData from './milky-way.json';
 import andromedaData from './andromeda.json';
+import sombreroData from './sombrero.json';
 
 /**
  * Registry of educational content loaders.
@@ -10,6 +11,7 @@ import andromedaData from './andromeda.json';
 const staticContentRegistry: Record<string, EducationalContent> = {
   'milky-way': milkyWayData as unknown as EducationalContent,
   'andromeda': andromedaData as unknown as EducationalContent,
+  'sombrero': sombreroData as unknown as EducationalContent,
 };
 
 /**

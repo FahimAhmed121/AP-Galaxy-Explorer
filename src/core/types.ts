@@ -147,6 +147,7 @@ export interface GameSettings {
 
 export type GameState = 
   | 'MENU' 
+  | 'INTRO_CUTSCENE'
   | 'PLAYING' 
   | 'WARPING' 
   | 'GALAXY_INFO' 

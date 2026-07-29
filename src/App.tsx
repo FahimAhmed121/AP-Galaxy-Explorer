@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { GameState, Galaxy, Spaceship } from './types';
 import { GALAXIES } from './data/galaxies';
 import MainMenu from './components/views/MainMenu';
+import OpeningCinematic from './components/views/OpeningCinematic';
 import GameCanvas from './components/GameCanvas';
 import GalaxyInfo from './components/educational/GalaxyInfo';
 import Certificate from './components/educational/Certificate';
@@ -81,9 +82,16 @@ export default function App() {
       {/* 1. STATE: MENU */}
       {gameState === 'MENU' && (
         <MainMenu
-          onStartGame={() => setGameState('PLAYING')}
+          onStartGame={() => setGameState('INTRO_CUTSCENE')}
           onOpenArchive={() => setGameState('ARCHIVE')}
           onOpenSettings={() => setGameState('SETTINGS')}
+        />
+      )}
+
+      {/* 1.5. STATE: INTRO_CUTSCENE */}
+      {gameState === 'INTRO_CUTSCENE' && (
+        <OpeningCinematic
+          onComplete={() => setGameState('PLAYING')}
         />
       )}
 

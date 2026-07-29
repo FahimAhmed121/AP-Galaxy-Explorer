@@ -54,7 +54,7 @@ export default function GameCanvas({
   const shipRef = useRef<Spaceship>(
     savedShipState || {
       x: WORLD_SIZE / 2,
-      y: WORLD_SIZE / 2,
+      y: WORLD_SIZE / 2 - 800,
       vx: 0,
       vy: 0,
       angle: -Math.PI / 2,

@@ -201,6 +201,7 @@ class AudioEngine {
       this.musicGain.connect(ctx.destination);
 
       const filter = ctx.createBiquadFilter();
+      this.modeFilterNode = filter;
       filter.type = 'lowpass';
       filter.frequency.setValueAtTime(320, ctx.currentTime);
       filter.Q.setValueAtTime(1, ctx.currentTime);
@@ -272,6 +273,46 @@ class AudioEngine {
       this.isMusicPlaying = true;
     } catch (e) {
       console.warn('Ambient space music failed to play', e);
+    }
+  }
+
+  private currentMode: 'MENU' | 'GAMEPLAY' | 'DISCOVERY' = 'MENU';
+  private modeFilterNode: BiquadFilterNode | null = null;
+
+  // Set Ambient Music Mode with Smooth Crossfading & Resonant Filter Shift
+  setMusicMode(mode: 'MENU' | 'GAMEPLAY' | 'DISCOVERY', enabled: boolean = true, volume: number = 0.5) {
+    if (this.currentMode === mode && this.isMusicPlaying) return;
+    this.currentMode = mode;
+
+    if (!this.audioCtx) {
+      this.startAmbientMusic(enabled, volume);
+      return;
+    }
+
+    try {
+      const now = this.audioCtx.currentTime;
+
+      if (this.modeFilterNode) {
+        if (mode === 'MENU') {
+          this.modeFilterNode.frequency.setTargetAtTime(280, now, 0.8);
+          this.modeFilterNode.Q.setTargetAtTime(1.0, now, 0.8);
+        } else if (mode === 'GAMEPLAY') {
+          this.modeFilterNode.frequency.setTargetAtTime(480, now, 0.8);
+          this.modeFilterNode.Q.setTargetAtTime(1.8, now, 0.8);
+        } else if (mode === 'DISCOVERY') {
+          this.modeFilterNode.frequency.setTargetAtTime(950, now, 0.5);
+          this.modeFilterNode.Q.setTargetAtTime(2.5, now, 0.5);
+        }
+      }
+
+      // Play mode transition chime
+      if (mode === 'DISCOVERY') {
+        this.playSound('discovery-ready', enabled, volume);
+      } else if (mode === 'GAMEPLAY') {
+        this.playSound('learning-start', enabled, volume);
+      }
+    } catch (e) {
+      console.warn('Mode transition failed', e);
     }
   }
 

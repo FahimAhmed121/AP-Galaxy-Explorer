@@ -53,9 +53,9 @@ export class MainGameplayScene extends Phaser.Scene {
     this.discoveryController.setCamera(this.cameras.main);
     this.learningController = new LearningController();
 
-    // 6. Spawn Player Ship at World Center
+    // 6. Spawn Player Ship at Safe Sector Alpha (2500, 1700)
     const spawnX = GAME_CONFIG.world.width / 2;
-    const spawnY = GAME_CONFIG.world.height / 2;
+    const spawnY = GAME_CONFIG.world.height / 2 - 800;
     this.playerShip = new PlayerShip(this, spawnX, spawnY);
 
     // 6. Configure Camera Follow & Lerp

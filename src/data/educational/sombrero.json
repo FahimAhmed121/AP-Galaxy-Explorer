@@ -1,0 +1,57 @@
+{
+  "galaxyId": "sombrero",
+  "galaxyName": "Sombrero Galaxy (M104)",
+  "auraIntro": "Explorer, Sombrero Galaxy is famous for its bright white core and prominent dark dust lane.",
+  "overview": "The Sombrero Galaxy (cataloged as M104 or NGC 4594) is an unbarred spiral galaxy in the constellation borders of Virgo and Corvus, roughly 31 million light-years from Earth.",
+  "formation": "Formed approximately 13.2 billion years ago, its huge central bulge and prominent dust disk suggest complex early galactic mergers.",
+  "structure": "Classified as an SAa spiral galaxy with a diameter of 50,000 light-years and a supermassive black hole exceeding 1 billion solar masses.",
+  "distance": "31 Million Light Years",
+  "diameter": "50,000 Light Years",
+  "age": "13.2 Billion Years",
+  "constellation": "Virgo / Corvus",
+  "discoveryHistory": "Discovered on May 11, 1781 by Pierre Méchain and independently noted by Charles Messier.",
+  "observationTips": "Visible with binoculars under dark skies; 8-inch telescopes reveal the dark dust lane across the bright core.",
+  "funFacts": [
+    "Possesses an unusually large globular cluster population estimated at nearly 2,000 clusters.",
+    "Houses a supermassive black hole with a mass 1 billion times that of our Sun at its center.",
+    "X-ray imaging shows hot gas extending over 60,000 light-years into space."
+  ],
+  "cards": [
+    {
+      "id": "sombrero-card-1",
+      "title": "Galactic Profile",
+      "subtitle": "Unbarred Spiral & Massive Dark Dust Ring",
+      "category": "OVERVIEW",
+      "body": "The Sombrero Galaxy (M104) is renowned for its brilliant white core surrounded by a striking dark rim of interstellar dust.",
+      "keyMetrics": [
+        { "label": "CLASSIFICATION", "value": "Unbarred Spiral (SAa)" },
+        { "label": "CONSTELLATION", "value": "Virgo / Corvus" },
+        { "label": "DISTANCE", "value": "31 Million Light-Years" },
+        { "label": "DIAMETER", "value": "50,000 Light-Years" }
+      ],
+      "visualPlaceholder": {
+        "title": "Hubble Deep Space View",
+        "caption": "High-resolution mosaic of M104 showing its sharp dust rim.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "sombrero-card-2",
+      "title": "Supermassive Core",
+      "subtitle": "1 Billion Solar Mass Black Hole Engine",
+      "category": "STRUCTURE",
+      "body": "Spectroscopic measurements indicate that M104 contains one of the most massive black holes ever detected in a relatively nearby galaxy.",
+      "bulletPoints": [
+        "Core mass measured at 1,000,000,000 solar masses.",
+        "Emits strong X-ray radiation detected by NASA's Chandra Observatory.",
+        "Surrounded by a giant sphere of globular clusters."
+      ],
+      "visualPlaceholder": {
+        "title": "Chandra X-Ray Overlay",
+        "caption": "X-ray emission from hot gas around the galactic core.",
+        "assetType": "SPECTRAL_CHART"
+      }
+    }
+  ],
+  "quizReferences": ["sombrero"]
+}
