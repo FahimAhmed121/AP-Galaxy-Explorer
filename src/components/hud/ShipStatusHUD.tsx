@@ -90,8 +90,8 @@ export default function ShipStatusHUD({
         </div>
       </div>
 
-      {/* Top Center: Score & Stardust Counter */}
-      <div className="flex items-center gap-4 p-2.5 rounded-sm bg-black/70 border border-white/10 backdrop-blur-md pointer-events-auto">
+      {/* Top Center: Score, Stardust & Mission Objective */}
+      <div className="flex items-center gap-3 p-2.5 rounded-sm bg-black/70 border border-white/10 backdrop-blur-md pointer-events-auto">
         <div className="flex items-center gap-2 font-mono">
           <div className="p-1.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
             <Sparkles size={16} />
@@ -111,6 +111,21 @@ export default function ShipStatusHUD({
           <div>
             <div className="text-[9px] text-slate-400 uppercase tracking-wider">{t('Score', 'স্কোর')}</div>
             <div className="text-sm font-bold text-gold">{ship.score}</div>
+          </div>
+        </div>
+
+        <div className="h-6 w-px bg-white/10"></div>
+
+        {/* Active Mission Objective Indicator */}
+        <div className="flex items-center gap-2 font-mono">
+          <div className="p-1.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <BookOpen size={16} />
+          </div>
+          <div>
+            <div className="text-[9px] text-slate-400 uppercase tracking-wider">{t('Mission Objective', 'মিশন লক্ষ্য')}</div>
+            <div className="text-xs font-bold text-cyan-300">
+              {t('Map Galaxies', 'গ্যালাক্সি মানচিত্র')}: {profile.discoveredGalaxyIds.length}/10
+            </div>
           </div>
         </div>
       </div>

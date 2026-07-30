@@ -194,7 +194,7 @@ export default function ArchiveModal({ onClose, onOpenGalaxy }: ArchiveModalProp
                       <div className="text-[10px] font-mono text-slate-400">
                         {t('Best Quiz Score:', 'সর্বোত্তম স্কোর:')}{' '}
                         <span className="text-gold font-bold">
-                          {bestScore !== undefined ? `${bestScore} / ${g.quizzes.length}` : t('Not taken', 'দেওয়া হয়নি')}
+                          {bestScore !== undefined ? `${bestScore} / ${(g.quizzes && g.quizzes.length) || 3}` : t('Not taken', 'দেওয়া হয়নি')}
                         </span>
                       </div>
 

@@ -46,8 +46,8 @@ export default function GalaxyInfo({
   const [lang, setLang] = useState<'EN' | 'BN'>('EN');
   const [infoTab, setInfoTab] = useState<'FACTS' | 'VIDEO'>('FACTS');
 
-  const quizQuestions = galaxy.quizzes;
-  const currentQuestion = quizQuestions[currentQuestionIndex];
+  const quizQuestions = galaxy?.quizzes || [];
+  const currentQuestion = quizQuestions[currentQuestionIndex] || null;
 
   // Helper translation function
   const t = (en: string, bn: string) => (lang === 'BN' ? bn : en);
@@ -129,7 +129,7 @@ export default function GalaxyInfo({
     setSelectedOption(null);
     setIsAnswered(false);
     setScore(0);
-    setViewState('QUIZ');
+    quizController.startQuiz(galaxy);
   };
 
   return (
@@ -333,7 +333,7 @@ export default function GalaxyInfo({
 
                   <button
                     id="start-quiz-btn"
-                    onClick={() => setViewState('QUIZ')}
+                    onClick={() => quizController.startQuiz(galaxy)}
                     className="group w-full sm:w-auto px-5 py-2.5 rounded-sm bg-gold hover:bg-gold-hover text-black text-xs font-extrabold tracking-widest uppercase flex items-center justify-center gap-1.5 shadow-lg transition-all cursor-pointer"
                   >
                     <span>{discoveredIds && discoveredIds.includes(galaxy.id) ? t('Retake Quiz', 'কুইজ পুনরায় দিন') : t('Test Your Skills', 'দক্ষতা পরীক্ষা করুন')}</span>
@@ -460,7 +460,7 @@ export default function GalaxyInfo({
           )}
 
           {/* VIEW: QUIZ (Active MCQ evaluation panel) */}
-          {viewState === 'QUIZ' && (
+          {viewState === 'QUIZ' && currentQuestion && (
             <div id="quiz-viewport" className="space-y-4">
               <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
                 <span className="text-[10px] font-mono tracking-wider text-slate-400">

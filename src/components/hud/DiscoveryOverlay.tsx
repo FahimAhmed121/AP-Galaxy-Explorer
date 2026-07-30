@@ -79,12 +79,7 @@ export const DiscoveryOverlay: React.FC = () => {
 
   const handleContinueToBriefing = () => {
     if (activeGalaxy) {
-      eventBus.emit('LEARNING_STARTED', {
-        galaxyId: activeGalaxy.id,
-        galaxyName: activeGalaxy.name,
-        totalCards: activeGalaxy.cards?.length || 2,
-        content: activeGalaxy,
-      });
+      eventBus.emit('DISCOVERY_READY', { galaxyData: activeGalaxy });
       eventBus.emit('DISCOVERY_FINISHED', { galaxyId: activeGalaxy.id });
     }
     setStage('HIDDEN');

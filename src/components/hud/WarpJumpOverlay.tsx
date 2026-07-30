@@ -135,12 +135,22 @@ export default function WarpJumpOverlay() {
     return () => cancelAnimationFrame(animId);
   }, [phase]);
 
+  // Calculate camera shake offset for high-speed warp phases
+  const getShakeClass = () => {
+    if (phase === 'STAR_STRETCH' || phase === 'WARP_TUNNEL') return 'animate-[bounce_0.1s_infinite]';
+    if (phase === 'BRIGHTNESS_BLOOM') return 'animate-[ping_0.2s_infinite] opacity-90';
+    return '';
+  };
+
   if (phase === 'IDLE' || phase === 'COMPLETE') return null;
 
   return (
-    <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center overflow-hidden font-mono select-none">
+    <div className={`fixed inset-0 z-50 pointer-events-none flex items-center justify-center overflow-hidden font-mono select-none ${getShakeClass()}`}>
       {/* 1. Starfield Warp Tunnel Canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+
+      {/* Radial Tunnel Flare Overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(6,182,212,0.2)_70%,rgba(3,7,18,0.9)_100%)] pointer-events-none" />
 
       {/* 2. Phase-Based HUD Telemetry & Radial Overlay */}
       <div className="relative z-10 flex flex-col items-center justify-center text-center space-y-4">

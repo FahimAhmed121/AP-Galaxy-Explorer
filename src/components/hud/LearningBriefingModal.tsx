@@ -16,6 +16,7 @@ import {
   Award,
 } from 'lucide-react';
 import { Galaxy } from '../../core/types';
+import { GALAXIES } from '../../data/galaxies';
 import { EducationalContent, LearningCard } from '../../data/educational/types';
 import { eventBus } from '../../core/events';
 import { quizController } from '../../phaser/systems/QuizController';
@@ -85,7 +86,8 @@ export const LearningBriefingModal: React.FC = () => {
 
   const handleComplete = useCallback(() => {
     if (!content) return;
-    const galaxyData: Galaxy = {
+    const existingGalaxy = GALAXIES.find((g) => g.id === content.galaxyId);
+    const galaxyData: Galaxy = existingGalaxy || {
       id: content.galaxyId,
       name: content.galaxyName,
       type: content.structure,
@@ -139,7 +141,7 @@ export const LearningBriefingModal: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, handleNext, handlePrev, handleComplete, content, activeCardIndex]);
 
-  if (!isOpen || !content) return null;
+  if (!isOpen || !content || !content.cards || content.cards.length === 0) return null;
 
   const currentCard: LearningCard = content.cards[activeCardIndex] || content.cards[0];
   const totalCards = content.cards.length;

@@ -66,7 +66,8 @@ export default function App() {
   const handleQuizSuccess = () => {
     if (!selectedGalaxy) return;
 
-    recordQuizScore(selectedGalaxy.id, selectedGalaxy.quizzes.length, selectedGalaxy.quizzes.length);
+    const totalQ = (selectedGalaxy.quizzes && selectedGalaxy.quizzes.length) || 3;
+    recordQuizScore(selectedGalaxy.id, totalQ, totalQ);
     setGameState('CERTIFICATE');
   };
 

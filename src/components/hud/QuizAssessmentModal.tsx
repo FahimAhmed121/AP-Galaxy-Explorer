@@ -211,13 +211,13 @@ export const QuizAssessmentModal: React.FC = () => {
   // Translation helpers
   const getQuestionText = () => {
     if (!currentQ) return '';
-    if (lang === 'BN' && currentQ.banglaTranslation) return currentQ.banglaTranslation.question;
-    return currentQ.question;
+    if (lang === 'BN' && currentQ.banglaTranslation?.question) return currentQ.banglaTranslation.question;
+    return currentQ.question || '';
   };
 
   const getOptionText = (idx: number) => {
-    if (!currentQ || !currentQ.options[idx]) return '';
-    if (lang === 'BN' && currentQ.banglaTranslation && currentQ.banglaTranslation.options[idx]) {
+    if (!currentQ || !currentQ.options || !currentQ.options[idx]) return '';
+    if (lang === 'BN' && currentQ.banglaTranslation?.options?.[idx]) {
       return currentQ.banglaTranslation.options[idx];
     }
     return currentQ.options[idx];
@@ -225,8 +225,8 @@ export const QuizAssessmentModal: React.FC = () => {
 
   const getExplanationText = () => {
     if (!currentQ) return '';
-    if (lang === 'BN' && currentQ.banglaTranslation) return currentQ.banglaTranslation.explanation;
-    return currentQ.explanation;
+    if (lang === 'BN' && currentQ.banglaTranslation?.explanation) return currentQ.banglaTranslation.explanation;
+    return currentQ.explanation || '';
   };
 
   return (
