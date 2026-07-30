@@ -12,6 +12,8 @@ export class PlayerShip extends Phaser.GameObjects.Container {
   public maxHealth: number = 100;
   public shield: number = 100;
   public maxShield: number = 100;
+  public energy: number = 100;
+  public maxEnergy: number = 100;
   public stardust: number = 0;
   public score: number = 0;
 
@@ -20,11 +22,11 @@ export class PlayerShip extends Phaser.GameObjects.Container {
   private thrusterGraphics: Phaser.GameObjects.Graphics;
   private particleEmitter?: Phaser.GameObjects.Particles.ParticleEmitter;
 
-  // Physics Control Variables
-  private turnSpeed: number = GAME_CONFIG.physics.turnSpeed;
-  private accelerationRate: number = GAME_CONFIG.physics.baseAcceleration;
-  private maxSpeed: number = 420;
-  private dragCoefficient: number = 0.985;
+  // Physics Control Variables (Refined Heavy Exploration Spacecraft Feel)
+  private turnSpeed: number = 3.2;
+  private accelerationRate: number = 220;
+  private maxSpeed: number = 320;
+  private dragCoefficient: number = 0.988; // Smooth, heavy inertia drift
 
   private isThrusting: boolean = false;
 
@@ -151,6 +153,15 @@ export class PlayerShip extends Phaser.GameObjects.Container {
 
     this.isThrusting = input.forward;
 
+    // Energy handling logic
+    const isBoosting = input.boost && this.energy > 5 && input.forward;
+    if (isBoosting) {
+      this.energy = Math.max(0, this.energy - 18 * dt);
+    } else {
+      // Regenerate energy over time
+      this.energy = Math.min(this.maxEnergy, this.energy + 14 * dt);
+    }
+
     // 1. Rotation Logic
     if (input.left) {
       this.rotation -= this.turnSpeed * dt;
@@ -160,7 +171,7 @@ export class PlayerShip extends Phaser.GameObjects.Container {
 
     // 2. Thrust & Acceleration
     if (input.forward) {
-      const currentBoost = input.boost ? 1.6 : 1.0;
+      const currentBoost = isBoosting ? 1.45 : 1.0;
       const accel = this.accelerationRate * currentBoost;
 
       // Calculate direction vector based on rotation angle
@@ -171,7 +182,7 @@ export class PlayerShip extends Phaser.GameObjects.Container {
       this.body.velocity.y += forwardY * accel * dt;
 
       // Thruster Visual Effect
-      this.drawThrusterGlow(true, input.boost);
+      this.drawThrusterGlow(true, isBoosting);
       if (this.particleEmitter) {
         const offsetDist = 18;
         const emitterX = this.x - Math.cos(this.rotation) * offsetDist;
@@ -201,12 +212,15 @@ export class PlayerShip extends Phaser.GameObjects.Container {
 
     // 4. Cap Velocity to Max Speed
     const currentSpeed = Math.hypot(this.body.velocity.x, this.body.velocity.y);
-    const topSpeed = input.boost ? this.maxSpeed * 1.5 : this.maxSpeed;
+    const topSpeed = isBoosting ? this.maxSpeed * 1.4 : this.maxSpeed;
     if (currentSpeed > topSpeed) {
       const scale = topSpeed / currentSpeed;
       this.body.velocity.x *= scale;
       this.body.velocity.y *= scale;
     }
+
+    // Sync state continuously
+    this.syncState();
   }
 
   private drawThrusterGlow(active: boolean, boost: boolean): void {
@@ -238,6 +252,7 @@ export class PlayerShip extends Phaser.GameObjects.Container {
   public syncState(): void {
     eventBus.emit('SHIP_HEALTH_CHANGED', { current: this.health, max: this.maxHealth });
     eventBus.emit('SHIP_SHIELD_CHANGED', { current: this.shield, max: this.maxShield });
+    eventBus.emit('SHIP_ENERGY_CHANGED', { current: this.energy, max: this.maxEnergy });
   }
 
   public destroy(fromScene?: boolean): void {

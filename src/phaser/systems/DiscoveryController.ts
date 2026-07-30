@@ -109,27 +109,11 @@ export class DiscoveryController {
 
       case 'AURA_PRESENTING':
         playerShip.isControlsLocked = true;
-
-        // Transition to READY_FOR_LEARNING after 2.5s
-        if (this.elapsedTime >= 2.5) {
-          this.state = 'READY_FOR_LEARNING';
-          this.elapsedTime = 0;
-
-          if (this.currentTarget) {
-            eventBus.emit('DISCOVERY_READY', {
-              galaxyData: this.currentTarget,
-            });
-          }
-        }
+        // Hold state until player interacts with AURA dialogue controls (Next/Continue/Skip)
         break;
 
       case 'READY_FOR_LEARNING':
         playerShip.isControlsLocked = true;
-
-        // Hold pause for 2.0s before auto-completing cinematic reveal
-        if (this.elapsedTime >= 2.0) {
-          this.finishSequence(playerShip, camera);
-        }
         break;
 
       case 'FINISHED':

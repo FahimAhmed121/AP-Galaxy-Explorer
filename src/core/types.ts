@@ -9,6 +9,8 @@ export interface Spaceship {
   maxHealth: number;
   shield: number;
   maxShield: number;
+  energy: number;
+  maxEnergy: number;
   stardust: number;
   score: number;
   level: number;

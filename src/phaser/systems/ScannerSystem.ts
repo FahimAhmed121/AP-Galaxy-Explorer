@@ -51,6 +51,14 @@ export class ScannerSystem {
       case 'IDLE':
         // Check if player initiated scanning with E key press
         if (scanJustPressed && this.nearbyTarget) {
+          if (playerShip && playerShip.energy < 10) {
+            logger.info('ScannerSystem: Insufficient plasma energy to initiate scan.');
+            eventBus.emit('SCAN_CANCELLED', {
+              targetId: this.nearbyTarget.id,
+              reason: 'INSUFFICIENT_ENERGY',
+            });
+            break;
+          }
           this.startScan(this.nearbyTarget, galaxyManager);
         }
         break;
@@ -59,6 +67,16 @@ export class ScannerSystem {
         if (!this.currentTarget) {
           this.cancelScan('NO_TARGET', galaxyManager);
           break;
+        }
+
+        // Consume plasma energy during scan
+        if (playerShip) {
+          playerShip.energy = Math.max(0, playerShip.energy - 12 * deltaSec);
+          if (playerShip.energy <= 0) {
+            logger.info('ScannerSystem: Energy depleted during scan. Cancelling.');
+            this.cancelScan('INSUFFICIENT_ENERGY', galaxyManager);
+            break;
+          }
         }
 
         // Validate target distance continuously

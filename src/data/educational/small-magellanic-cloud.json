@@ -1,0 +1,57 @@
+{
+  "galaxyId": "small-magellanic-cloud",
+  "galaxyName": "Small Magellanic Cloud (SMC)",
+  "auraIntro": "Explorer, Small Magellanic Cloud is a dwarf satellite galaxy linked to the LMC by a stream of neutral hydrogen gas.",
+  "overview": "The Small Magellanic Cloud (SMC or NGC 292) is a dwarf irregular galaxy orbiting the Milky Way at a distance of 200,000 light-years in Tucana.",
+  "formation": "Formed roughly 6.5 billion years ago, frequent gravitational encounters with the Milky Way and LMC disrupted its original structure.",
+  "structure": "A dwarf irregular galaxy containing several hundred million stars across a diameter of 7,000 light-years, with low heavy-element metal abundance.",
+  "distance": "200,000 Light Years",
+  "diameter": "7,000 Light Years",
+  "age": "6.5 Billion Years",
+  "constellation": "Tucana",
+  "discoveryHistory": "Observed by Southern Hemisphere inhabitants for millennia; recorded by Amerigo Vespucci in 1501 and cataloged by Magellan's crew.",
+  "observationTips": "Visible to the naked eye as a hazy cloud near 47 Tucanae globular cluster in Southern Hemisphere skies.",
+  "funFacts": [
+    "Henrietta Swan Leavitt discovered the Cepheid variable Period-Luminosity relationship studying stars in the SMC in 1912, revolutionizing cosmic distance measurements.",
+    "Linked to the Large Magellanic Cloud by the 'Magellanic Bridge', a stream of neutral hydrogen gas and young stars.",
+    "Possesses low metallicity (heavy elements), providing a window into conditions in the early Universe."
+  ],
+  "cards": [
+    {
+      "id": "smc-card-1",
+      "title": "Cosmic Distance Key",
+      "subtitle": "Low-Metallicity Dwarf Irregular Galaxy",
+      "category": "OVERVIEW",
+      "body": "The Small Magellanic Cloud (SMC) holds a historical milestone in astrophysics: Henrietta Leavitt's discovery of Cepheid variables in SMC calibrated the cosmic distance scale.",
+      "keyMetrics": [
+        { "label": "CLASSIFICATION", "value": "Dwarf Irregular (SB(s)m pec)" },
+        { "label": "CONSTELLATION", "value": "Tucana" },
+        { "label": "DISTANCE", "value": "200,000 Light-Years" },
+        { "label": "DIAMETER", "value": "7,000 Light-Years" }
+      ],
+      "visualPlaceholder": {
+        "title": "ESO Vista Infrared Sky Survey",
+        "caption": "Deep infrared portrait penetrating SMC interstellar dust clouds.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "smc-card-2",
+      "title": "Magellanic Bridge & NGC 346",
+      "subtitle": "Gas Streams & Active Starbirth Clusters",
+      "category": "STRUCTURE",
+      "body": "NGC 346 is SMC's brightest starbirth cluster, harboring dozens of massive O-type stars shedding energetic stellar winds.",
+      "bulletPoints": [
+        "Henrietta Leavitt discovered Period-Luminosity law in SMC (1912).",
+        "Connected to LMC by neutral hydrogen Magellanic Bridge stream.",
+        "Low metallicity mimics high-redshift early cosmic conditions."
+      ],
+      "visualPlaceholder": {
+        "title": "Hubble Detailed View of NGC 346",
+        "caption": "Optical view of arc-shaped gas filaments surrounding young hot stars in NGC 346.",
+        "assetType": "SPECTRAL_CHART"
+      }
+    }
+  ],
+  "quizReferences": ["small-magellanic-cloud"]
+}

@@ -1,23 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { Sparkles, Radio, CheckCircle2, ShieldCheck, Compass, Eye, Volume2, Cpu } from 'lucide-react';
+import { Sparkles, Radio, CheckCircle2, Eye, Volume2, Cpu, ChevronRight, ChevronLeft, ArrowRight, X } from 'lucide-react';
 import { Galaxy } from '../../core/types';
 import { eventBus } from '../../core/events';
 
 export const DiscoveryOverlay: React.FC = () => {
   const [activeGalaxy, setActiveGalaxy] = useState<Galaxy | null>(null);
-  const [auraText, setAuraText] = useState<string>('');
+  const [auraDialoguePages, setAuraDialoguePages] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(0);
   const [stage, setStage] = useState<'HIDDEN' | 'STARTED' | 'AURA' | 'READY'>('HIDDEN');
 
   useEffect(() => {
     const handleStarted = (payload: { galaxyId: string; galaxyName: string; galaxyData: Galaxy }) => {
       setActiveGalaxy(payload.galaxyData);
-      setAuraText(`Initiating high-resolution spectrographic analysis of ${payload.galaxyName}...`);
+      setAuraDialoguePages([
+        `Target locked: ${payload.galaxyName}. Radio frequency lock confirmed on deep space channel 9.4 GHz.`,
+        `Analyzing spectrographic emissions from constellation ${payload.galaxyData.constellation}... Classification verified as ${payload.galaxyData.type}.`,
+        `Estimated distance: ${payload.galaxyData.distance}. Scientific briefing dossier is ready for review.`
+      ]);
+      setCurrentPage(0);
       setStage('STARTED');
     };
 
     const handleOverlayShown = (payload: { galaxyData: Galaxy; auraText: string }) => {
       setActiveGalaxy(payload.galaxyData);
-      setAuraText(payload.auraText);
+      setAuraDialoguePages([
+        `Discovery confirmed! We have successfully mapped ${payload.galaxyData.name}.`,
+        `Spectrographic classification: ${payload.galaxyData.type}. Located in ${payload.galaxyData.constellation} at ${payload.galaxyData.distance}.`,
+        payload.auraText,
+        `Astronomy Pathshala NASA Briefing Dossier compiled. Click 'Continue to Briefing' to begin educational review.`
+      ]);
+      setCurrentPage(0);
       setStage('AURA');
     };
 
@@ -29,7 +41,8 @@ export const DiscoveryOverlay: React.FC = () => {
     const handleFinished = () => {
       setStage('HIDDEN');
       setActiveGalaxy(null);
-      setAuraText('');
+      setAuraDialoguePages([]);
+      setCurrentPage(0);
     };
 
     eventBus.on('DISCOVERY_STARTED', handleStarted);
@@ -45,58 +58,128 @@ export const DiscoveryOverlay: React.FC = () => {
     };
   }, []);
 
+  const handleNext = () => {
+    if (currentPage < auraDialoguePages.length - 1) {
+      setCurrentPage((prev) => prev + 1);
+    } else {
+      handleContinueToBriefing();
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentPage > 0) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  const handleSkip = () => {
+    eventBus.emit('DISCOVERY_FINISHED', { galaxyId: activeGalaxy?.id });
+    setStage('HIDDEN');
+  };
+
+  const handleContinueToBriefing = () => {
+    if (activeGalaxy) {
+      eventBus.emit('LEARNING_STARTED', {
+        galaxyId: activeGalaxy.id,
+        galaxyName: activeGalaxy.name,
+        totalCards: activeGalaxy.cards?.length || 2,
+        content: activeGalaxy,
+      });
+      eventBus.emit('DISCOVERY_FINISHED', { galaxyId: activeGalaxy.id });
+    }
+    setStage('HIDDEN');
+  };
+
   if (stage === 'HIDDEN' || !activeGalaxy) {
     return null;
   }
+
+  const currentAuraText = auraDialoguePages[currentPage] || 'Synthesizing astrophysical metrics...';
 
   return (
     <div className="fixed inset-0 z-40 pointer-events-none flex flex-col justify-between p-6 md:p-10 select-none font-sans">
       
       {/* 1. TOP NASA MISSION CONTROL STATUS BAR */}
       <div className="flex items-center justify-between w-full max-w-5xl mx-auto">
-        <div className="flex items-center gap-3 px-4 py-2 rounded bg-slate-950/85 border border-cyan-500/40 backdrop-blur-md shadow-xl text-cyan-400 font-mono text-xs tracking-wider animate-pulse">
+        <div className="flex items-center gap-3 px-4 py-2 rounded bg-slate-950/85 border border-cyan-500/40 backdrop-blur-md shadow-xl text-cyan-400 font-mono text-xs tracking-wider animate-pulse pointer-events-auto">
           <Radio size={16} className="text-cyan-400 animate-spin" />
           <span className="font-bold uppercase">AURA DEEP-SPACE LINK ACTIVE</span>
           <span className="text-slate-500">|</span>
           <span className="text-emerald-400">CH-9.4 GHz</span>
         </div>
 
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded bg-black/80 border border-slate-700/60 text-slate-400 font-mono text-[11px] backdrop-blur-md">
-          <Eye size={13} className="text-slate-400" />
-          <span>PRESS <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 border border-slate-600 font-bold">ESC</kbd> TO SKIP CINEMATIC</span>
-        </div>
+        <button
+          onClick={handleSkip}
+          className="pointer-events-auto flex items-center gap-2 px-3 py-1.5 rounded bg-red-950/80 hover:bg-red-900 border border-red-500/40 text-red-300 font-mono text-[11px] backdrop-blur-md transition-all cursor-pointer"
+        >
+          <X size={13} />
+          <span>SKIP CINEMATIC (ESC)</span>
+        </button>
       </div>
 
       {/* 2. CENTER-BOTTOM AURA HOLOGRAPHIC ASSISTANT & GALAXY SPEC CARD */}
       <div className="w-full max-w-4xl mx-auto flex flex-col md:flex-row items-stretch gap-4 pointer-events-auto transition-all duration-500">
         
-        {/* A. AURA Holographic Avatar Panel */}
-        <div className="flex-1 p-5 rounded-lg bg-slate-950/90 border border-cyan-500/30 shadow-2xl backdrop-blur-xl flex items-start gap-4 relative overflow-hidden">
+        {/* A. AURA Holographic Avatar Panel & Dialogue Controls */}
+        <div className="flex-1 p-5 rounded-lg bg-slate-950/90 border border-cyan-500/30 shadow-2xl backdrop-blur-xl flex flex-col justify-between relative overflow-hidden min-h-[180px]">
           {/* Background scanlines */}
           <div className="absolute inset-0 bg-[linear-gradient(rgba(56,189,248,0.03)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none" />
 
-          {/* Hologram Circle Icon */}
-          <div className="relative flex-shrink-0 w-14 h-14 rounded-full bg-cyan-950/60 border-2 border-cyan-400/80 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/20">
-            <Cpu size={28} className="animate-pulse" />
-            <div className="absolute inset-0 rounded-full border border-cyan-400 animate-ping opacity-30" />
-          </div>
-
-          {/* Dialogue Body */}
-          <div className="space-y-1.5 z-10">
-            <div className="flex items-center gap-2 text-[10px] font-mono text-cyan-400 tracking-widest uppercase">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-              <span className="font-bold">AURA // RESEARCH ASSISTANT</span>
+          <div className="flex items-start gap-4 z-10">
+            {/* Hologram Circle Icon */}
+            <div className="relative flex-shrink-0 w-12 h-12 rounded-full bg-cyan-950/60 border-2 border-cyan-400/80 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/20">
+              <Cpu size={24} className="animate-pulse" />
+              <div className="absolute inset-0 rounded-full border border-cyan-400 animate-ping opacity-30" />
             </div>
 
-            <p className="text-sm font-sans text-slate-200 leading-relaxed italic">
-              "{auraText}"
-            </p>
+            {/* Dialogue Body */}
+            <div className="space-y-1.5 z-10 flex-1">
+              <div className="flex items-center justify-between text-[10px] font-mono text-cyan-400 tracking-widest uppercase">
+                <div className="flex items-center gap-2 font-bold">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                  <span>AURA // RESEARCH ASSISTANT</span>
+                </div>
+                <span className="text-slate-400">
+                  {currentPage + 1} / {auraDialoguePages.length}
+                </span>
+              </div>
 
-            <div className="pt-1 flex items-center gap-2 text-[10px] font-mono text-slate-400">
-              <Volume2 size={12} className="text-cyan-400" />
-              <span>SYNTHESIZING ASTROPHYSICAL METRICS</span>
+              <p className="text-sm font-sans text-slate-100 leading-relaxed italic">
+                "{currentAuraText}"
+              </p>
             </div>
           </div>
+
+          {/* Player-Controlled Progression Buttons (Next, Prev, Skip, Continue) */}
+          <div className="pt-3 border-t border-cyan-900/40 flex items-center justify-between z-10 text-xs font-mono">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handlePrev}
+                disabled={currentPage === 0}
+                className="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-40 disabled:pointer-events-none flex items-center gap-1 cursor-pointer"
+              >
+                <ChevronLeft size={14} />
+                <span>PREV</span>
+              </button>
+              <button
+                onClick={handleNext}
+                disabled={currentPage >= auraDialoguePages.length - 1}
+                className="px-2.5 py-1 rounded bg-cyan-950 border border-cyan-600 text-cyan-300 hover:bg-cyan-900 disabled:opacity-40 disabled:pointer-events-none flex items-center gap-1 cursor-pointer"
+              >
+                <span>NEXT</span>
+                <ChevronRight size={14} />
+              </button>
+            </div>
+
+            <button
+              onClick={handleContinueToBriefing}
+              className="px-3 py-1.5 rounded bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold flex items-center gap-1.5 shadow-lg shadow-emerald-950/50 cursor-pointer"
+            >
+              <span>CONTINUE TO BRIEFING</span>
+              <ArrowRight size={14} />
+            </button>
+          </div>
+
         </div>
 
         {/* B. Discovered Galaxy Metadata Overlay */}

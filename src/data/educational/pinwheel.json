@@ -1,0 +1,57 @@
+{
+  "galaxyId": "pinwheel",
+  "galaxyName": "Pinwheel Galaxy (M101)",
+  "auraIntro": "Explorer, Pinwheel Galaxy is an immense face-on spiral galaxy containing over 1 trillion stars and 3,000 starbirth regions.",
+  "overview": "The Pinwheel Galaxy (M101 or NGC 5457) is a massive face-on spiral galaxy in the constellation Ursa Major, roughly 21 million light-years from Earth.",
+  "formation": "Formed approximately 13.1 billion years ago, tidal interactions with nearby companion galaxies asymmetricized its outer arms and accelerated starbirth.",
+  "structure": "A face-on grand spiral galaxy spanning 170,000 light-years—nearly double the size of the Milky Way—with a stellar mass of 1 trillion solar masses.",
+  "distance": "21 Million Light Years",
+  "diameter": "170,000 Light Years",
+  "age": "13.1 Billion Years",
+  "constellation": "Ursa Major",
+  "discoveryHistory": "Discovered by Pierre Méchain on March 27, 1781, and cataloged by Charles Messier.",
+  "observationTips": "Due to its face-on orientation, surface brightness is low; requires dark skies and 8-inch or larger optics to resolve individual arm nodes.",
+  "funFacts": [
+    "Contains over 3,000 giant H II regions where active star formation creates massive newborn star clusters.",
+    "Nearly twice the diameter of our Milky Way Galaxy, holding an estimated 1 trillion stars.",
+    "Hosted supernova SN 2023ixf in May 2023, one of the brightest and closest Type Ia supernovae seen in two decades."
+  ],
+  "cards": [
+    {
+      "id": "pinwheel-card-1",
+      "title": "Face-On Giant Spiral",
+      "subtitle": "170,000 Light-Year Stellar Wheel",
+      "category": "OVERVIEW",
+      "body": "The Pinwheel Galaxy (M101) presents a perfect face-on perspective from Earth, providing astronomers with an ideal top-down view of spiral mechanics.",
+      "keyMetrics": [
+        { "label": "CLASSIFICATION", "value": "Pinwheel Spiral (SAB(rs)cd)" },
+        { "label": "CONSTELLATION", "value": "Ursa Major" },
+        { "label": "DISTANCE", "value": "21 Million Light-Years" },
+        { "label": "DIAMETER", "value": "170,000 Light-Years" }
+      ],
+      "visualPlaceholder": {
+        "title": "Hubble Ultra-High Resolution Mosaic",
+        "caption": "16,000 pixel wide composite capturing 3,000 starburst regions in M101.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "pinwheel-card-2",
+      "title": "Supernova & H II Regions",
+      "subtitle": "SN 2023ixf & Extreme Stellar Nurseries",
+      "category": "STRUCTURE",
+      "body": "In May 2023, Japanese amateur astronomer Koichi Itagaki discovered supernova SN 2023ixf in M101's spiral arms, attracting worldwide observation.",
+      "bulletPoints": [
+        "SN 2023ixf occurred when a red supergiant star collapsed into a neutron star.",
+        "M101 holds 3,000+ ionized hydrogen H II regions.",
+        "Asymmetric arm structure caused by tidal drag from dwarf companions."
+      ],
+      "visualPlaceholder": {
+        "title": "Chandra X-Ray & Optical Overlay",
+        "caption": "X-ray glowing gas surrounds active supernova remnants in M101.",
+        "assetType": "SPECTRAL_CHART"
+      }
+    }
+  ],
+  "quizReferences": ["pinwheel"]
+}

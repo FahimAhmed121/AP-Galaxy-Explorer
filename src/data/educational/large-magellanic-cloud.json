@@ -1,0 +1,57 @@
+{
+  "galaxyId": "large-magellanic-cloud",
+  "galaxyName": "Large Magellanic Cloud (LMC)",
+  "auraIntro": "Explorer, Large Magellanic Cloud is the largest satellite galaxy of the Milky Way, housing the active Tarantula Nebula.",
+  "overview": "The Large Magellanic Cloud (LMC) is a satellite galaxy orbiting the Milky Way at a distance of 160,000 light-years in the southern constellations Dorado and Mensa.",
+  "formation": "Formed roughly 11 billion years ago, its irregular shape is caused by gravitational tidal forces exerted by the Milky Way.",
+  "structure": "Classified as a Magellanic irregular galaxy spanning 14,000 light-years, containing a central stellar bar and roughly 20 billion stars.",
+  "distance": "160,000 Light Years",
+  "diameter": "14,000 Light Years",
+  "age": "11 Billion Years",
+  "constellation": "Dorado / Mensa",
+  "discoveryHistory": "Observed since antiquity by Southern Hemisphere indigenous populations; cataloged by Persian astronomer Al Sufi in 964 AD and Ferdinand Magellan in 1519.",
+  "observationTips": "Prominently visible to the naked eye under dark Southern Hemisphere skies as a bright glowing cosmic cloud.",
+  "funFacts": [
+    "Houses the Tarantula Nebula (30 Doradus), the most energetic starburst region in the entire Local Group.",
+    "Hosted Supernova SN 1987A, the closest observed supernova explosion since Kepler's Supernova in 1604.",
+    "Gravitationally bound to the Milky Way and expected to merge with our galaxy in roughly 2.4 billion years."
+  ],
+  "cards": [
+    {
+      "id": "lmc-card-1",
+      "title": "Milky Way's Premier Satellite",
+      "subtitle": "Magellanic Irregular & Tarantula Nebula",
+      "category": "OVERVIEW",
+      "body": "The Large Magellanic Cloud (LMC) orbits 160,000 light-years from Earth, functioning as an invaluable laboratory for studying stellar evolution.",
+      "keyMetrics": [
+        { "label": "CLASSIFICATION", "value": "Magellanic Irregular (SB(s)m)" },
+        { "label": "CONSTELLATION", "value": "Dorado / Mensa" },
+        { "label": "DISTANCE", "value": "160,000 Light-Years" },
+        { "label": "DIAMETER", "value": "14,000 Light-Years" }
+      ],
+      "visualPlaceholder": {
+        "title": "VLT Deep Space Wide Field View",
+        "caption": "Wide-angle portrait of LMC showing Tarantula Nebula and central stellar bar.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "lmc-card-2",
+      "title": "30 Doradus & SN 1987A",
+      "subtitle": "Most Active Starbirth Engine in Local Group",
+      "category": "STRUCTURE",
+      "body": "The Tarantula Nebula in LMC spans 1,000 light-years across. Nearby lies remnant SN 1987A, providing key insights into supernova physics.",
+      "bulletPoints": [
+        "Tarantula Nebula is so bright it would cast shadows if placed at Orion Nebula's distance.",
+        "SN 1987A emitted a historical burst of neutrinos detected on Earth.",
+        "Connected to Small Magellanic Cloud via the Magellanic Bridge gas stream."
+      ],
+      "visualPlaceholder": {
+        "title": "JWST NIRCam View of Tarantula Nebula",
+        "caption": "Infrared view of cosmic dust filaments and protostars in 30 Doradus.",
+        "assetType": "SPECTRAL_CHART"
+      }
+    }
+  ],
+  "quizReferences": ["large-magellanic-cloud"]
+}

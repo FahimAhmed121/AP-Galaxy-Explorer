@@ -1,0 +1,57 @@
+{
+  "galaxyId": "triangulum",
+  "galaxyName": "Triangulum Galaxy (M33)",
+  "auraIntro": "Explorer, Triangulum Galaxy is the third-largest member of our Local Group, renowned for giant starbirth nebula NGC 604.",
+  "overview": "The Triangulum Galaxy (M33 or NGC 598) is a spiral galaxy roughly 2.73 million light-years from Earth in the constellation Triangulum.",
+  "formation": "Formed approximately 12 billion years ago, M33 is gravitationally bound to the Andromeda Galaxy (M31) and undergoing intense localized starbirth.",
+  "structure": "A unbarred spiral galaxy spanning 60,000 light-years in diameter. Intriguingly, spectroscopic analysis indicates M33 lacks a central supermassive black hole.",
+  "distance": "2.73 Million Light Years",
+  "diameter": "60,000 Light Years",
+  "age": "12 Billion Years",
+  "constellation": "Triangulum",
+  "discoveryHistory": "Discovered before 1654 by Giovanni Battista Hodierna and independently cataloged by Charles Messier in 1764.",
+  "observationTips": "Under dark skies, M33 is one of the most distant permanent objects visible to the naked eye. Wide-field binoculars reveal its loose spiral arms.",
+  "funFacts": [
+    "Contains NGC 604, one of the largest known H II star-forming regions in the Local Group, over 40 times larger than the Orion Nebula.",
+    "Lacks a central supermassive black hole, making it a critical laboratory for studying galaxy cores without SMBH feedback.",
+    "Orbiting the Andromeda Galaxy and scheduled for a potential gravitational encounter prior to the Milky Way merger."
+  ],
+  "cards": [
+    {
+      "id": "triangulum-card-1",
+      "title": "Local Group Companion",
+      "subtitle": "Unbarred Spiral & Active Starburst Regions",
+      "category": "OVERVIEW",
+      "body": "Triangulum (M33) is the third largest member of our Local Group after Andromeda and the Milky Way, spanning 60,000 light-years across.",
+      "keyMetrics": [
+        { "label": "CLASSIFICATION", "value": "Unbarred Spiral (SA(s)cd)" },
+        { "label": "CONSTELLATION", "value": "Triangulum" },
+        { "label": "DISTANCE", "value": "2.73 Million Light-Years" },
+        { "label": "DIAMETER", "value": "60,000 Light-Years" }
+      ],
+      "visualPlaceholder": {
+        "title": "Hubble & JWST Composite View",
+        "caption": "Deep space mosaic capturing loose, gas-rich spiral arms of M33.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "triangulum-card-2",
+      "title": "Nursery of Giant Stars",
+      "subtitle": "NGC 604 & Supermassive Black Hole Absence",
+      "category": "STRUCTURE",
+      "body": "NGC 604 in M33 contains over 200 young high-mass stars in a nebula 1,500 light-years across. Unlike most spiral galaxies, M33 has no supermassive black hole at its center.",
+      "bulletPoints": [
+        "NGC 604 is 40x larger than the Orion Nebula.",
+        "Upper limit on central black hole mass is under 3,000 solar masses.",
+        "Gravitationally tied to the larger Andromeda galaxy."
+      ],
+      "visualPlaceholder": {
+        "title": "Hubble Detailed View of NGC 604",
+        "caption": "Ultraviolet and infrared imaging of ionization bubbles in star nursery NGC 604.",
+        "assetType": "SPECTRAL_CHART"
+      }
+    }
+  ],
+  "quizReferences": ["triangulum"]
+}

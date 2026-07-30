@@ -1,0 +1,57 @@
+{
+  "galaxyId": "whirlpool",
+  "galaxyName": "Whirlpool Galaxy (M51)",
+  "auraIntro": "Explorer, Whirlpool Galaxy is the textbook example of a grand design spiral galaxy, interacting with companion NGC 5195.",
+  "overview": "The Whirlpool Galaxy (M51a or NGC 5194) is an iconic grand design spiral galaxy located 23 million light-years away in the constellation Canes Venatici.",
+  "formation": "Its distinct double spiral structure is driven by gravitational tidal encounters with smaller dwarf companion NGC 5195.",
+  "structure": "A grand design spiral galaxy spanning 76,000 light-years, featuring sweeping spiral arms enriched with bright pink H II starbirth regions.",
+  "distance": "23 Million Light Years",
+  "diameter": "76,000 Light Years",
+  "age": "400 Million Years (Active Interaction Phase)",
+  "constellation": "Canes Venatici",
+  "discoveryHistory": "Discovered on October 13, 1773 by Charles Messier. Its spiral structure was first drawn in 1845 by Lord Rosse.",
+  "observationTips": "A favorite for amateur astronomers; 4-inch telescopes reveal its companion galaxy, while 8-inch instruments show sweeping spiral arms under dark skies.",
+  "funFacts": [
+    "First celestial object ever identified as possessing a spiral structure (by Lord Rosse using the 'Leviathan of Parsonstown' in 1845).",
+    "Tidal compression from companion galaxy NGC 5195 triggers massive waves of newborn star formation along its arms.",
+    "Multiple supernovae have been observed in M51 over recent decades, including SN 1994I, SN 2005cs, and SN 2011dh."
+  ],
+  "cards": [
+    {
+      "id": "whirlpool-card-1",
+      "title": "Grand Design Spiral",
+      "subtitle": "Classic Interacting Galaxy Pair",
+      "category": "OVERVIEW",
+      "body": "The Whirlpool Galaxy (M51) displays clean, well-defined spiral arms stretching outward, connected by a gravitational bridge to dwarf companion NGC 5195.",
+      "keyMetrics": [
+        { "label": "CLASSIFICATION", "value": "Grand Design Spiral (SA(s)bc)" },
+        { "label": "CONSTELLATION", "value": "Canes Venatici" },
+        { "label": "DISTANCE", "value": "23 Million Light-Years" },
+        { "label": "DIAMETER", "value": "76,000 Light-Years" }
+      ],
+      "visualPlaceholder": {
+        "title": "Hubble Space Telescope High-Res Image",
+        "caption": "Full optical mosaic of M51 highlighting starburst clusters in dust lanes.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "whirlpool-card-2",
+      "title": "Gravitational Tidal Engine",
+      "subtitle": "NGC 5195 Interaction & Starburst Waves",
+      "category": "STRUCTURE",
+      "body": "Gravitational tides from dwarf galaxy NGC 5195 compress gas in M51's disk, igniting thousands of bright blue young star clusters.",
+      "bulletPoints": [
+        "First spiral structure drawn in astronomical history (1845).",
+        "Companion NGC 5195 passed through M51's disk ~500 million years ago.",
+        "JWST MIRI observations reveal intricate dust filament networks."
+      ],
+      "visualPlaceholder": {
+        "title": "JWST Infrared Infrared Structure Map",
+        "caption": "Mid-infrared scan revealing warm interstellar dust filaments in M51.",
+        "assetType": "SPECTRAL_CHART"
+      }
+    }
+  ],
+  "quizReferences": ["whirlpool"]
+}

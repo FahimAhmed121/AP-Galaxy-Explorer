@@ -4,6 +4,13 @@ import { EducationalContent, LearningCard } from './types';
 import milkyWayData from './milky-way.json';
 import andromedaData from './andromeda.json';
 import sombreroData from './sombrero.json';
+import whirlpoolData from './whirlpool.json';
+import triangulumData from './triangulum.json';
+import blackEyeData from './black-eye.json';
+import pinwheelData from './pinwheel.json';
+import cartwheelData from './cartwheel.json';
+import lmcData from './large-magellanic-cloud.json';
+import smcData from './small-magellanic-cloud.json';
 
 /**
  * Registry of educational content loaders.
@@ -12,6 +19,13 @@ const staticContentRegistry: Record<string, EducationalContent> = {
   'milky-way': milkyWayData as unknown as EducationalContent,
   'andromeda': andromedaData as unknown as EducationalContent,
   'sombrero': sombreroData as unknown as EducationalContent,
+  'whirlpool': whirlpoolData as unknown as EducationalContent,
+  'triangulum': triangulumData as unknown as EducationalContent,
+  'black-eye': blackEyeData as unknown as EducationalContent,
+  'pinwheel': pinwheelData as unknown as EducationalContent,
+  'cartwheel': cartwheelData as unknown as EducationalContent,
+  'large-magellanic-cloud': lmcData as unknown as EducationalContent,
+  'small-magellanic-cloud': smcData as unknown as EducationalContent,
 };
 
 /**

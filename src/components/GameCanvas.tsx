@@ -11,6 +11,7 @@ import PilotDashboardModal from './hud/PilotDashboardModal';
 import GameOverModal from './hud/GameOverModal';
 import DiscoveryOverlay from './hud/DiscoveryOverlay';
 import LearningBriefingModal from './hud/LearningBriefingModal';
+import WarpJumpOverlay from './hud/WarpJumpOverlay';
 import GameContainer from './common/GameContainer';
 import { eventBus } from '../core/events';
 
@@ -632,6 +633,9 @@ export default function GameCanvas({
 
       {/* Educational Briefing Learning Layer Modal */}
       <LearningBriefingModal />
+
+      {/* Warp Jump Hyperspace Cinematic Overlay */}
+      <WarpJumpOverlay />
 
       {/* 3. Bottom Right Radar & Map Navigation */}
       <RadarHUD

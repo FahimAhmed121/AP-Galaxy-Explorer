@@ -1,0 +1,57 @@
+{
+  "galaxyId": "cartwheel",
+  "galaxyName": "Cartwheel Galaxy (ESO 350-40)",
+  "auraIntro": "Explorer, Cartwheel Galaxy was reshaped by a violent head-on galactic collision, creating expanding shockwaves of star formation.",
+  "overview": "The Cartwheel Galaxy (ESO 350-40) is a famous ring galaxy located 500 million light-years away in the constellation Sculptor.",
+  "formation": "Formed roughly 500 million years ago when a small companion galaxy punched directly through the center of a larger spiral galaxy.",
+  "structure": "A ring galaxy spanning 150,000 light-years across. It features an inner ring surrounding the core and a outer ring expanding at 217,000 mph.",
+  "distance": "500 Million Light Years",
+  "diameter": "150,000 Light Years",
+  "age": "500 Million Years (Post-Collision Phase)",
+  "constellation": "Sculptor",
+  "discoveryHistory": "Discovered in 1941 by Fritz Zwicky, who described it as 'one of the most complicated structures waiting for an explanation.'",
+  "observationTips": "Extremely distant at 500 million light-years; imaged extensively by Hubble and JWST's NIRCam instruments.",
+  "funFacts": [
+    "Created when a smaller companion galaxy pierced straight through the center of a spiral galaxy like a pebble in a pond.",
+    "The outer ring is expanding at over 217,000 mph (350,000 km/h), plowing into surrounding gas and sparking starbursts.",
+    "JWST images revealed faint optical 'spokes' connecting the inner hub to the outer rim."
+  ],
+  "cards": [
+    {
+      "id": "cartwheel-card-1",
+      "title": "Violent Collision Ring",
+      "subtitle": "Expanding Shockwaves & Outer Starburst Ring",
+      "category": "OVERVIEW",
+      "body": "The Cartwheel Galaxy (ESO 350-40) is a classic ring galaxy produced by a direct high-speed collision with a smaller companion galaxy.",
+      "keyMetrics": [
+        { "label": "CLASSIFICATION", "value": "Ring Galaxy (SAD(r)0/a)" },
+        { "label": "CONSTELLATION", "value": "Sculptor" },
+        { "label": "DISTANCE", "value": "500 Million Light-Years" },
+        { "label": "DIAMETER", "value": "150,000 Light-Years" }
+      ],
+      "visualPlaceholder": {
+        "title": "JWST NIRCam & MIRI Composite Image",
+        "caption": "Infrared view showing glowing dust spokes connecting inner core to outer ring.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "cartwheel-card-2",
+      "title": "Cosmic Ripple Dynamics",
+      "subtitle": "217,000 mph Expanding Ring & JWST Spokes",
+      "category": "STRUCTURE",
+      "body": "Like a stone dropped in water, the collision sent a gravitational shockwave outwards, sweeping up interstellar gas into an expanding ring of newborn stars.",
+      "bulletPoints": [
+        "Ring expanding at 217,000 mph into intergalactic medium.",
+        "Spokes contain silicate dust filaments and young star clusters.",
+        "Companion intruder galaxy visible trailing in space nearby."
+      ],
+      "visualPlaceholder": {
+        "title": "JWST Mid-Infrared Dust Distribution",
+        "caption": "MIRI spectral map highlighting organic hydrocarbon dust in the outer ring.",
+        "assetType": "SPECTRAL_CHART"
+      }
+    }
+  ],
+  "quizReferences": ["cartwheel"]
+}

@@ -1,0 +1,57 @@
+{
+  "galaxyId": "black-eye",
+  "galaxyName": "Black Eye Galaxy (M64)",
+  "auraIntro": "Explorer, Black Eye Galaxy features a dramatic dark dust band and counter-rotating gas disks from an ancient collision.",
+  "overview": "The Black Eye Galaxy (M64 or NGC 4826) is an isolated spiral galaxy in the constellation Coma Berenices, roughly 17 million light-years away.",
+  "formation": "Created by a merger approximately 1 billion years ago when M64 absorbed a gas-rich satellite galaxy rotating in the opposite direction.",
+  "structure": "A spiral galaxy spanning 40,000 light-years. Remarkably, its outer interstellar gas rotates in the OPPOSITE direction relative to its inner stars and central core.",
+  "distance": "17 Million Light Years",
+  "diameter": "40,000 Light Years",
+  "age": "13 Billion Years",
+  "constellation": "Coma Berenices",
+  "discoveryHistory": "Discovered on March 23, 1779 by Edward Pigott and independently by Johann Elert Bode and Charles Messier.",
+  "observationTips": "Famous in small telescopes; a 4-inch telescope easily reveals the dark dust patch obscuring the north side of its core.",
+  "funFacts": [
+    "The dark 'eye' feature is a dense band of light-absorbing dust blocking stars behind the core.",
+    "Outer gas cloud rotates counter-clockwise while inner stars rotate clockwise due to a absorbed satellite galaxy.",
+    "Friction at the shear boundary between opposing gas flows triggers rapid starbirth along a 300 light-year wide ring."
+  ],
+  "cards": [
+    {
+      "id": "black-eye-card-1",
+      "title": "Cosmic Collision Legacy",
+      "subtitle": "Dark Absorbing Dust & Counter-Rotating Disks",
+      "category": "OVERVIEW",
+      "body": "The Black Eye Galaxy (M64) is named for the prominent dark band of dust obscuring light in front of its bright core.",
+      "keyMetrics": [
+        { "label": "CLASSIFICATION", "value": "Spiral Galaxy (SA(rs)ab)" },
+        { "label": "CONSTELLATION", "value": "Coma Berenices" },
+        { "label": "DISTANCE", "value": "17 Million Light-Years" },
+        { "label": "DIAMETER", "value": "40,000 Light-Years" }
+      ],
+      "visualPlaceholder": {
+        "title": "Hubble Space Telescope Core Image",
+        "caption": "High-contrast view of M64's equatorial dust lane and core.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "black-eye-card-2",
+      "title": "Counter-Rotating Dynamics",
+      "subtitle": "Shear Boundary Starburst Ignition",
+      "category": "STRUCTURE",
+      "body": "Spectroscopic Doppler shifts confirm that M64's outer gas disk rotates opposite to the inner star disk. The collision boundary creates intense localized star formation.",
+      "bulletPoints": [
+        "Gas beyond 3,000 light-years rotates opposite to inner core.",
+        "Collision occurred approximately 1 billion years ago.",
+        "Shear boundary compresses gas into hot blue starburst clusters."
+      ],
+      "visualPlaceholder": {
+        "title": "Doppler Kinematic Velocity Map",
+        "caption": "Redshift/blueshift diagram illustrating counter-rotating gas sheets.",
+        "assetType": "SPECTRAL_CHART"
+      }
+    }
+  ],
+  "quizReferences": ["black-eye"]
+}

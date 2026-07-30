@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Heart, Sparkles, Award, User, Settings, BookOpen, SlidersHorizontal } from 'lucide-react';
+import { Shield, Heart, Zap, Sparkles, Award, User, Settings, BookOpen, SlidersHorizontal } from 'lucide-react';
 import { Spaceship } from '../../types';
 import { useGameStore } from '../../store/useGameStore';
 
@@ -22,10 +22,13 @@ export default function ShipStatusHUD({
 
   const healthPct = Math.max(0, Math.min(100, (ship.health / ship.maxHealth) * 100));
   const shieldPct = Math.max(0, Math.min(100, (ship.shield / ship.maxShield) * 100));
+  const energyVal = ship.energy ?? 100;
+  const maxEnergyVal = ship.maxEnergy ?? 100;
+  const energyPct = Math.max(0, Math.min(100, (energyVal / maxEnergyVal) * 100));
 
   return (
     <div className="absolute top-0 left-0 w-full p-3 md:p-4 z-20 pointer-events-none flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-sans select-none">
-      {/* Top Left: Ship Vitals (Health & Shield) */}
+      {/* Top Left: Ship Vitals (Health, Shield & Plasma Energy) */}
       <div className="flex flex-col gap-2 p-2.5 rounded-sm bg-black/70 border border-white/10 backdrop-blur-md pointer-events-auto min-w-[240px]">
         {/* Pilot Identity */}
         <div className="flex items-center justify-between border-b border-white/10 pb-1 text-[10px] font-mono">
@@ -46,7 +49,7 @@ export default function ShipStatusHUD({
             </span>
             <span className="text-white font-bold">{Math.ceil(ship.health)}/{ship.maxHealth}</span>
           </div>
-          <div className="w-full h-2 rounded-full bg-slate-900 border border-red-900/40 overflow-hidden">
+          <div className="w-full h-1.5 rounded-full bg-slate-900 border border-red-900/40 overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-200"
               style={{ width: `${healthPct}%` }}
@@ -62,10 +65,26 @@ export default function ShipStatusHUD({
             </span>
             <span className="text-white font-bold">{Math.ceil(ship.shield)}/{ship.maxShield}</span>
           </div>
-          <div className="w-full h-2 rounded-full bg-slate-900 border border-cyan-900/40 overflow-hidden">
+          <div className="w-full h-1.5 rounded-full bg-slate-900 border border-cyan-900/40 overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 transition-all duration-200"
               style={{ width: `${shieldPct}%` }}
+            ></div>
+          </div>
+        </div>
+
+        {/* Plasma Energy Bar */}
+        <div className="space-y-0.5">
+          <div className="flex justify-between items-center text-[10px] font-mono">
+            <span className="text-amber-400 flex items-center gap-1">
+              <Zap size={10} className="fill-amber-500/20" /> {t('PLASMA ENERGY', 'প্লাজমা এনার্জি')}
+            </span>
+            <span className="text-white font-bold">{Math.ceil(energyVal)}/{maxEnergyVal}</span>
+          </div>
+          <div className="w-full h-1.5 rounded-full bg-slate-900 border border-amber-900/40 overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all duration-200"
+              style={{ width: `${energyPct}%` }}
             ></div>
           </div>
         </div>

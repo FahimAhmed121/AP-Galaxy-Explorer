@@ -7,6 +7,7 @@ export type GameEventType =
   | 'RESUME_GAMEPLAY'
   | 'SHIP_HEALTH_CHANGED'
   | 'SHIP_SHIELD_CHANGED'
+  | 'SHIP_ENERGY_CHANGED'
   | 'STARDUST_COLLECTED'
   | 'GALAXY_PROXIMITY_ENTER'
   | 'GALAXY_PROXIMITY_EXIT'
@@ -32,6 +33,7 @@ export interface GameEventPayloads {
   RESUME_GAMEPLAY: void;
   SHIP_HEALTH_CHANGED: { current: number; max: number };
   SHIP_SHIELD_CHANGED: { current: number; max: number };
+  SHIP_ENERGY_CHANGED: { current: number; max: number };
   STARDUST_COLLECTED: { amount: number; total: number };
   GALAXY_PROXIMITY_ENTER: { galaxyId: string; galaxyName: string };
   GALAXY_PROXIMITY_EXIT: { galaxyId: string };

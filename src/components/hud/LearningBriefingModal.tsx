@@ -222,52 +222,114 @@ export const LearningBriefingModal: React.FC = () => {
               </div>
             </div>
 
-            {/* Main Card Body Narrative */}
-            <p className="text-sm md:text-base text-slate-200 leading-relaxed font-sans">
-              {currentCard.body}
-            </p>
-
-            {/* Key Metrics Grid (If Present) */}
-            {currentCard.keyMetrics && currentCard.keyMetrics.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                {currentCard.keyMetrics.map((metric, idx) => (
-                  <div key={idx} className="p-3 rounded-lg bg-black/50 border border-slate-800/80 space-y-0.5">
-                    <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider block">{metric.label}</span>
-                    <span className="text-xs font-mono font-bold text-cyan-300 block truncate">{metric.value}</span>
+            {/* Active Learning Card Grid: 2-Column Desktop (40% Telescope Visual Showcase + 60% Narrative Content) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+              
+              {/* Left Column: 40-50% Large Scientific Image Showcase Area */}
+              <div className="lg:col-span-5 flex flex-col justify-between rounded-xl bg-slate-950 border border-cyan-500/30 overflow-hidden relative min-h-[260px] lg:min-h-[340px] p-4 group">
+                
+                {/* Telescope Optics Grid Overlay */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-950/40 via-slate-950/80 to-slate-950 pointer-events-none" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#0284c710_1px,transparent_1px),linear-gradient(to_bottom,#0284c710_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
+                
+                {/* Top Badge: Telescope Observatory Identification */}
+                <div className="relative z-10 flex items-center justify-between font-mono text-[10px]">
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-black/80 border border-cyan-500/50 text-cyan-300 font-bold uppercase tracking-wider">
+                    <Sparkles size={11} className="text-cyan-400 animate-pulse" />
+                    <span>
+                      {activeCardIndex % 2 === 0 ? 'NASA / JWST NIRCam' : 'HUBBLE ACS / WFC3'}
+                    </span>
                   </div>
-                ))}
-              </div>
-            )}
-
-            {/* Bullet Points List (If Present) */}
-            {currentCard.bulletPoints && currentCard.bulletPoints.length > 0 && (
-              <div className="space-y-2 pt-2">
-                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest block font-bold">
-                  KEY SCIENTIFIC TAKEAWAYS:
-                </span>
-                <ul className="space-y-2 text-xs md:text-sm text-slate-300 font-sans">
-                  {currentCard.bulletPoints.map((pt, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1.5 flex-shrink-0" />
-                      <span>{pt}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Visual Placeholder Component */}
-            {currentCard.visualPlaceholder && (
-              <div className="p-4 rounded-lg bg-black/60 border border-cyan-500/20 flex flex-col md:flex-row items-center gap-4 text-xs font-mono">
-                <div className="w-16 h-16 rounded bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-center text-cyan-400 flex-shrink-0">
-                  <ImageIcon size={28} />
+                  <span className="text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-500/30 text-[9px]">
+                    SPECTRAL LOCK
+                  </span>
                 </div>
-                <div className="space-y-1 text-center md:text-left">
-                  <span className="text-cyan-300 font-bold block">{currentCard.visualPlaceholder.title}</span>
-                  <p className="text-slate-400 text-[11px] font-sans italic">{currentCard.visualPlaceholder.caption}</p>
+
+                {/* Central Visual Image Display */}
+                <div className="relative z-10 my-auto flex flex-col items-center justify-center text-center p-2">
+                  {currentCard.visualPlaceholder?.url ? (
+                    <div className="relative w-full h-44 rounded-lg overflow-hidden border border-cyan-500/30 shadow-2xl">
+                      <img
+                        src={currentCard.visualPlaceholder.url}
+                        alt={currentCard.title}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                    </div>
+                  ) : (
+                    /* Stylized Deep-Space Graphic Viewport */
+                    <div className="relative w-full h-44 rounded-lg bg-gradient-to-br from-indigo-950 via-slate-900 to-cyan-950 border border-cyan-500/30 flex items-center justify-center overflow-hidden shadow-inner">
+                      {/* Rotating Optics Reticle */}
+                      <div className="absolute w-32 h-32 rounded-full border border-dashed border-cyan-400/40 animate-[spin_20s_linear_infinite]" />
+                      <div className="absolute w-20 h-20 rounded-full border border-cyan-500/60 animate-ping opacity-25" />
+                      
+                      <div className="relative z-10 flex flex-col items-center gap-2 p-3">
+                        <div className="p-3 rounded-full bg-cyan-950/80 border border-cyan-400 text-cyan-300 shadow-lg shadow-cyan-500/30">
+                          <ImageIcon size={28} />
+                        </div>
+                        <span className="text-xs font-mono font-bold text-white tracking-wider">
+                          {currentCard.visualPlaceholder?.title || `${content.galaxyName} Telescope Scan`}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="mt-2 text-[11px] font-sans italic text-slate-300 leading-snug">
+                    "{currentCard.visualPlaceholder?.caption || `Deep-space optical capture of ${content.galaxyName}.`}"
+                  </p>
+                </div>
+
+                {/* Bottom Telemetry Bar */}
+                <div className="relative z-10 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[9px] font-mono text-slate-400">
+                  <div className="flex items-center gap-1 text-cyan-400">
+                    <Activity size={10} />
+                    <span>WAVELENGTH: 0.6µm - 2.0µm</span>
+                  </div>
+                  <span>SOURCE: STScI / NASA Archive</span>
                 </div>
               </div>
-            )}
+
+              {/* Right Column: 50-60% Educational Narrative & Metrics */}
+              <div className="lg:col-span-7 flex flex-col justify-between space-y-4">
+                
+                {/* Main Narrative Text */}
+                <p className="text-sm md:text-base text-slate-200 leading-relaxed font-sans">
+                  {currentCard.body}
+                </p>
+
+                {/* Key Metrics Grid */}
+                {currentCard.keyMetrics && currentCard.keyMetrics.length > 0 && (
+                  <div className="grid grid-cols-2 gap-2.5 pt-1">
+                    {currentCard.keyMetrics.map((metric, idx) => (
+                      <div key={idx} className="p-2.5 rounded-lg bg-black/60 border border-slate-800 space-y-0.5">
+                        <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider block">{metric.label}</span>
+                        <span className="text-xs font-mono font-bold text-cyan-300 block truncate">{metric.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Bullet Points List */}
+                {currentCard.bulletPoints && currentCard.bulletPoints.length > 0 && (
+                  <div className="space-y-1.5 pt-1">
+                    <span className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest block font-bold">
+                      KEY ASTROPHYSICAL FINDINGS:
+                    </span>
+                    <ul className="space-y-1.5 text-xs md:text-sm text-slate-300 font-sans">
+                      {currentCard.bulletPoints.map((pt, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1.5 flex-shrink-0" />
+                          <span>{pt}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+              </div>
+
+            </div>
 
           </div>
 
