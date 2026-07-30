@@ -60,19 +60,23 @@
   - Interactive 2D Minimap (`RadarHUD`) showing player heading, galaxies, and space station.
 - **Success Criteria**: Fully verified vertical slice with zero broken UI, zero JSON routing failures, and 60 FPS performance.
 
+### 8. Sprint 2.0 — Adaptive Quiz & Scientific Assessment
+- **Goal**: Complete the educational loop with a production-ready adaptive quiz system designed as a scientific mission debriefing.
+- **Major Deliverables**:
+  - Dedicated `QuizController.ts` managing quiz flow, scoring, accuracy, streak counters, and timing.
+  - Lazy-loaded quiz dataset pipeline (`quizPipeline.ts`) with static JSON questions and dynamic fallback generation.
+  - MCQ evaluation support with architecture for True/False and Image questions.
+  - NASA Mission Console UI (`QuizAssessmentModal.tsx`) with dark-tech HUD aesthetic, AURA scientific tone, and immediate feedback.
+  - 80% passing threshold leading to Discovery Log placeholder step.
+  - EventBus integration (`QUIZ_STARTED`, `QUESTION_ANSWERED`, `QUIZ_PASSED`, `QUIZ_FAILED`, `QUIZ_COMPLETED`).
+  - Keyboard accessibility (keys 1-4, Enter, Esc) and reduced motion support.
+- **Success Criteria**: Scientific mission debriefing quiz runs seamlessly with immediate feedback, score persistence, and non-destructive retry mechanics.
+
 ---
 
 ## Upcoming Milestones
 
-### 1. Sprint 2.0 — Adaptive Quiz System
-- **Goal**: Implement interactive astrophysical quiz modules following educational card reviews.
-- **Major Deliverables**:
-  - Multiple-choice evaluation modal linked to galaxy dossier topics.
-  - Adaptive difficulty scaling based on player performance history.
-  - Instant scientific explanation feedback for correct and incorrect answers.
-- **Success Criteria**: Completing learning cards triggers an optional quiz rewarding bonus stardust for correct responses.
-
-### 2. Sprint 2.1 — Discovery Logbook
+### 1. Sprint 2.1 — Discovery Logbook
 - **Goal**: Provide a persistent galactic archive and pilot logbook.
 - **Major Deliverables**:
   - Full-screen Pilot Logbook UI listing all discovered and unexplored galaxies.

@@ -23,6 +23,11 @@ export type GameEventType =
   | 'LEARNING_STARTED'
   | 'LEARNING_CARD_CHANGED'
   | 'LEARNING_COMPLETED'
+  | 'QUIZ_STARTED'
+  | 'QUESTION_ANSWERED'
+  | 'QUIZ_PASSED'
+  | 'QUIZ_FAILED'
+  | 'QUIZ_COMPLETED'
   | 'WARP_JUMP_TRIGGERED'
   | 'GAME_OVER_TRIGGERED';
 
@@ -49,6 +54,11 @@ export interface GameEventPayloads {
   LEARNING_STARTED: { galaxyId: string; galaxyName: string; totalCards: number; content: any };
   LEARNING_CARD_CHANGED: { galaxyId: string; currentCardIndex: number; totalCards: number; progressPercentage: number };
   LEARNING_COMPLETED: { galaxyId: string; galaxyData: Galaxy; timeSpentSeconds: number };
+  QUIZ_STARTED: { galaxyId: string; galaxyName: string; totalQuestions: number; questions: any[] };
+  QUESTION_ANSWERED: { galaxyId: string; questionIndex: number; selectedOption: number; isCorrect: boolean; currentScore: number; streak: number; timeTakenSeconds: number };
+  QUIZ_PASSED: { galaxyId: string; score: number; accuracy: number; totalTimeSeconds: number; maxStreak: number };
+  QUIZ_FAILED: { galaxyId: string; score: number; accuracy: number; totalTimeSeconds: number; maxStreak: number; requiredAccuracy: number };
+  QUIZ_COMPLETED: { galaxyId: string; passed: boolean; score: number; accuracy: number; totalTimeSeconds: number };
   WARP_JUMP_TRIGGERED: { targetGalaxyId: string };
   GAME_OVER_TRIGGERED: { finalScore: number };
 }

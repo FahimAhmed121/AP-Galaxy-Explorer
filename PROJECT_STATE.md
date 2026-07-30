@@ -56,6 +56,7 @@
   - `SaveManager`: Manages persistent local storage state (stardust, mapped galaxies, custom options).
 - **Controllers**:
   - `DiscoveryController`: Manages state machine flow for galaxy discoveries (`IDLE` → `SCANNING` → `CINEMATIC_ZOOM` → `AURA_PRESENTING` → `BRIEFING`).
+  - `QuizController`: Manages quiz state, question flow, timing, scoring, streaks, and pass/fail evaluation.
 - **Systems**:
   - `ScannerSystem`: Computes player-to-target distance, energy consumption during scanning, and triggers scan events.
   - `InputSystem`: Processes keyboard (WASD/Arrows/Space/Shift/E) and virtual touch controls, calculating thrust vectors.
@@ -65,6 +66,7 @@
   - `RadarHUD`: Displays 2D minimap with player position/heading, space stations, and discovered/unmapped galaxy indicators.
   - `DiscoveryOverlay`: Provides player-controlled AURA dialogue progression (`PREV`, `NEXT`, `SKIP`, `CONTINUE`).
   - `LearningBriefingModal`: Renders 2-column NASA/JWST educational dossiers with telescope visual showcases.
+  - `QuizAssessmentModal`: NASA Mission Console interface for scientific mission debriefing, immediate feedback, and scoring.
   - `WarpJumpOverlay`: Renders multi-phase HTML5 canvas hyperdrive particle tunnels.
 - **Data Pipeline**:
   - `contentPipeline.ts` dynamically imports educational JSON files with automatic fallback content for unmapped deep-space objects.
@@ -187,7 +189,8 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 
 ---
 
-## 14. Next Milestone
+## 14. Milestones
 
 - **Quality Sprint 1.0**: ✅ **COMPLETE**
-- **Next Milestone**: **Sprint 2.0 — Adaptive Quiz & Skill Evaluation System** (Interactive astrophysical quizzes, knowledge badges, and pilot progression levelling).
+- **Sprint 2.0 — Adaptive Quiz & Scientific Assessment**: ✅ **COMPLETE**
+- **Next Milestone**: **Sprint 3.0 — Interactive Stardust Synthesis & Deep Discovery System**

@@ -15,8 +15,10 @@ import {
   Activity,
   Award,
 } from 'lucide-react';
+import { Galaxy } from '../../core/types';
 import { EducationalContent, LearningCard } from '../../data/educational/types';
 import { eventBus } from '../../core/events';
+import { quizController } from '../../phaser/systems/QuizController';
 
 export const LearningBriefingModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -83,28 +85,34 @@ export const LearningBriefingModal: React.FC = () => {
 
   const handleComplete = useCallback(() => {
     if (!content) return;
+    const galaxyData: Galaxy = {
+      id: content.galaxyId,
+      name: content.galaxyName,
+      type: content.structure,
+      distance: content.distance,
+      diameter: content.diameter,
+      constellation: content.constellation,
+      age: content.age,
+      description: content.overview,
+      funFacts: content.funFacts,
+      visualColor: '#00d2ff',
+      iconStyle: 'spiral',
+      x: 0,
+      y: 0,
+      radius: 100,
+      quizzes: [],
+    };
+
     eventBus.emit('LEARNING_COMPLETED', {
       galaxyId: content.galaxyId,
-      galaxyData: {
-        id: content.galaxyId,
-        name: content.galaxyName,
-        type: content.structure,
-        distance: content.distance,
-        diameter: content.diameter,
-        constellation: content.constellation,
-        age: content.age,
-        description: content.overview,
-        funFacts: content.funFacts,
-        visualColor: '#00d2ff',
-        iconStyle: 'spiral',
-        x: 0,
-        y: 0,
-        radius: 100,
-        quizzes: [],
-      },
+      galaxyData,
       timeSpentSeconds: 15,
     });
+
     setIsOpen(false);
+
+    // Transition smoothly into AURA Assessment
+    quizController.startQuiz(galaxyData);
   }, [content]);
 
   // Keyboard navigation

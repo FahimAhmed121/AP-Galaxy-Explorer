@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Galaxy, QuizQuestion } from '../../types';
 import { audioEngine } from '../../engine/audioEngine';
+import { quizController } from '../../phaser/systems/QuizController';
 
 interface GalaxyInfoProps {
   galaxy: Galaxy;
@@ -447,7 +448,7 @@ export default function GalaxyInfo({
 
                   <button
                     id="start-quiz-btn"
-                    onClick={() => setViewState('QUIZ')}
+                    onClick={() => quizController.startQuiz(galaxy)}
                     className="group w-full sm:w-auto px-5 py-2.5 rounded-sm bg-gold hover:bg-gold-hover text-black text-xs font-extrabold tracking-widest uppercase flex items-center justify-center gap-1.5 shadow-lg transition-all cursor-pointer"
                   >
                     <span>{discoveredIds && discoveredIds.includes(galaxy.id) ? t('Retake Quiz', 'কুইজ পুনরায় দিন') : t('Test Your Skills', 'দক্ষতা পরীক্ষা করুন')}</span>

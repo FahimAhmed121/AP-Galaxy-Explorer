@@ -114,11 +114,23 @@ export interface Galaxy {
   };
 }
 
+export type QuestionType = 'MULTIPLE_CHOICE' | 'TRUE_FALSE' | 'IMAGE_QUESTION';
+
 export interface QuizQuestion {
+  id?: string;
+  type?: QuestionType;
   question: string;
   options: string[];
   correctAnswer: number; // Index of correct option
   explanation: string;
+  difficulty?: 'EASY' | 'MEDIUM' | 'HARD';
+  tags?: string[];
+  imageUrl?: string;
+  banglaTranslation?: {
+    question: string;
+    options: string[];
+    explanation: string;
+  };
 }
 
 export interface ExplorerBadge {
