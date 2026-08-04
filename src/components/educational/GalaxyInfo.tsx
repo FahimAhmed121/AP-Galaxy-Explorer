@@ -20,6 +20,7 @@ import {
 import { Galaxy, QuizQuestion } from '../../types';
 import { audioEngine } from '../../engine/audioEngine';
 import { quizController } from '../../phaser/systems/QuizController';
+import GalaxyImage from '../common/GalaxyImage';
 
 interface GalaxyInfoProps {
   galaxy: Galaxy;
@@ -175,11 +176,13 @@ export default function GalaxyInfo({
               className="w-36 h-36 md:w-44 md:h-44 rounded-full border-2 border-white/10 bg-black flex flex-col items-center justify-center relative overflow-hidden shadow-2xl"
               style={{ boxShadow: `0 0 25px ${galaxy.visualColor}40` }}
             >
-              <img 
-                src={galaxy.realImageUrl} 
-                referrerPolicy="no-referrer" 
-                alt={galaxy.name} 
-                className="w-full h-full object-cover rounded-full scale-105 hover:scale-125 transition-transform duration-700 pointer-events-auto cursor-zoom-in" 
+              <GalaxyImage
+                src={galaxy.realImageUrl}
+                alt={galaxy.name}
+                visualColor={galaxy.visualColor}
+                type={galaxy.type}
+                className="w-full h-full object-cover rounded-full scale-105 hover:scale-125 transition-transform duration-700 pointer-events-auto cursor-zoom-in"
+                containerClassName="w-full h-full relative overflow-hidden bg-slate-950 rounded-full"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col items-center justify-end pb-2.5 text-center pointer-events-none">
                 <span className="text-[7.5px] font-mono text-gold font-bold uppercase tracking-widest px-1.5 py-0.5 bg-black/60 rounded-sm">

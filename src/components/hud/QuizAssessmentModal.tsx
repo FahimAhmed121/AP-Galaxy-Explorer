@@ -625,53 +625,86 @@ export const QuizAssessmentModal: React.FC = () => {
             </div>
           )}
 
-          {/* STEP E: DISCOVERY LOG (PLACEHOLDER STEP) */}
+          {/* STEP E: DISCOVERY LOG RECORD */}
           {step === 'DISCOVERY_LOG' && (
-            <div className="space-y-6 text-center animate-fade-in">
-              <div className="p-6 rounded-xl bg-slate-950/90 border border-cyan-500/40 space-y-4">
-                <div className="w-14 h-14 rounded-full bg-cyan-950 border border-cyan-400 flex items-center justify-center text-cyan-300 mx-auto shadow-lg">
-                  <Database size={28} />
-                </div>
-
-                <div className="space-y-1">
-                  <span className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest font-bold">
-                    {t('NASA ARCHIVAL REGISTER // DISCOVERY LOG PLACEHOLDER', 'নাসা আরকাইভাল রেজিস্টার // ডিসকভারি লগ')}
-                  </span>
-                  <h2 className="text-xl md:text-2xl font-serif italic text-white font-bold">
-                    {galaxy.name} {t('Catalog Entry Encoded', 'ক্যাটালগ এন্ট্রি সংরক্ষিত')}
-                  </h2>
-                </div>
-
-                <div className="p-4 rounded bg-black/80 border border-slate-800 text-left font-mono text-xs space-y-2 text-slate-300">
-                  <div className="flex justify-between border-b border-slate-800 pb-2 text-[10px]">
-                    <span className="text-slate-400">ARCHIVE RECORD ID:</span>
-                    <span className="text-cyan-400 font-bold">{galaxy.id.toUpperCase()}-VERIFIED</span>
+            <div className="space-y-6 animate-fade-in">
+              <div className="p-6 rounded-xl bg-slate-950/90 border border-cyan-500/40 space-y-5">
+                
+                {/* Header Badge & Title */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-lg bg-cyan-950 border border-cyan-400 flex items-center justify-center text-cyan-300 shadow-lg shrink-0">
+                      <Database size={24} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 font-mono text-[10px] text-cyan-400 uppercase tracking-widest font-bold">
+                        <Sparkles size={12} className="text-amber-400" />
+                        <span>{t('NASA ARCHIVAL REGISTER // DISCOVERY LOG RECORD', 'নাসা আর্কাইভাল রেজিস্টার // ডিসকভারি লগ রেকর্ড')}</span>
+                      </div>
+                      <h2 className="text-xl md:text-2xl font-serif italic text-white font-bold">
+                        {galaxy.name} {t('Catalog Entry Encoded', 'ক্যাটালগ এন্ট্রি সংরক্ষিত')}
+                      </h2>
+                    </div>
                   </div>
-                  <div className="flex justify-between border-b border-slate-800 pb-2 text-[10px]">
-                    <span className="text-slate-400">TELEMETRY ACCURACY:</span>
-                    <span className="text-emerald-400 font-bold">{accuracy}%</span>
-                  </div>
-                  <div className="flex justify-between text-[10px]">
-                    <span className="text-slate-400">RESEARCH STATUS:</span>
-                    <span className="text-emerald-400 font-bold">OFFICIALLY CATALOGED</span>
+
+                  <div className="px-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono text-xs flex items-center gap-2">
+                    <Award size={16} />
+                    <span className="font-bold uppercase">{t('AURA CERTIFIED', 'অরা সত্যায়িত')}</span>
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-400 italic">
-                  {t(
-                    'Full interactive multi-sector Discovery Log catalog will expand in future mission releases.',
-                    'সম্পূর্ণ ডিসকভারি লগ ক্যাটালগ আগামী মিশন সংস্করণে বিস্তারিতভাবে প্রকাশিত হবে।'
-                  )}
-                </p>
+                {/* Telemetry Specification Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
+                  <div className="p-3 rounded bg-black/80 border border-slate-800">
+                    <span className="text-[10px] text-slate-400 uppercase block">{t('RECORD ID', 'রেকর্ড আইডি')}</span>
+                    <span className="text-sm font-bold text-cyan-400 mt-0.5 block">{galaxy.id.toUpperCase()}-01</span>
+                  </div>
+                  <div className="p-3 rounded bg-black/80 border border-slate-800">
+                    <span className="text-[10px] text-slate-400 uppercase block">{t('ACCURACY', 'নির্ভুলতা')}</span>
+                    <span className="text-sm font-bold text-emerald-400 mt-0.5 block">{accuracy}%</span>
+                  </div>
+                  <div className="p-3 rounded bg-black/80 border border-slate-800">
+                    <span className="text-[10px] text-slate-400 uppercase block">{t('STRUCTURE', 'গঠন')}</span>
+                    <span className="text-sm font-bold text-amber-300 mt-0.5 block truncate">{galaxy.type}</span>
+                  </div>
+                  <div className="p-3 rounded bg-black/80 border border-slate-800">
+                    <span className="text-[10px] text-slate-400 uppercase block">{t('DISTANCE', 'দূরত্ব')}</span>
+                    <span className="text-sm font-bold text-slate-200 mt-0.5 block truncate">{galaxy.distance}</span>
+                  </div>
+                </div>
+
+                {/* Detailed Log Summary */}
+                <div className="p-4 rounded-lg bg-cyan-950/20 border border-cyan-500/20 space-y-2 text-xs md:text-sm text-slate-200 font-sans">
+                  <div className="font-mono text-[10px] text-cyan-400 uppercase tracking-wider font-bold">
+                    {t('ASTROPHYSICAL RESEARCH SUMMARY:', 'জ্যোতির্বিজ্ঞান গবেষণা বিবরণী:')}
+                  </div>
+                  <p className="leading-relaxed">
+                    {lang === 'BN' && galaxy.banglaTranslation ? galaxy.banglaTranslation.description : galaxy.description}
+                  </p>
+                </div>
+
+                {/* Key Telemetry Parameters */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                  <div className="p-3 rounded bg-black/60 border border-slate-800 flex justify-between items-center">
+                    <span className="text-slate-400">{t('CONSTELLATION:', 'তারামণ্ডল:')}</span>
+                    <span className="text-white font-bold">{galaxy.constellation}</span>
+                  </div>
+                  <div className="p-3 rounded bg-black/60 border border-slate-800 flex justify-between items-center">
+                    <span className="text-slate-400">{t('ESTIMATED AGE:', 'আনুমানিক বয়স:')}</span>
+                    <span className="text-white font-bold">{galaxy.age}</span>
+                  </div>
+                </div>
+
               </div>
 
-              <div className="flex justify-center pt-2">
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
                 <button
                   onClick={handleClose}
-                  className="px-8 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono text-xs font-extrabold uppercase tracking-widest flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20"
+                  className="w-full sm:w-auto px-8 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono text-xs font-extrabold uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20"
                 >
                   <CheckCircle size={16} />
-                  <span>{t('RETURN TO GAMEPLAY', 'গেমপ্লেতে ফিরুন')}</span>
+                  <span>{t('RESUME SPACE EXPLORATION', 'মহাকাশ অনুসন্ধান চালিয়ে যান')}</span>
                 </button>
               </div>
             </div>
