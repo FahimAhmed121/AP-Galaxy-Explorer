@@ -254,7 +254,6 @@ export default function ArchiveModal({ onClose, onOpenGalaxy }: ArchiveModalProp
                       <button
                         onClick={() => {
                           onOpenGalaxy(g);
-                          onClose();
                         }}
                         className="px-3 py-1.5 rounded-sm bg-gold/10 hover:bg-gold/20 text-gold border border-gold/30 text-[10px] font-mono font-bold uppercase tracking-wider cursor-pointer transition-colors flex items-center gap-1"
                       >

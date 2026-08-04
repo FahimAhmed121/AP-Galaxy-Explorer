@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GameState, Galaxy, Spaceship } from './types';
 import { GALAXIES } from './data/galaxies';
 import MainMenu from './components/views/MainMenu';
@@ -8,11 +8,14 @@ import GalaxyInfo from './components/educational/GalaxyInfo';
 import Certificate from './components/educational/Certificate';
 import ArchiveModal from './components/views/ArchiveModal';
 import SettingsModal from './components/views/SettingsModal';
+import LearningBriefingModal from './components/hud/LearningBriefingModal';
+import QuizAssessmentModal from './components/hud/QuizAssessmentModal';
 import { useGameStore } from './store/useGameStore';
 import { audioEngine } from './engine/audioEngine';
 import { Rocket, Sparkles } from 'lucide-react';
 
 export default function App() {
+  const [returnState, setReturnState] = useState<GameState>('PLAYING');
   const {
     gameState,
     selectedGalaxy,
@@ -71,20 +74,26 @@ export default function App() {
     setGameState('CERTIFICATE');
   };
 
-  // Return to Space Sandbox
+  // Return from Galaxy Info / Certificate
   const handleReturnToSpace = () => {
     setSelectedGalaxy(null);
-    setGameState('PLAYING');
+    setGameState(returnState);
   };
 
   return (
     <main className="w-full h-screen relative bg-[#050508] text-slate-100 overflow-hidden font-sans select-none">
-      
+      {/* Global Modals for Learning Briefing & Quiz Assessment */}
+      <LearningBriefingModal />
+      <QuizAssessmentModal />
+
       {/* 1. STATE: MENU */}
       {gameState === 'MENU' && (
         <MainMenu
           onStartGame={() => setGameState('INTRO_CUTSCENE')}
-          onOpenArchive={() => setGameState('ARCHIVE')}
+          onOpenArchive={() => {
+            setReturnState('MENU');
+            setGameState('ARCHIVE');
+          }}
           onOpenSettings={() => setGameState('SETTINGS')}
         />
       )}
@@ -99,13 +108,19 @@ export default function App() {
       {/* 2. STATE: PLAYING */}
       {gameState === 'PLAYING' && (
         <GameCanvas
-          onDiscoverGalaxy={handleDiscoverGalaxy}
+          onDiscoverGalaxy={(galaxyId) => {
+            setReturnState('PLAYING');
+            handleDiscoverGalaxy(galaxyId);
+          }}
           discoveredIds={profile.discoveredGalaxyIds}
           soundEnabled={settings.soundEnabled}
           onExitToMenu={() => setGameState('MENU')}
           savedShipState={savedShipState}
           onSaveShipState={handleSaveShipState}
-          onOpenArchive={() => setGameState('ARCHIVE')}
+          onOpenArchive={() => {
+            setReturnState('PLAYING');
+            setGameState('ARCHIVE');
+          }}
           onOpenSettings={() => setGameState('SETTINGS')}
         />
       )}
@@ -184,9 +199,10 @@ export default function App() {
       {/* 6. MODAL: ARCHIVE */}
       {gameState === 'ARCHIVE' && (
         <ArchiveModal
-          onClose={() => setGameState('MENU')}
+          onClose={() => setGameState(returnState)}
           onOpenGalaxy={(galaxy) => {
             setSelectedGalaxy(galaxy);
+            setReturnState('ARCHIVE');
             setGameState('GALAXY_INFO');
           }}
         />
