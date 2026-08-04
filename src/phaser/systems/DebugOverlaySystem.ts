@@ -9,13 +9,14 @@ export class DebugOverlaySystem {
   private container: Phaser.GameObjects.Container;
   private background: Phaser.GameObjects.Graphics;
   private debugText: Phaser.GameObjects.Text;
-  private isVisible: boolean = true;
+  private isVisible: boolean = false;
 
   constructor(scene: Phaser.Scene) {
     // Create Container and set to top depth fixed to camera
     this.container = scene.add.container(12, 12);
     this.container.setScrollFactor(0);
     this.container.setDepth(1000);
+    this.container.setVisible(this.isVisible);
 
     // Background Panel
     this.background = scene.add.graphics();

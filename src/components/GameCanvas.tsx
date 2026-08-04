@@ -667,12 +667,26 @@ export default function GameCanvas({
       <GameContainer className="absolute inset-0 z-0" />
 
       {/* 2. Top Status HUD Bar */}
-      <ShipStatusHUD
-        ship={hudShip}
-        onOpenDashboard={() => setShowDashboard(true)}
-        onOpenArchive={onOpenArchive}
-        onOpenSettings={onOpenSettings}
-      />
+      {(() => {
+        const nearestGalaxy = GALAXIES.reduce(
+          (closest, g) => {
+            const dist = Math.hypot(hudShip.x - g.x, hudShip.y - g.y);
+            return dist < closest.dist ? { galaxy: g, dist } : closest;
+          },
+          { galaxy: GALAXIES[0], dist: Infinity }
+        ).galaxy;
+        const currentGalaxyName = nearGalaxy?.name || nearestGalaxy?.name || 'Milky Way Sector';
+
+        return (
+          <ShipStatusHUD
+            ship={hudShip}
+            currentGalaxyName={currentGalaxyName}
+            onOpenDashboard={() => setShowDashboard(true)}
+            onOpenArchive={onOpenArchive}
+            onOpenSettings={onOpenSettings}
+          />
+        );
+      })()}
 
       {/* Discovery Experience AURA & Metadata Overlay */}
       <DiscoveryOverlay />
@@ -696,22 +710,22 @@ export default function GameCanvas({
 
       {/* 4. Near Galaxy Discovery Prompt */}
       {nearGalaxy && !isGameOver && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
-          <div className="p-4 rounded-sm bg-black/90 border border-gold shadow-2xl backdrop-blur-md flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left glow-gold animate-bounce">
-            <div className="p-3 rounded bg-gold/10 text-gold border border-gold/30">
-              <Compass size={24} />
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
+          <div className="px-5 py-3 rounded-2xl bg-slate-950/75 border border-amber-400/40 shadow-2xl shadow-amber-500/10 backdrop-blur-lg flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left transition-all">
+            <div className="p-2.5 rounded-xl bg-amber-400/10 text-amber-400 border border-amber-400/20">
+              <Compass size={22} />
             </div>
             <div>
-              <div className="text-[10px] font-mono text-gold uppercase tracking-[0.2em]">
+              <div className="text-[10px] font-mono text-amber-400 uppercase tracking-widest font-semibold">
                 {t('CELESTIAL DISCOVERY ZONE', 'মহাজাগতিক আবিষ্কার অঞ্চল')}
               </div>
-              <div className="text-base font-serif italic text-white font-bold">
+              <div className="text-sm sm:text-base font-serif italic text-slate-100 font-bold">
                 {nearGalaxy.name}
               </div>
             </div>
             <button
               onClick={() => onDiscoverGalaxy(nearGalaxy.id)}
-              className="px-5 py-2.5 rounded-sm bg-gold hover:bg-yellow-400 text-black font-mono font-bold text-xs uppercase tracking-wider shadow-lg transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-mono font-bold text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 active:scale-95 transition-all cursor-pointer border border-amber-300/30"
             >
               {t('Press E to Warp Jump', 'ওয়ার্প লাফ দিন (E)')}
             </button>
