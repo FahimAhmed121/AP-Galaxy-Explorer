@@ -78,6 +78,51 @@ export default function GameCanvas({
   // React state mirror for HUD updates
   const [hudShip, setHudShip] = useState<Spaceship>({ ...shipRef.current });
 
+  // Sync ship position & stats real-time from Phaser eventBus
+  useEffect(() => {
+    const handlePos = (data: { x: number; y: number; angle: number; speed: number }) => {
+      shipRef.current.x = data.x;
+      shipRef.current.y = data.y;
+      shipRef.current.angle = data.angle;
+      setHudShip((prev) => ({
+        ...prev,
+        x: data.x,
+        y: data.y,
+        angle: data.angle,
+      }));
+    };
+
+    const handleHealth = (data: { current: number; max: number }) => {
+      shipRef.current.health = data.current;
+      shipRef.current.maxHealth = data.max;
+      setHudShip((prev) => ({ ...prev, health: data.current, maxHealth: data.max }));
+    };
+
+    const handleShield = (data: { current: number; max: number }) => {
+      shipRef.current.shield = data.current;
+      shipRef.current.maxShield = data.max;
+      setHudShip((prev) => ({ ...prev, shield: data.current, maxShield: data.max }));
+    };
+
+    const handleEnergy = (data: { current: number; max: number }) => {
+      shipRef.current.energy = data.current;
+      shipRef.current.maxEnergy = data.max;
+      setHudShip((prev) => ({ ...prev, energy: data.current, maxEnergy: data.max }));
+    };
+
+    eventBus.on('SHIP_POSITION_CHANGED', handlePos);
+    eventBus.on('SHIP_HEALTH_CHANGED', handleHealth);
+    eventBus.on('SHIP_SHIELD_CHANGED', handleShield);
+    eventBus.on('SHIP_ENERGY_CHANGED', handleEnergy);
+
+    return () => {
+      eventBus.off('SHIP_POSITION_CHANGED', handlePos);
+      eventBus.off('SHIP_HEALTH_CHANGED', handleHealth);
+      eventBus.off('SHIP_SHIELD_CHANGED', handleShield);
+      eventBus.off('SHIP_ENERGY_CHANGED', handleEnergy);
+    };
+  }, []);
+
   // Game Entities Refs
   const asteroidsRef = useRef<Asteroid[]>([]);
   const lasersRef = useRef<Laser[]>([]);

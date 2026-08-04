@@ -250,6 +250,12 @@ export class PlayerShip extends Phaser.GameObjects.Container {
   }
 
   public syncState(): void {
+    eventBus.emit('SHIP_POSITION_CHANGED', {
+      x: this.x,
+      y: this.y,
+      angle: this.rotation,
+      speed: this.body ? this.body.speed : 0,
+    });
     eventBus.emit('SHIP_HEALTH_CHANGED', { current: this.health, max: this.maxHealth });
     eventBus.emit('SHIP_SHIELD_CHANGED', { current: this.shield, max: this.maxShield });
     eventBus.emit('SHIP_ENERGY_CHANGED', { current: this.energy, max: this.maxEnergy });

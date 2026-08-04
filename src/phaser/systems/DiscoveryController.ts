@@ -28,6 +28,15 @@ export class DiscoveryController {
     this.startDiscoverySequence(payload.galaxyData);
   };
 
+  private handleResetOrFinish = () => {
+    logger.info('DiscoveryController: Received completion event. Resetting state to IDLE and restoring camera.');
+    this.state = 'IDLE';
+    this.currentTarget = null;
+    if (this.sceneCamera) {
+      this.sceneCamera.setZoom(1.0);
+    }
+  };
+
   constructor() {
     logger.info('DiscoveryController: Discovery Controller initialized.');
     this.setupListeners();
@@ -35,6 +44,9 @@ export class DiscoveryController {
 
   private setupListeners(): void {
     eventBus.on('SCAN_COMPLETED', this.handleScanCompleted);
+    eventBus.on('DISCOVERY_FINISHED', this.handleResetOrFinish);
+    eventBus.on('RESUME_GAMEPLAY', this.handleResetOrFinish);
+    eventBus.on('QUIZ_COMPLETED', this.handleResetOrFinish);
   }
 
   public setCamera(camera: Phaser.Cameras.Scene2D.Camera): void {
@@ -63,7 +75,12 @@ export class DiscoveryController {
   ): void {
     const deltaSec = delta / 1000;
 
-    if (this.state === 'IDLE') return;
+    if (this.state === 'IDLE') {
+      if (playerShip.isControlsLocked) {
+        playerShip.isControlsLocked = false;
+      }
+      return;
+    }
 
     this.elapsedTime += deltaSec;
     this.totalCinematicTime += deltaSec;
@@ -120,18 +137,15 @@ export class DiscoveryController {
         // Restores state to IDLE
         this.state = 'IDLE';
         this.currentTarget = null;
+        playerShip.isControlsLocked = false;
+        camera.setZoom(1.0);
+        camera.startFollow(playerShip, true, 0.08, 0.08);
         break;
     }
   }
 
   public finishSequence(playerShip: PlayerShip, camera: Phaser.Cameras.Scene2D.Camera): void {
-    if (!this.currentTarget) {
-      this.state = 'IDLE';
-      playerShip.isControlsLocked = false;
-      return;
-    }
-
-    const galaxyId = this.currentTarget.id;
+    const galaxyId = this.currentTarget ? this.currentTarget.id : '';
 
     // Reset camera zoom & follow target
     camera.setZoom(1.0);
@@ -140,10 +154,14 @@ export class DiscoveryController {
     // Unlock ship controls
     playerShip.isControlsLocked = false;
 
-    this.state = 'FINISHED';
-    eventBus.emit('DISCOVERY_FINISHED', { galaxyId });
+    this.state = 'IDLE';
+    this.currentTarget = null;
 
-    logger.info(`DiscoveryController: Cinematic sequence finished for galaxy [${galaxyId}]. Controls restored.`);
+    if (galaxyId) {
+      eventBus.emit('DISCOVERY_FINISHED', { galaxyId });
+    }
+
+    logger.info(`DiscoveryController: Cinematic sequence finished. Controls restored.`);
   }
 
   private generateAuraDialogue(galaxy: Galaxy): string {
@@ -167,6 +185,9 @@ export class DiscoveryController {
 
   public destroy(): void {
     eventBus.off('SCAN_COMPLETED', this.handleScanCompleted);
+    eventBus.off('DISCOVERY_FINISHED', this.handleResetOrFinish);
+    eventBus.off('RESUME_GAMEPLAY', this.handleResetOrFinish);
+    eventBus.off('QUIZ_COMPLETED', this.handleResetOrFinish);
     this.currentTarget = null;
   }
 }

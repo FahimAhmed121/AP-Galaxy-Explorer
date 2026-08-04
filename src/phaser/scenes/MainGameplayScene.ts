@@ -155,7 +155,14 @@ export class MainGameplayScene extends Phaser.Scene {
     const handleResume = () => {
       this.isPaused = false;
       this.scene.resume();
-      logger.info('MainGameplayScene: Scene resumed via EventBus.');
+      if (this.playerShip) {
+        this.playerShip.isControlsLocked = false;
+      }
+      if (this.cameras && this.cameras.main && this.playerShip) {
+        this.cameras.main.setZoom(1.0);
+        this.cameras.main.startFollow(this.playerShip, true, 0.08, 0.08);
+      }
+      logger.info('MainGameplayScene: Scene resumed and player ship controls/camera restored via EventBus.');
     };
 
     eventBus.on('PAUSE_GAMEPLAY', handlePause);

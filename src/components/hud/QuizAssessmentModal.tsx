@@ -146,9 +146,14 @@ export const QuizAssessmentModal: React.FC = () => {
 
   const handleClose = useCallback(() => {
     setIsOpen(false);
+    const targetGalaxyId = galaxy ? galaxy.id : '';
     setGalaxy(null);
     quizController.destroy();
-  }, []);
+
+    // Notify game systems that quiz is finished and gameplay should resume
+    eventBus.emit('RESUME_GAMEPLAY', undefined);
+    eventBus.emit('DISCOVERY_FINISHED', { galaxyId: targetGalaxyId });
+  }, [galaxy]);
 
   const handleOpenDiscoveryLog = () => {
     setStep('DISCOVERY_LOG');
