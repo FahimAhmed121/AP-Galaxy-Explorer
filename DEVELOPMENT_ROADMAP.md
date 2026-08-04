@@ -1,125 +1,92 @@
 # DEVELOPMENT_ROADMAP.md — AP Galaxy Explorer
 
-## Completed Milestones
+## 💡 Development Philosophy & Lean V1 Vision
 
-### 1. Foundation
-- **Goal**: Establish core 2D application architecture, React + Phaser engine integration, and EventBus pipeline.
-- **Major Deliverables**:
-  - React 18 + Vite SPA template setup with Tailwind CSS.
-  - Phaser 3.80+ WebGL game container and scene pipeline (`MainGameplayScene`).
-  - Decoupled `eventBus` architecture for DOM <-> Canvas communication.
-- **Success Criteria**: WebGL game canvas renders at 60 FPS with responsive UI overlays.
-
-### 2. Universe
-- **Goal**: Create open-space navigation mechanics, parallax starfield, and spacecraft physics.
-- **Major Deliverables**:
-  - `PlayerShip` entity with WASD/Arrow key controls and inertia vector physics.
-  - Parallax multi-layer starfield background.
-  - 8000x8000 boundary space world with camera tracking (`lerp 0.08`).
-- **Success Criteria**: Smooth space navigation with responsive inertia, turn velocity, and camera bounds.
-
-### 3. Galaxy System
-- **Goal**: Implement dynamic astronomical entities and spatial indexing.
-- **Major Deliverables**:
-  - `GalaxyObject` entity rendering procedural galaxy visuals.
-  - `GalaxyManager` spatial index for proximity detection and state tracking.
-  - 10 handcrafted deep-space galaxies placed across coordinate grid.
-- **Success Criteria**: Player ship detects nearby galaxies within scanning radius with visual reticle locks.
-
-### 4. Scanner
-- **Goal**: Build spectrographic scanner system for scientific analysis of celestial bodies.
-- **Major Deliverables**:
-  - `ScannerSystem` and `ScannerVisualSystem` computing range and energy costs.
-  - Spectrographic visual ray beams and scan progress feedback.
-  - Interactive target lock triggered via `E` key or touch HUD button.
-- **Success Criteria**: Activating scanner within range consumes energy and completes analysis.
-
-### 5. Discovery
-- **Goal**: Create cinematic galaxy discovery sequence and narrative AI assistant.
-- **Major Deliverables**:
-  - `DiscoveryController` state machine for cinematic camera zoom and camera pan.
-  - `DiscoveryOverlay` presenting AURA research assistant dialogue.
-  - Player-controlled dialogue progression (`PREV`, `NEXT`, `SKIP`, `CONTINUE`).
-- **Success Criteria**: Scanning unmapped galaxies triggers cinematic reveal with player-controlled reading speed.
-
-### 6. Learning
-- **Goal**: Deliver authentic NASA / JWST / Hubble educational dossiers.
-- **Major Deliverables**:
-  - `LearningBriefingModal` rendering structured 2-column educational cards.
-  - `contentPipeline.ts` dynamic dataset loader with automatic fallback safety.
-  - Handcrafted educational JSON dossiers for 10 major galaxies.
-- **Success Criteria**: Discovery sequence seamlessly displays astrophysical dossiers with spectral metrics and scientific takeaways.
-
-### 7. Quality Sprint 1.0
-- **Goal**: Polish flight physics, energy mechanics, dialogue pacing, HUD layout, warp visuals, and dataset routing.
-- **Major Deliverables**:
-  - Refined spacecraft mass, acceleration (`220 px/s²`), and drag (`0.988`).
-  - 100-point Plasma Energy system powering boosters and scanners.
-  - Cleaned HUD showing Hull, Shield, Energy, Stardust, and Mission status.
-  - Multi-phase HTML5 canvas hyperspace warp jump animation (`WarpJumpOverlay`).
-  - Interactive 2D Minimap (`RadarHUD`) showing player heading, galaxies, and space station.
-- **Success Criteria**: Fully verified vertical slice with zero broken UI, zero JSON routing failures, and 60 FPS performance.
-
-### 8. Sprint 2.0 — Adaptive Quiz & Scientific Assessment
-- **Goal**: Complete the educational loop with a production-ready adaptive quiz system designed as a scientific mission debriefing.
-- **Major Deliverables**:
-  - Dedicated `QuizController.ts` managing quiz flow, scoring, accuracy, streak counters, and timing.
-  - Lazy-loaded quiz dataset pipeline (`quizPipeline.ts`) with static JSON questions and dynamic fallback generation.
-  - MCQ evaluation support with architecture for True/False and Image questions.
-  - NASA Mission Console UI (`QuizAssessmentModal.tsx`) with dark-tech HUD aesthetic, AURA scientific tone, and immediate feedback.
-  - 80% passing threshold leading to Discovery Log placeholder step.
-  - EventBus integration (`QUIZ_STARTED`, `QUESTION_ANSWERED`, `QUIZ_PASSED`, `QUIZ_FAILED`, `QUIZ_COMPLETED`).
-  - Keyboard accessibility (keys 1-4, Enter, Esc) and reduced motion support.
-- **Success Criteria**: Scientific mission debriefing quiz runs seamlessly with immediate feedback, score persistence, and non-destructive retry mechanics.
+- **Educational Exploration First**: Version 1 focuses strictly on delivering a highly polished, interactive, and authentic educational exploration experience for Astronomy Pathshala students.
+- **Scope Discipline & Feature Creep Prevention**: Advanced or unneeded complex infrastructure systems are intentionally postponed to maintain high craftsmanship on core features.
+- **Lightweight & Maintainable Architecture**: Every sprint keeps the codebase lightweight, highly maintainable, type-safe, and optimized for rapid iterative development within Google AI Studio.
 
 ---
 
-## Upcoming Milestones
+## Completed Milestones
 
-### 1. Sprint 2.1 — Discovery Logbook
-- **Goal**: Provide a persistent galactic archive and pilot logbook.
-- **Major Deliverables**:
-  - Full-screen Pilot Logbook UI listing all discovered and unexplored galaxies.
-  - Filterable catalog by constellation, galaxy type, distance, and completion score.
-  - Re-read dossier access for previously mapped galaxies.
-- **Success Criteria**: Players can review mapped galaxies, spectral data, and quiz scores from the main menu or pilot station.
+- ✅ **Foundation Refactor**: React 18 + Vite template, TypeScript strict mode, and decoupled EventBus architecture.
+- ✅ **Phaser Foundation**: Phaser 3 WebGL 2D engine integration, canvas rendering layer, and scene lifecycle management.
+- ✅ **Gameplay Foundation Migration**: Refactored game entities, state management, and asset pipelines to Phaser 3 system architecture.
+- ✅ **Universe Generation System**: Open-space 8000x8000 px space grid, parallax background starfields, and smooth camera tracking.
+- ✅ **Interactive Galaxy System**: Spatial indexing (`GalaxyManager`), proximity detection reticles, and 10 handcrafted deep-space galaxies.
+- ✅ **Scanner System**: Spectrographic scanner system (`ScannerSystem`), energy expenditure, beam visuals, and interactive target locking.
+- ✅ **Discovery Experience**: Cinematic camera focus (`DiscoveryController`) and narrative AURA AI dialogue with step pagination (`DiscoveryOverlay`).
+- ✅ **Educational Learning Layer**: Authentic 2-column NASA/JWST educational dossiers (`LearningBriefingModal`) and dynamic content dataset loader (`contentPipeline.ts`).
+- ✅ **Quality Sprint 1.0**: Flight physics tuning, 100-point Plasma Energy system, multi-phase HTML5 canvas hyperdrive warp jump animation (`WarpJumpOverlay`), interactive 2D minimap (`RadarHUD`), and HUD bar streamlining.
+- ✅ **Sprint 2.0 — Adaptive Quiz & Scientific Assessment**: Dedicated `QuizController`, lazy-loaded dataset pipeline (`quizPipeline.ts`), NASA Mission Console UI (`QuizAssessmentModal`), immediate scientific feedback, score rewards, and keyboard accessibility.
+- ✅ **Stabilization Sprint 1.0**: Traced and resolved event payload mismatch in AURA transition, eliminated runtime property crashes, verified complete 9-step progression loop for all 10 galaxies, and set developer debug overlay to hidden by default.
+- ✅ **Documentation Synchronization**: Comprehensive synchronization of project state, engineering standards, system architectures, and Lean V1 roadmap.
 
-### 3. Sprint 2.2 — Progression & Station Trading
-- **Goal**: Expand pilot progression, rank badges, and space station upgrades.
-- **Major Deliverables**:
-  - Pilot XP and rank level system (Ensign → Commander → Chief Astronomer).
-  - Space Station Alpha docking hub for repairing hull and upgrading scanner range.
-  - Achievement badge notification toast engine.
-- **Success Criteria**: Players can spend collected stardust at Space Station Alpha to upgrade ship capabilities.
+---
 
-### 4. Sprint 2.3 — Asteroid Fields & Stardust Mining
-- **Goal**: Add ambient asteroid hazards and interactive stardust mining.
-- **Major Deliverables**:
-  - Procedural asteroid field generation in unmapped sector zones.
-  - Mining laser beam mechanics to fracture asteroids into collectable stardust nodes.
-  - Shield collision response and dynamic damage feedback.
-- **Success Criteria**: Navigating asteroid belts requires piloting skill and provides stardust resource harvesting.
+## Upcoming Milestones (Lean V1 Roadmap)
 
-### 5. Sprint 2.4 — Alien Survey Drones
-- **Goal**: Introduce autonomous AI survey drones and environmental space hazards.
-- **Major Deliverables**:
-  - Non-combat autonomous drone entities patrolling outer sectors.
-  - Hacking/Scanning mini-games to download foreign navigational data.
-  - Solar flare cosmic storms affecting ship sensor systems.
-- **Success Criteria**: Sector exploration features dynamic environmental events and interactive survey drones.
+### Sprint 2.1 — Discovery Log & Galactic Archive
+**Goal**: Provide a persistent galactic archive and pilot logbook to review discovered galaxies and retake quizzes.
+**Deliverables**:
+- Discovery summary screen upon completing galaxy scans.
+- Persistent Galactic Archive showcasing mapped celestial objects.
+- Local save integration (`localStorage` logbook synchronization).
+- Discovery statistics and completion metrics.
+- Quiz retake capability directly from the archive.
+- NASA-inspired dark-tech archive UI interface.
 
-### 6. Sprint 2.5 — Firebase Cloud Synchronization
-- **Goal**: Enable cloud user authentication, cross-device save states, and leaderboards.
-- **Major Deliverables**:
-  - Firebase Authentication (Google & Anonymous sign-in).
-  - Firestore sync for pilot profiles, mapped galaxies, and stardust currency.
-  - Global Astronomer Leaderboard for quiz accuracy and mapped sectors.
-- **Success Criteria**: Player progress persists across browser sessions and devices automatically.
+### Sprint 2.2 — Asteroids & Stardust
+**Goal**: Introduce ambient space hazards and resource gathering between galaxy discoveries.
+**Deliverables**:
+- Procedural asteroid field spawning across outer sector zones.
+- Lightweight laser beam system to break down asteroids.
+- Stardust collection nodes and pickup magnetics.
+- Small particle impact and fragmentation visual effects.
+- Engaging ambient gameplay loops while traveling between galaxies.
 
-### 7. Sprint 2.6 — Standalone Desktop Release (Electron)
-- **Goal**: Package AP Galaxy Explorer into an offline cross-platform desktop application.
-- **Major Deliverables**:
-  - Electron wrapper configuration and main process file (`electron.js`).
-  - Native filesystem access for local logbook backups.
-  - Window management, native menus, and installer builds (Windows / macOS / Linux).
-- **Success Criteria**: Executable desktop installer launches full-screen game without web browser dependency.
+### Sprint 2.3 — Progression
+**Goal**: Add lightweight pilot progression and cosmetic/stat rewards.
+**Deliverables**:
+- Explorer XP system derived from quiz accuracy and galaxy mapping.
+- Explorer Levels and rank titles (Space Cadet → Chief Astronomer).
+- Unlockable ship skins and visual thruster themes.
+- Small gameplay upgrades (scanner range, energy recharge speed).
+*(Note: Keep progression lightweight to maintain focus on educational exploration).*
+
+### Sprint 2.4 — Alien Survey Drones
+**Goal**: Introduce autonomous AI survey drones for optional environmental encounters.
+**Deliverables**:
+- Simple AI survey drone entities patrolling deep space sectors.
+- Basic defensive combat mechanics and sensor jammer abilities.
+- Optional non-destructive encounters.
+*(Educational exploration remains the primary focus).*
+
+### Sprint 2.5 — Firebase Authentication & Cloud Save
+**Goal**: Implement user account management and cross-device save state persistence.
+**Deliverables**:
+- User login (Google OAuth & Anonymous authentication).
+- Firestore cloud save synchronization for pilot profiles and mapped catalog.
+- Cross-device progress restoration.
+
+### Sprint 2.6 — Electron Desktop Release
+**Goal**: Package the application into a standalone cross-platform desktop game.
+**Deliverables**:
+- Desktop packaging configuration using Electron.
+- Executable installers (Windows, macOS, Linux).
+- Production bundle verification and release candidate candidate build.
+
+---
+
+## Beta & Release Phase
+
+### Beta Phase
+- Comprehensive user playtesting with Astronomy Pathshala students and educators.
+- Bug fixing and edge-case resolution.
+- WebGL performance optimization for low-end hardware.
+- UI/UX interaction polish and responsive layout refinement.
+- Web Audio synthesizer sound mixing and soundscape polish.
+
+### Version 1.0 Release
+- Production-ready educational space exploration desktop & web game ready for Astronomy Pathshala students!

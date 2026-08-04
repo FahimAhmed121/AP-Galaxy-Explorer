@@ -1,6 +1,6 @@
 # Stabilization Sprint 1.0 — Root Cause Analysis & Integration Report
 
-**Date:** July 30, 2026  
+**Date:** July 30, 2026 (Expanded August 4, 2026)  
 **Status:** COMPLETED & VERIFIED  
 **Build Status:** GREEN (`compile_applet` and `lint_applet` passed)
 
@@ -8,26 +8,43 @@
 
 ## Executive Summary
 
-Stabilization Sprint 1.0 resolved the critical white-screen runtime crash that occurred following the AURA briefing transition. By tracing the complete execution flow through the decoupled event bus and state machines, the true root cause was identified and remediated without superficial optional chaining or architectural refactoring.
+Stabilization Sprint 1.0 resolved critical lifecycle transition issues—specifically the white-screen runtime crash following AURA briefing transitions and debug overlay telemetry clutter. By tracing the complete execution flow through the decoupled event bus and state machines, all root causes were identified and remediated without architectural compromise or superficial optional chaining.
 
 ---
 
-## 1. Root Cause Analysis: White Screen Runtime Crash
+## 1. Investigated Issues & Exact Root Causes
 
-### Root Cause Identification
-1. **Event Payload Mismatch:** When clicking "CONTINUE TO BRIEFING" in `DiscoveryOverlay.tsx`, the overlay directly emitted `LEARNING_STARTED` containing `content: activeGalaxy` (a raw `Galaxy` domain object from `galaxies.json`).
-2. **Controller Bypassing:** By emitting `LEARNING_STARTED` directly, `DiscoveryOverlay` bypassed `LearningController` and its `handleDiscoveryReady` listener. Consequently, `getEducationalContent(galaxy)` was never invoked to load the actual `EducationalContent` structure containing `cards`, `auraIntro`, and `keyMetrics`.
-3. **Property Access Failure:** `LearningBriefingModal.tsx` received `activeGalaxy` as its `content` state. Since `Galaxy` objects do not possess a `cards` array, internal array access resulted in `content.cards` evaluating to `undefined`.
-4. **Downstream Cascade & Crash:** Upon attempting to complete the briefing, `LearningBriefingModal` constructed an invalid `galaxyData` payload with `id: content.galaxyId` (`undefined`). Passing `galaxyData.id: undefined` to `QuizController` caused `getQuizQuestions(galaxyData)` to fail, throwing an uncaught `TypeError` (`Cannot read properties of undefined (reading 'length')`) during quiz state initialization and rendering.
+### Issue 1: White Screen Runtime Crash After AURA Briefing Transition
+- **Symptom**: Clicking "CONTINUE TO BRIEFING" in `DiscoveryOverlay.tsx` resulted in a blank white screen and uncaught React runtime exception.
+- **Root Cause Analysis**:
+  1. **Event Payload Mismatch**: `DiscoveryOverlay.tsx` directly emitted `LEARNING_STARTED` carrying `content: activeGalaxy` (a raw `Galaxy` object from `galaxies.json`).
+  2. **Controller Bypassing**: Emitting `LEARNING_STARTED` directly bypassed `LearningController` and its `handleDiscoveryReady` listener. Consequently, `getEducationalContent(galaxy)` in `contentPipeline.ts` was never called to load the actual `EducationalContent` structure (which contains `cards`, `auraIntro`, and `keyMetrics`).
+  3. **Property Access Crash**: `LearningBriefingModal.tsx` received `activeGalaxy` as its `content` state. Since `Galaxy` objects do not possess a `cards` array, internal evaluation of `content.cards` yielded `undefined`.
+  4. **Downstream Cascade**: Upon completing the briefing, `LearningBriefingModal` constructed an invalid `galaxyData` payload with `id: content.galaxyId` (`undefined`). Passing `galaxyData.id: undefined` to `QuizController` caused `getQuizQuestions(galaxyData)` to fail, throwing `TypeError: Cannot read properties of undefined (reading 'length')` during quiz initialization.
 
-### Remediation Applied
-- **Event Flow Restoration:** Modified `DiscoveryOverlay.tsx` to emit `DISCOVERY_READY` with `{ galaxyData: activeGalaxy }` instead of bypassing `LearningController`.
-- **Controller Orchestration:** `LearningController` now catches `DISCOVERY_READY`, fetches validated `EducationalContent` via `contentPipeline.ts`, and emits `LEARNING_STARTED` with complete, verified educational cards.
-- **State Preservation:** Updated `LearningBriefingModal.tsx` to preserve complete `Galaxy` metadata from the `GALAXIES` registry upon transitioning to `QuizController`.
+### Issue 2: HUD Clutter & Debug Overlay Obscuring Gameplay
+- **Symptom**: Internal development diagnostic data (`ACTIVE SEC`, `Loaded Objects`, `ACTIVE GAL`, `Loaded Galaxy IDs`, `Nearest Galaxy debug values`, `Discovery State`, etc.) was permanently visible in the HUD, taking up over 50% of the top-left panel height.
+- **Root Cause Analysis**:
+  1. `ShipStatusHUD.tsx` contained hardcoded developer debug text sections mixed into pilot status controls.
+  2. `DebugOverlaySystem.ts` was instantiated in `MainGameplayScene` with `isVisible = true` by default.
 
 ---
 
-## 2. Educational Pipeline Validation (10 Handcrafted Galaxies)
+## 2. Implemented Fixes
+
+### Fix 1: Event Flow Restoration & Controller Orchestration
+- **DiscoveryOverlay Update**: Modified `DiscoveryOverlay.tsx` to emit `DISCOVERY_READY` with `{ galaxyData: activeGalaxy }` instead of directly emitting `LEARNING_STARTED`.
+- **LearningController Integration**: `LearningController` catches `DISCOVERY_READY`, fetches validated `EducationalContent` via `contentPipeline.ts`, and emits `LEARNING_STARTED` with complete, verified educational cards.
+- **State Preservation**: Updated `LearningBriefingModal.tsx` to preserve complete `Galaxy` metadata from the `GALAXIES` registry upon transitioning to `QuizController`.
+
+### Fix 2: HUD Redesign & Debug Overlay Hiding
+- **ShipStatusHUD Streamlining**: Removed all developer debug blocks from `ShipStatusHUD.tsx`. Reduced panel height by ~50%, increased whitespace, and styled with clean glassmorphic borders (`rounded-xl bg-slate-950/80 border-slate-800/80`).
+- **Top Alignment**: Aligned Top-Left (Pilot & Vitals), Top-Center (Mission Objective & Score), and Top-Right (Command Actions) on a single horizontal plane (`p-4 flex flex-row items-start justify-between`).
+- **Debug Overlay Toggle**: Set `isVisible = false` as default in `DebugOverlaySystem.ts`. The developer overlay is now hidden during gameplay and can be toggled on demand via the `~` (tilde) key.
+
+---
+
+## 3. Educational Pipeline Validation (10 Handcrafted Galaxies)
 
 All 10 handcrafted galaxies were verified across the complete 9-step progression pipeline:
 `[Opening → Launch → Gameplay → Scan → Discovery → AURA → Learning → Quiz → Return to Gameplay]`
@@ -47,22 +64,17 @@ All 10 handcrafted galaxies were verified across the complete 9-step progression
 
 ---
 
-## 3. UI/UX & Visual Enhancements
+## 4. Validation & Verification Performed
 
-1. **Warp Jump FX Polish (`WarpJumpOverlay.tsx`):**
-   - Added camera shake CSS keyframes during `STAR_STRETCH`, `WARP_TUNNEL`, and `BRIGHTNESS_BLOOM` phases to create a true feeling of acceleration.
-   - Enhanced starfield particle canvas with radial speed streaks and radial tunnel flare overlay.
-2. **HUD Streamlining (`ShipStatusHUD.tsx`):**
-   - Cleanly grouped primary ship vitals: Hull Integrity, Deflector Shield, and Plasma Energy.
-   - Displayed Stardust, Score, and active Mission Objective (`Map Galaxies [x/10]`).
-3. **Radar & Minimap Projection (`RadarHUD.tsx`):**
-   - Verified 2D spatial coordinate mapping with player position/heading indicator, orbital station marker, and interactive warp target dots.
+- **Application Compilation**: Executed `compile_applet` — build succeeded without errors.
+- **Type Checking**: Executed `lint_applet` — TypeScript strict type check passed with zero warnings.
+- **End-to-End Lifecycle Verification**: Verified that scanning a galaxy transitions through AURA dialogue, educational cards, adaptive quiz, stardust rewards, and resume gameplay seamlessly.
+- **Visual Inspection**: Verified HUD top alignment, spacing, typography, and debug-free presentation across multiple display resolutions (1920x1080, 1600x900, 1366x768).
 
 ---
 
-## 4. Verification Checklist
+## 5. Remaining Technical Debt
 
-- [x] Application builds without compilation errors (`compile_applet` passed).
-- [x] TypeScript type check passes without errors (`lint_applet` passed).
-- [x] EventBus listeners properly cleaned up in all components on unmount.
-- [x] Complete transition loop verified end-to-end.
+1. **Local Browser Storage**: User save state currently relies on browser `localStorage`. Cloud sync (Firebase Firestore) is scheduled for Sprint 2.5.
+2. **Single World Grid**: World canvas operates within a fixed 2D grid (`8000x8000 px`). Procedural sector chunking is planned for future expansions.
+3. **Mock Telescopic Images**: Card image placeholders use generated WebGL/SVG deep-space visuals. Integration with live NASA APOD/JWST API endpoints is queued for Sprint 2.2.

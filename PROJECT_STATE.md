@@ -2,10 +2,11 @@
 
 ## 1. Project Overview
 
-- **Purpose**: Astronomy Pathshala (AP) Galaxy Explorer is an interactive, space-themed educational simulation that combines 2D space flight, real-time spectrographic galaxy scanning, cinematic discovery reveals, and interactive NASA/JWST/Hubble educational dossiers.
+- **Purpose**: Astronomy Pathshala (AP) Galaxy Explorer is an interactive, space-themed educational simulation that combines 2D space flight, real-time spectrographic galaxy scanning, cinematic discovery reveals, and interactive NASA/JWST/Hubble educational dossiers and adaptive scientific quizzes.
 - **Target Audience**: Students, astronomy enthusiasts, self-learners, and science educators seeking an engaging visual platform to explore deep-space astrophysics.
-- **Gameplay Loop**: Safe Sector Spawn → Open-Space Navigation & Inertial Thruster Control → Galaxy Proximity Lock → Active Spectrographic Scanning → Cinematic Reveal & AURA AI Dialogue → Interactive Educational Dossier → Star dust Collection & Return to Exploration.
-- **Educational Goal**: Deliver authentic astrophysical insights—including galactic classification, spectral signatures, distance metrics, tidal collisions, black hole absence/presence, and Hubble/JWST discoveries—through interactive gameplay and curated educational modules.
+- **Gameplay Loop**: Safe Sector Spawn → Open-Space Navigation & Inertial Thruster Control → Galaxy Proximity Lock → Active Spectrographic Scanning → Cinematic Reveal & AURA AI Dialogue → Interactive Educational Dossier (NASA/JWST Cards) → Adaptive Scientific Mission Quiz → Stardust & Score Rewards → Galactic Archive Sync & Return to Exploration.
+- **Educational Goal**: Deliver authentic astrophysical insights—including galactic classification, spectral signatures, distance metrics, tidal collisions, black hole absence/presence, and Hubble/JWST discoveries—through interactive gameplay, curated educational modules, and adaptive scientific assessments.
+- **Development Philosophy**: Version 1 focuses strictly on a polished educational exploration experience. Advanced systems are intentionally postponed to avoid feature creep. Every sprint keeps the codebase lightweight, maintainable, and optimized for Google AI Studio development.
 
 ---
 
@@ -13,9 +14,10 @@
 
 - **React 18 & Vite**: Modular HUD overlays, responsive modals, state management, and localized UI components.
 - **Phaser 3.80+**: 2D WebGL/Canvas rendering engine managing physics bodies, camera tracking, particle systems, procedural starfields, and space objects.
-- **TypeScript (Strict Mode)**: Type safety across game engines, event buses, telemetry interfaces, and educational schemas.
+- **TypeScript (Strict Mode)**: Type safety across game engines, event buses, telemetry interfaces, educational schemas, and quiz pipelines.
 - **EventBus Architecture**: Decoupled Pub/Sub event pipeline (`EventEmitter`) bridging Phaser 3 canvas updates with React UI state without direct DOM coupling.
 - **Web Audio API Engine**: Custom procedural synthesizer and audio engine handling multi-channel sound FX, thruster rumbles, scanner sweeps, warp jump hums, and ambient music crossfades.
+- **Zustand State Store**: Global reactive state management for user profiles, discovered galaxies, stardust currency, scores, and application settings.
 - **Electron Preparation**: Clean modular separation enabling standalone desktop compilation with native IPC bindings.
 
 ---
@@ -28,48 +30,73 @@
 ├── src/
 │   ├── components/             # React UI components
 │   │   ├── common/             # Reusable UI containers & buttons
-│   │   └── hud/                # Gameplay HUD overlays (Status, Radar, Briefing, AURA, Warp)
+│   │   ├── educational/        # Interactive educational widgets
+│   │   ├── hud/                # Modernized Gameplay HUD overlays
+│   │   │   ├── DiscoveryOverlay.tsx       # AURA AI narrative dialogue
+│   │   │   ├── GameOverModal.tsx          # Game over state UI
+│   │   │   ├── LearningBriefingModal.tsx # 2-Column NASA/JWST educational dossiers
+│   │   │   ├── PilotDashboardModal.tsx    # Pilot profile & upgrades
+│   │   │   ├── QuizAssessmentModal.tsx    # Adaptive NASA Mission Console quiz
+│   │   │   ├── RadarHUD.tsx               # 2D Minimap radar with spatial coordinates
+│   │   │   ├── ShipStatusHUD.tsx          # Top HUD bar (Vitals, Mission, Controls)
+│   │   │   └── WarpJumpOverlay.tsx        # Multi-phase hyperdrive canvas particle FX
+│   │   └── views/              # Full-screen views (Options, Archive)
 │   ├── core/                   # Shared types, event bus, and global configuration
-│   │   ├── config.ts           # Game configuration constants & physics settings
+│   │   ├── config.ts           # Game physics, energy, and world bounds configuration
 │   │   ├── events.ts           # EventBus typed interfaces & event names
-│   │   └── types.ts            # Core TypeScript models (Ship, Galaxy, Profile)
+│   │   ├── logger.ts           # Centralized logging engine
+│   │   └── types.ts            # Core TypeScript models (Ship, Galaxy, Profile, Quiz)
 │   ├── data/                   # Data registries & educational content
 │   │   ├── educational/        # Handcrafted galaxy JSON dossiers & content pipeline
-│   │   └── galaxies.json       # Master galaxy catalog & coordinates
+│   │   ├── quizzes/            # Handcrafted scientific quiz JSON datasets
+│   │   ├── contentPipeline.ts  # Dynamic dossier loading with fallback safety
+│   │   ├── quizPipeline.ts     # Asynchronous quiz pipeline & generator
+│   │   └── galaxies.json       # Master galaxy catalog & spatial coordinates
 │   ├── engine/                 # Custom sound engine & audio management
+│   │   └── audioEngine.ts      # Web Audio procedural oscillator & SFX synthesis
 │   ├── phaser/                 # Phaser game engine architecture
 │   │   ├── entities/           # PlayerShip, GalaxyObject, SpaceStation entities
 │   │   ├── managers/           # GalaxyManager, SaveManager, ParticleManager
 │   │   ├── scenes/             # MainGameplayScene & LoadingScene
-│   │   └── systems/            # ScannerSystem, DiscoveryController, AudioSystem
+│   │   └── systems/            # ScannerSystem, DiscoveryController, QuizController, LearningController, InputSystem, AudioSystem, DebugOverlaySystem
 │   ├── store/                  # Zustand global state (game options, user profile, language)
 │   └── App.tsx / main.tsx      # Main application entry point & canvas integration
-└── QUALITY_SPRINT_1_REPORT.md  # Quality Sprint execution and verification report
+├── docs/                       # Architecture & engineering documentation
+├── PROJECT_STATE.md            # Master project state documentation
+├── DEVELOPMENT_ROADMAP.md      # Development milestone roadmap
+├── ARCHITECTURE_OVERVIEW.md    # High-level architecture map
+├── QUALITY_SPRINT_1_REPORT.md  # Quality Sprint execution report
+└── STABILIZATION_SPRINT_1_REPORT.md # Stabilization & Root Cause Analysis report
 ```
 
 ---
 
-## 4. Core Architecture
+## 4. Core Architecture & System Components
 
-- **Managers**:
+- **Managers (`/src/phaser/managers/`)**:
   - `GalaxyManager`: Handles spatial indexing, proximity detection, galaxy entity instantiation, and discovery status tracking.
-  - `SaveManager`: Manages persistent local storage state (stardust, mapped galaxies, custom options).
-- **Controllers**:
-  - `DiscoveryController`: Manages state machine flow for galaxy discoveries (`IDLE` → `SCANNING` → `CINEMATIC_ZOOM` → `AURA_PRESENTING` → `BRIEFING`).
-  - `QuizController`: Manages quiz state, question flow, timing, scoring, streaks, and pass/fail evaluation.
-- **Systems**:
+  - `SaveManager`: Manages persistent local storage state (stardust, score, mapped galaxies, custom options).
+  - `ParticleManager`: Manages thruster emissions, scanner particle beams, and explosion visual FX.
+- **Controllers (`/src/phaser/systems/`)**:
+  - `DiscoveryController`: Manages state machine flow for galaxy discoveries (`IDLE` → `DISCOVERING` → `AURA_PRESENTING` → `READY_FOR_LEARNING` → `FINISHED`).
+  - `LearningController`: Manages educational dossier state machine (`IDLE` → `LOADING` → `PRESENTING` → `COMPLETED`), loading content via `contentPipeline.ts`.
+  - `QuizController`: Manages adaptive quiz state machine (`IDLE` → `LOADING` → `QUESTION_ACTIVE` → `EVALUATING` → `PASSED` / `FAILED` → `COMPLETED`), question timing, scoring, and accuracy tracking.
+- **Systems (`/src/phaser/systems/`)**:
   - `ScannerSystem`: Computes player-to-target distance, energy consumption during scanning, and triggers scan events.
   - `InputSystem`: Processes keyboard (WASD/Arrows/Space/Shift/E) and virtual touch controls, calculating thrust vectors.
   - `ScannerVisualSystem`: Renders dynamic scanning reticles and spectrographic beams in WebGL.
-- **Components**:
-  - `ShipStatusHUD`: Displays real-time Hull Integrity, Deflector Shield, Plasma Energy, and Stardust.
+  - `AudioSystem`: Listens to EventBus triggers and synchronizes audio synthesis with gameplay events.
+  - `DebugOverlaySystem`: Toggable developer overlay (hidden by default, toggled via `~` key).
+- **HUD Components (`/src/components/hud/`)**:
+  - `ShipStatusHUD`: Modernized top HUD bar aligning Pilot Vitals (Hull, Shield, Energy, Current Galaxy), Mission Objectives (`Map Galaxies [x/10]`, Stardust, Score), and Command Actions (Pilot Station, Codex, Settings) on a clean horizontal plane.
   - `RadarHUD`: Displays 2D minimap with player position/heading, space stations, and discovered/unmapped galaxy indicators.
-  - `DiscoveryOverlay`: Provides player-controlled AURA dialogue progression (`PREV`, `NEXT`, `SKIP`, `CONTINUE`).
+  - `DiscoveryOverlay`: Provides player-controlled AURA dialogue progression (`PREV`, `NEXT`, `SKIP`, `CONTINUE TO BRIEFING`).
   - `LearningBriefingModal`: Renders 2-column NASA/JWST educational dossiers with telescope visual showcases.
   - `QuizAssessmentModal`: NASA Mission Console interface for scientific mission debriefing, immediate feedback, and scoring.
   - `WarpJumpOverlay`: Renders multi-phase HTML5 canvas hyperdrive particle tunnels.
 - **Data Pipeline**:
   - `contentPipeline.ts` dynamically imports educational JSON files with automatic fallback content for unmapped deep-space objects.
+  - `quizPipeline.ts` dynamically imports quiz JSON datasets with fallback question generation.
 - **EventBus**:
   - `eventBus` (`EventEmitter`) provides bidirectional communication between Phaser systems and React HUD components.
 - **Rendering**:
@@ -98,7 +125,11 @@
                  ↓
   Learning Briefing Dossier (NASA / JWST Telescope Cards)
                  ↓
-  Return to Exploration (Stardust Reward & Mapped Status)
+  Adaptive Scientific Mission Quiz (NASA Console Assessment)
+                 ↓
+  Stardust & Score Rewards (Mapped Status Updated)
+                 ↓
+  Return to Exploration / Galactic Archive Sync
 ```
 
 ---
@@ -109,26 +140,28 @@
 - **Plasma Energy System**: Dynamic 100-point energy pool powering hyperspace boosters and spectrographic scanners with automatic passive regeneration (`14/s`).
 - **Player-Controlled AURA Dialogue**: Paginated dialogue flow with explicit `PREV`, `NEXT`, `SKIP CINEMATIC`, and `CONTINUE TO BRIEFING` controls.
 - **NASA / JWST / Hubble Educational Cards**: Structured 2-column learning dossiers featuring high-resolution telescope visual placeholders, spectral charts, and key astrophysical metrics.
+- **Adaptive Scientific Mission Quiz**: Mission debriefing console evaluating galaxy-specific astrophysics with immediate explanation feedback, score calculation, and stardust rewards.
+- **Modernized Distraction-Free HUD**: Cleaned top HUD bar removing all internal developer/debug data, perfectly aligning Pilot Identity, Ship Vitals, Mission Objectives, and Command Actions.
 - **Interactive Minimap / Radar HUD**: 2D radar displaying player heading angle, nearby targets, discovery markers, space station hub, and collapsible toggle mode.
 - **Multi-Phase Warp Animation**: Hyperspace warp jump sequence featuring engine charge, star stretching, radial bloom, particle tunnel rendering, and exit flashes.
 - **Handcrafted Educational Datasets**: Complete astrophysical datasets for 10 major galaxies.
-- **Bilingual Interface**: Seamless runtime toggle between English and Bengali (বাংলা) across all HUD elements.
+- **Bilingual Interface**: Seamless runtime toggle between English and Bengali (বাংলা) across all HUD elements and modals.
 
 ---
 
-## 7. Educational Pipeline
+## 7. Educational & Quiz Pipeline
 
-Educational content is loaded dynamically via `contentPipeline.ts`:
+Educational and assessment content is loaded dynamically via dedicated pipelines:
 
-1. **JSON Dataset Registry**: Handcrafted JSON files located in `src/data/educational/` are mapped by `galaxyId`.
-2. **Dynamic Resolution**: When a galaxy is scanned, `getEducationalContent(galaxyId)` retrieves the primary JSON.
-3. **Fallback Generation**: If a custom JSON file is missing or corrupted, `contentPipeline.ts` automatically generates a valid `EducationalContent` structure from core `galaxies.json` attributes to prevent UI crashes.
+1. **JSON Dataset Registry**: Handcrafted JSON files located in `src/data/educational/` and `src/data/quizzes/` are mapped by `galaxyId`.
+2. **Dynamic Resolution**: When a galaxy is scanned, `contentPipeline.ts` retrieves the primary dossier JSON and `quizPipeline.ts` retrieves the corresponding quiz dataset.
+3. **Fallback Generation**: If a custom JSON file is missing or corrupted, the pipelines automatically generate valid `EducationalContent` and `QuizData` structures from core `galaxies.json` attributes to prevent UI crashes.
 
 ---
 
 ## 8. Galaxy Database
 
-The following 10 handcrafted galaxies are fully integrated with coordinate data, spectral metrics, and educational cards:
+The following 10 handcrafted galaxies are fully integrated with coordinate data, spectral metrics, educational cards, and adaptive quizzes:
 
 1. **Milky Way Galaxy (`milky-way`)**: Barred spiral, 100,000 light-years diameter, home galaxy.
 2. **Andromeda Galaxy (`andromeda`)**: M31, largest Local Group member, 2.5 million light-years distance.
@@ -152,36 +185,36 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 - **Shift (Hold)**: Engage Plasma Booster
 - **E**: Initiate Spectrographic Scanner / Open Briefing
 - **Space**: Quick Action / Warp Engage
-- **F3**: Toggle Developer Diagnostic Telemetry
+- **~ (Tilde)**: Toggle Developer Diagnostic Overlay
 - **ESC**: Skip Active Cinematic / Close Modals
 
 ---
 
-## 10. Audio
+## 10. Audio Architecture
 
-- **Synthesizer Engine**: Procedural Web Audio oscillator generating custom thruster rumbles and scanner sweeps.
+- **Synthesizer Engine**: Procedural Web Audio oscillator generating custom thruster rumbles, scanner sweeps, and warp tunnels.
 - **Multi-Channel Mixing**: Independent gain nodes for BGM (`ambientVolume`) and SFX (`sfxVolume`).
 - **Seamless Crossfading**: Dynamic volume attenuation during warp sequences, dialogue triggers, and modal overlays.
 
 ---
 
-## 11. UI
+## 11. UI & Visual Hierarchy
 
-- **Design Aesthetic**: Clean, high-contrast dark sci-fi glassmorphism utilizing dark slate/cyan themes (`#0284c7`, `#0f172a`, `#f59e0b`).
-- **Responsive HUD Layout**: Desktop-first layout with fluid mobile scaling, non-overlapping action bars, and clear status indicators.
-- **Typography**: Inter and Mono font pairing with strict single-line label enforcement.
+- **Design Aesthetic**: Clean, high-contrast dark sci-fi glassmorphism utilizing dark slate/cyan themes (`#0f172a`, `#0284c7`, `#f59e0b`).
+- **Responsive HUD Layout**: Desktop-first layout with fluid mobile scaling, non-overlapping action bars, and aligned top status panels.
+- **Typography**: Inter, Mono, and Serif font pairing with strict label hierarchy.
 
 ---
 
-## 12. Performance
+## 12. Performance & Reliability
 
 - **Target Framerate**: Sustained 60 FPS across WebGL and Canvas fallback engines.
 - **Memory Management**: Automatic sprite pooling, particle emitter recycling, and EventBus listener cleanup on unmount.
-- **Build Optimization**: Vite bundler output clean modular chunks with fast initial load.
+- **Build Optimization**: Vite bundler output clean modular chunks with fast initial load (`compile_applet` and `lint_applet` passed).
 
 ---
 
-## 13. Current Limitations
+## 13. Known Limitations
 
 - **Single-System Canvas**: Exploration canvas operates within a 2D boundary grid (`8000x8000 px`).
 - **Mock Image Assets**: Educational card showcases currently utilize stylized WebGL/SVG deep-space reticles in lieu of live external NASA API image streaming.
@@ -189,8 +222,30 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 
 ---
 
-## 14. Milestones
+## 14. Milestones & Sprint Progress
 
+### Completed Milestones
+- **Foundation Refactor**: ✅ **COMPLETE**
+- **Phaser Foundation**: ✅ **COMPLETE**
+- **Gameplay Foundation Migration**: ✅ **COMPLETE**
+- **Universe Generation System**: ✅ **COMPLETE**
+- **Interactive Galaxy System**: ✅ **COMPLETE**
+- **Scanner System**: ✅ **COMPLETE**
+- **Discovery Experience**: ✅ **COMPLETE**
+- **Educational Learning Layer**: ✅ **COMPLETE**
 - **Quality Sprint 1.0**: ✅ **COMPLETE**
 - **Sprint 2.0 — Adaptive Quiz & Scientific Assessment**: ✅ **COMPLETE**
-- **Next Milestone**: **Sprint 3.0 — Interactive Stardust Synthesis & Deep Discovery System**
+- **Stabilization Sprint 1.0**: ✅ **COMPLETE**
+- **Documentation Synchronization & HUD Redesign**: ✅ **COMPLETE**
+
+### Next Milestone
+- **Sprint 2.1 — Discovery Log & Galactic Archive**: Discovery summary screen, Persistent Galactic Archive, Local save integration, Discovery statistics, Quiz retakes, NASA-inspired archive UI.
+
+### Future Milestones (Lean V1 Roadmap)
+- **Sprint 2.2 — Asteroids & Stardust**: Procedural asteroids, lightweight laser system, stardust collection, ambient gameplay.
+- **Sprint 2.3 — Progression**: Lightweight Explorer XP, levels, unlockable ships, small upgrades.
+- **Sprint 2.4 — Alien Survey Drones**: Simple AI drones, basic defensive combat, optional encounters.
+- **Sprint 2.5 — Firebase Authentication & Cloud Save**: Login, cloud save, progress synchronization.
+- **Sprint 2.6 — Electron Desktop Release**: Desktop packaging, installer, production build.
+- **Beta Phase**: Full playtesting, bug fixing, performance optimization, UI/UX polish, audio polish.
+- **Version 1.0 Release**: Educational desktop game ready for Astronomy Pathshala students.
