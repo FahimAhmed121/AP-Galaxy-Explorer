@@ -21,6 +21,11 @@ export class DiscoveryController {
   private targetZoom: number = 1.65;
   private sceneCamera?: Phaser.Cameras.Scene2D.Camera;
 
+  private setState(newState: DiscoveryState, reason: string) {
+    logger.info(`DiscoveryController: State transition [${this.state} -> ${newState}] (${reason})`);
+    this.state = newState;
+  }
+
   private handleScanCompleted = (payload: { targetId: string; galaxyData: Galaxy }) => {
     if (this.state !== 'IDLE') return;
 
@@ -29,8 +34,8 @@ export class DiscoveryController {
   };
 
   private handleResetOrFinish = () => {
-    logger.info('DiscoveryController: Received completion event. Resetting state to IDLE and restoring camera.');
-    this.state = 'IDLE';
+    logger.info(`DiscoveryController: Resetting state to IDLE from [${this.state}].`);
+    this.setState('IDLE', 'Event DISCOVERY_FINISHED / RESUME_GAMEPLAY received');
     this.currentTarget = null;
     if (this.sceneCamera) {
       this.sceneCamera.setZoom(1.0);
@@ -56,7 +61,7 @@ export class DiscoveryController {
 
   public startDiscoverySequence(galaxy: Galaxy): void {
     this.currentTarget = galaxy;
-    this.state = 'DISCOVERING';
+    this.setState('DISCOVERING', `startDiscoverySequence for ${galaxy.name}`);
     this.elapsedTime = 0;
     this.totalCinematicTime = 0;
 
@@ -111,7 +116,7 @@ export class DiscoveryController {
 
         // Transition to AURA_PRESENTING after 2.0s
         if (this.elapsedTime >= 2.0) {
-          this.state = 'AURA_PRESENTING';
+          this.setState('AURA_PRESENTING', '2.0s elapsedTime reached');
           this.elapsedTime = 0;
 
           if (this.currentTarget) {

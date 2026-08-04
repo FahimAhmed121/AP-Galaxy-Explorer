@@ -1,34 +1,89 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Sparkles, CheckCircle2, ArrowRight, X } from 'lucide-react';
 import { Galaxy } from '../../core/types';
 import { eventBus } from '../../core/events';
+import { logger } from '../../core/logger';
 
 export const DiscoveryOverlay: React.FC = () => {
   const [activeGalaxy, setActiveGalaxy] = useState<Galaxy | null>(null);
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
-  useEffect(() => {
-    let autoDismissTimer: NodeJS.Timeout;
+  // Refs to eliminate stale closures and ensure event safety
+  const activeGalaxyRef = useRef<Galaxy | null>(null);
+  const autoDismissTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const hasEmittedFinishedRef = useRef<boolean>(false);
 
+  // Helper to clear any active auto-dismiss timer
+  const clearTimer = useCallback(() => {
+    if (autoDismissTimerRef.current) {
+      clearTimeout(autoDismissTimerRef.current);
+      autoDismissTimerRef.current = null;
+    }
+  }, []);
+
+  // Centralized, deterministic event emitter that guarantees DISCOVERY_FINISHED is emitted exactly once
+  const finishDiscovery = useCallback((galaxy: Galaxy, triggerBriefing: boolean) => {
+    clearTimer();
+
+    if (triggerBriefing) {
+      logger.info(`DiscoveryOverlay: Emitting DISCOVERY_READY for [${galaxy.name}].`);
+      eventBus.emit('DISCOVERY_READY', { galaxyData: galaxy });
+    }
+
+    if (!hasEmittedFinishedRef.current) {
+      hasEmittedFinishedRef.current = true;
+      logger.info(`DiscoveryOverlay: Emitting DISCOVERY_FINISHED for [${galaxy.name}].`);
+      eventBus.emit('DISCOVERY_FINISHED', { galaxyId: galaxy.id });
+    }
+
+    setIsVisible(false);
+    setActiveGalaxy(null);
+    activeGalaxyRef.current = null;
+  }, [clearTimer]);
+
+  useEffect(() => {
     const handleOverlayShown = (payload: { galaxyData: Galaxy; auraText: string }) => {
-      setActiveGalaxy(payload.galaxyData);
+      const galaxy = payload.galaxyData;
+      if (!galaxy) return;
+
+      logger.info(`DiscoveryOverlay: DISCOVERY_OVERLAY_SHOWN received for [${galaxy.name}].`);
+
+      clearTimer();
+      hasEmittedFinishedRef.current = false;
+
+      // Update ref FIRST (synchronous) so callbacks access fresh reference
+      activeGalaxyRef.current = galaxy;
+      setActiveGalaxy(galaxy);
       setIsVisible(true);
 
-      // Auto-dismiss after 3.2 seconds so it never blocks gameplay
-      clearTimeout(autoDismissTimer);
-      autoDismissTimer = setTimeout(() => {
-        handleDismiss();
+      // Auto-dismiss after 3.2s: auto-triggers briefing & finishes discovery
+      autoDismissTimerRef.current = setTimeout(() => {
+        const currentGalaxy = activeGalaxyRef.current;
+        if (currentGalaxy) {
+          logger.info(`DiscoveryOverlay: Auto-dismiss timer (3.2s) expired for [${currentGalaxy.name}]. Triggering briefing.`);
+          finishDiscovery(currentGalaxy, true);
+        }
       }, 3200);
     };
 
     const handleStarted = (payload: { galaxyId: string; galaxyName: string; galaxyData: Galaxy }) => {
-      setActiveGalaxy(payload.galaxyData);
+      const galaxy = payload.galaxyData;
+      if (!galaxy) return;
+
+      clearTimer();
+      hasEmittedFinishedRef.current = false;
+
+      activeGalaxyRef.current = galaxy;
+      setActiveGalaxy(galaxy);
       setIsVisible(true);
     };
 
     const handleFinished = () => {
+      clearTimer();
+      hasEmittedFinishedRef.current = true;
       setIsVisible(false);
       setActiveGalaxy(null);
+      activeGalaxyRef.current = null;
     };
 
     eventBus.on('DISCOVERY_OVERLAY_SHOWN', handleOverlayShown);
@@ -36,26 +91,29 @@ export const DiscoveryOverlay: React.FC = () => {
     eventBus.on('DISCOVERY_FINISHED', handleFinished);
 
     return () => {
-      clearTimeout(autoDismissTimer);
+      clearTimer();
       eventBus.off('DISCOVERY_OVERLAY_SHOWN', handleOverlayShown);
       eventBus.off('DISCOVERY_STARTED', handleStarted);
       eventBus.off('DISCOVERY_FINISHED', handleFinished);
     };
-  }, []);
+  }, [clearTimer, finishDiscovery]);
 
   const handleDismiss = () => {
-    setIsVisible(false);
-    if (activeGalaxy) {
-      eventBus.emit('DISCOVERY_FINISHED', { galaxyId: activeGalaxy.id });
+    const galaxy = activeGalaxyRef.current || activeGalaxy;
+    if (galaxy) {
+      finishDiscovery(galaxy, false);
+    } else {
+      setIsVisible(false);
     }
   };
 
   const handleOpenBriefing = () => {
-    if (activeGalaxy) {
-      eventBus.emit('DISCOVERY_READY', { galaxyData: activeGalaxy });
-      eventBus.emit('DISCOVERY_FINISHED', { galaxyId: activeGalaxy.id });
+    const galaxy = activeGalaxyRef.current || activeGalaxy;
+    if (galaxy) {
+      finishDiscovery(galaxy, true);
+    } else {
+      setIsVisible(false);
     }
-    setIsVisible(false);
   };
 
   if (!isVisible || !activeGalaxy) {
