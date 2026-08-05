@@ -129,11 +129,11 @@ private generateAuraDialogue(galaxy: Galaxy): string {
 
 ---
 
-## 7. Future Educational & Progression Integration Roadmap
+## 7. Educational & Progression Integration Status
 
-1. **Sprint 1.9 — Interactive Learning Cards**:
-   - `DISCOVERY_READY` will trigger transition into full 3D interactive galaxy specification cards featuring HD NASA imagery, dimensions, age, and fun facts.
-2. **Sprint 2.0 — Astrophysics Quiz Engine**:
-   - Following card completion, `GALAXY_INFO` opens interactive MCQ quizzes to test knowledge and reward Stardust.
-3. **Sprint 2.1 — Explorer Profile & Badges**:
-   - `DISCOVERY_FINISHED` permanently registers the galaxy in `profile.discoveredGalaxyIds`, updating the Pilot Archive and awarding Explorer XP.
+1. **Sprint 1.9 — Interactive Learning Cards**: ✅ **COMPLETED**
+   - `DISCOVERY_READY` triggers transition into full interactive 2-column NASA/JWST galaxy specification cards (`LearningBriefingModal`) featuring HD imagery, dimensions, age, and fun facts.
+2. **Sprint 2.0 — Astrophysics Quiz Engine**: ✅ **COMPLETED**
+   - Following card briefing, `QuizController` opens interactive MCQ quizzes (`QuizAssessmentModal`) to test knowledge, evaluate accuracy, and reward Stardust.
+3. **Sprint 2.1 — Persistent Galactic Archive & Codex**: ✅ **COMPLETED**
+   - `DISCOVERY_FINISHED` permanently registers the galaxy in `profile.discoveredGalaxyIds` in Zustand store `useGameStore`. Discovered galaxies populate `ArchiveModal.tsx` for searching, morphology filtering, inspection, and direct quiz retakes.

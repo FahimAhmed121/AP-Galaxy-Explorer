@@ -30,17 +30,22 @@
 ├── src/
 │   ├── components/             # React UI components
 │   │   ├── common/             # Reusable UI containers & buttons
-│   │   ├── educational/        # Interactive educational widgets
+│   │   ├── educational/        # Interactive educational widgets & dossiers
+│   │   │   ├── Certificate.tsx            # Explorer Completion Certificate
+│   │   │   └── GalaxyInfo.tsx             # Galaxy deep-dive inspection dossier
 │   │   ├── hud/                # Modernized Gameplay HUD overlays
 │   │   │   ├── DiscoveryOverlay.tsx       # AURA AI narrative dialogue
 │   │   │   ├── GameOverModal.tsx          # Game over state UI
 │   │   │   ├── LearningBriefingModal.tsx # 2-Column NASA/JWST educational dossiers
-│   │   │   ├── PilotDashboardModal.tsx    # Pilot profile & upgrades
+│   │   │   ├── PilotDashboardModal.tsx    # Pilot profile, stats & dossier
 │   │   │   ├── QuizAssessmentModal.tsx    # Adaptive NASA Mission Console quiz
 │   │   │   ├── RadarHUD.tsx               # 2D Minimap radar with spatial coordinates
 │   │   │   ├── ShipStatusHUD.tsx          # Top HUD bar (Vitals, Mission, Controls)
 │   │   │   └── WarpJumpOverlay.tsx        # Multi-phase hyperdrive canvas particle FX
-│   │   └── views/              # Full-screen views (Options, Archive)
+│   │   └── views/              # Full-screen views (MainMenu, ArchiveModal, SettingsModal)
+│   │       ├── ArchiveModal.tsx           # Persistent Galactic Archive & Codex
+│   │       ├── MainMenu.tsx               # Main Menu view
+│   │       └── SettingsModal.tsx          # Settings & Audio controls
 │   ├── core/                   # Shared types, event bus, and global configuration
 │   │   ├── config.ts           # Game physics, energy, and world bounds configuration
 │   │   ├── events.ts           # EventBus typed interfaces & event names
@@ -87,8 +92,11 @@
   - `ScannerVisualSystem`: Renders dynamic scanning reticles and spectrographic beams in WebGL.
   - `AudioSystem`: Listens to EventBus triggers and synchronizes audio synthesis with gameplay events.
   - `DebugOverlaySystem`: Toggable developer overlay (hidden by default, toggled via `~` key).
-- **HUD Components (`/src/components/hud/`)**:
-  - `ShipStatusHUD`: Modernized top HUD bar aligning Pilot Vitals (Hull, Shield, Energy, Current Galaxy), Mission Objectives (`Map Galaxies [x/10]`, Stardust, Score), and Command Actions (Pilot Station, Codex, Settings) on a clean horizontal plane.
+- **HUD & View Components (`/src/components/`)**:
+  - `ShipStatusHUD`: Modernized top HUD bar aligning Pilot Vitals (Hull, Shield, Energy, Current Galaxy), Mission Objectives (`Map Galaxies [x/10]`), Stardust, Score, and Command Actions (Pilot Station, Codex, Settings) on a clean horizontal plane.
+  - `ArchiveModal`: Full-screen Galactic Archive & Codex providing instant search, morphology filters (Spiral, Elliptical, Irregular), discovery status badges, completion stats, and direct galaxy inspection / quiz retakes.
+  - `GalaxyInfo`: Deep-dive galaxy inspection dossier featuring scientific summaries, telescope showcases, key astrophysical parameters, and retake quiz button.
+  - `PilotDashboardModal`: Explorer Dossier displaying pilot statistics, total galaxies mapped, average accuracy, stardust count, rank titles, and unlocked badges.
   - `RadarHUD`: Displays 2D minimap with player position/heading, space stations, and discovered/unmapped galaxy indicators.
   - `DiscoveryOverlay`: Provides player-controlled AURA dialogue progression (`PREV`, `NEXT`, `SKIP`, `CONTINUE TO BRIEFING`).
   - `LearningBriefingModal`: Renders 2-column NASA/JWST educational dossiers with telescope visual showcases.
@@ -103,8 +111,9 @@
   - Phaser WebGL pipeline handles smooth camera follow (`lerp 0.08`), parallax background starfields, thruster particle emissions, and glow filters.
 - **Audio**:
   - `audioEngine.ts` triggers procedural synthesis and layered audio streams based on game state changes.
-- **Persistence**:
-  - LocalStorage sync maintains pilot logbooks, stardust counts, mapped IDs, and language preferences.
+- **Persistence & State Synchronization**:
+  - Zustand store (`useGameStore`) acts as the single source of truth for user profile data, discovered galaxy IDs (`profile.discoveredGalaxyIds`), quiz attempts (`profile.quizAttempts`), high scores (`profile.quizHighScores`), stardust currency, and settings—automatically synced to browser `localStorage`.
+  - Phaser `GalaxyManager` initializes discovery state from Zustand store and updates the store upon discovery completion.
 
 ---
 
@@ -144,6 +153,12 @@
 - **Modernized Distraction-Free HUD**: Cleaned top HUD bar removing all internal developer/debug data, perfectly aligning Pilot Identity, Ship Vitals, Mission Objectives, and Command Actions.
 - **Interactive Minimap / Radar HUD**: 2D radar displaying player heading angle, nearby targets, discovery markers, space station hub, and collapsible toggle mode.
 - **Multi-Phase Warp Animation**: Hyperspace warp jump sequence featuring engine charge, star stretching, radial bloom, particle tunnel rendering, and exit flashes.
+- **Persistent Galactic Archive & Codex (`ArchiveModal.tsx`)**: Full-screen logbook showcasing mapped celestial objects with real-time text search, morphology filters (Spiral, Elliptical, Irregular), status badges, accuracy ratings, and completion metrics.
+- **Single Source of Truth Discovery Synchronization**: Zustand `profile.discoveredGalaxyIds` drives discovery states seamlessly across Phaser engine (`GalaxyManager`), top HUD (`ShipStatusHUD`), Archive Modal, and Pilot Station.
+- **Archive → Inspect → Back Navigation Flow**: Smooth modal navigation preserving return state when opening galaxy dossiers from the Archive (`openedFromArchive` state).
+- **Quiz Retake Capability**: Players can re-inspect discovered galaxies and retake scientific quizzes anytime directly from the Archive / Galaxy Info screens to improve accuracy, score, and stardust rewards.
+- **Mission Objective HUD Synchronization**: Dynamic `Map Galaxies: X/10` display updated in real-time in `ShipStatusHUD`.
+- **Reliable Fallback Visual System**: SVG/WebGL procedural deep-space rendering for galaxies when external images are absent or mock assets.
 - **Handcrafted Educational Datasets**: Complete astrophysical datasets for 10 major galaxies.
 - **Bilingual Interface**: Seamless runtime toggle between English and Bengali (বাংলা) across all HUD elements and modals.
 
@@ -236,13 +251,14 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 - **Quality Sprint 1.0**: ✅ **COMPLETE**
 - **Sprint 2.0 — Adaptive Quiz & Scientific Assessment**: ✅ **COMPLETE**
 - **Stabilization Sprint 1.0**: ✅ **COMPLETE**
+- **Sprint 2.1 — Discovery Log & Galactic Archive**: ✅ **COMPLETE**
+- **Sprint 2.1.1 — Regression Fixes & State Synchronization**: ✅ **COMPLETE**
 - **Documentation Synchronization & HUD Redesign**: ✅ **COMPLETE**
 
 ### Next Milestone
-- **Sprint 2.1 — Discovery Log & Galactic Archive**: Discovery summary screen, Persistent Galactic Archive, Local save integration, Discovery statistics, Quiz retakes, NASA-inspired archive UI.
+- **Sprint 2.2 — Asteroids & Stardust**: Procedural asteroids, lightweight laser system, stardust collection, ambient gameplay.
 
 ### Future Milestones (Lean V1 Roadmap)
-- **Sprint 2.2 — Asteroids & Stardust**: Procedural asteroids, lightweight laser system, stardust collection, ambient gameplay.
 - **Sprint 2.3 — Progression**: Lightweight Explorer XP, levels, unlockable ships, small upgrades.
 - **Sprint 2.4 — Alien Survey Drones**: Simple AI drones, basic defensive combat, optional encounters.
 - **Sprint 2.5 — Firebase Authentication & Cloud Save**: Login, cloud save, progress synchronization.

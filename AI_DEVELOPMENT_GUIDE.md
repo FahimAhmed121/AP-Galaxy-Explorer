@@ -44,6 +44,9 @@ The codebase is split into distinct architectural boundaries. Every developer an
 - **Systems (`src/phaser/systems/`)**: Process continuous gameplay mechanics (`ScannerSystem`, `InputSystem`, `AudioSystem`).
 - **EventBus (`src/core/events.ts`)**: Serves as the single, decoupled Pub/Sub communication channel bridging Phaser 3 canvas events and React UI overlays without direct DOM coupling.
 - **Data Pipelines (`src/data/`)**: Store educational datasets and quizzes in modular JSON registries with dynamic pipeline resolution (`contentPipeline.ts`, `quizPipeline.ts`).
+- **Global State Store (`src/store/useGameStore.ts`)**: Serves as the single source of truth for user profile state, discovered galaxy IDs (`profile.discoveredGalaxyIds`), quiz attempts (`profile.quizAttempts`), quiz high scores (`profile.quizHighScores`), stardust currency, and custom options.
+  - *Discovery State Management*: `useGameStore` (`profile.discoveredGalaxyIds`) is the authoritative source for discovery status. `GalaxyManager` initializes discovery state from `useGameStore` on scene start and triggers `discoverGalaxy(id)` on scan completion.
+  - *Navigation & View Management*: Modal state transitions (e.g., Main Menu → Flight Canvas → Archive → Inspect Galaxy Info → Retake Quiz → Back to Archive) are orchestrated using clean state flags (`returnState`, `openedFromArchive`) in `App.tsx`.
 
 ### Strict Execution Rules:
 1. **Never Bypass Controllers**: React UI components must emit intent to the EventBus or trigger controller methods rather than attempting to mutate Phaser internal state directly.
@@ -105,7 +108,7 @@ Before writing code or making edits, AI assistants and developers MUST inspect d
 4. `ARCHITECTURE_OVERVIEW.md` (High-level architecture and EventBus flows)
 5. `docs/ENGINEERING_STANDARDS.md` (Detailed coding standards)
 6. Relevant system architecture doc in `docs/` (`DISCOVERY_SYSTEM_ARCHITECTURE.md`, `LEARNING_SYSTEM_ARCHITECTURE.md`, `QUIZ_SYSTEM_ARCHITECTURE.md`, etc.)
-7. Latest sprint report (`STABILIZATION_SPRINT_1_REPORT.md`, `QUALITY_SPRINT_1_REPORT.md`)
+7. Latest sprint reports (`SPRINT_2_1_REPORT.md`, `STABILIZATION_SPRINT_1_REPORT.md`, `QUALITY_SPRINT_1_REPORT.md`)
 
 ---
 

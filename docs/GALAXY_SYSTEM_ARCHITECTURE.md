@@ -56,7 +56,7 @@ The Interactive Galaxy System introduces content-driven celestial destinations a
 
 ---
 
-## Future Integrations
-- **Scanner System**: Long-range scanner pulses can target galaxy coordinates provided by `GalaxyManager.getMinimapData()`.
-- **Educational Cards & Quizzes**: Triggers when player activates scanner or landing interaction inside discovery radius.
-- **Save State & Discovery Log**: `GalaxyManager` provides serializable discovery states for profile saving.
+## System Integrations
+- **Scanner System**: Long-range scanner pulses target galaxy coordinates provided by `GalaxyManager`.
+- **Educational Cards & Quizzes**: Scanning or inspecting a galaxy opens interactive educational briefs and adaptive scientific quizzes.
+- **Save State & Discovery Log**: `GalaxyManager` initializes discovery states directly from Zustand `useGameStore` (`profile.discoveredGalaxyIds`) and syncs discovery completions bidirectionally for persistent storage across sessions.

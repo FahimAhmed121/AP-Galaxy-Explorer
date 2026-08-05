@@ -129,23 +129,23 @@ Sound effects are synthesized natively via Web Audio API (`audioEngine.ts`):
 
 ---
 
-## 7. Future Integration Roadmap
+## 7. System Integrations Status
 
-The Scanner System was intentionally architected as a modular framework ready for seamless future sprint integrations:
+The Scanner System was intentionally architected as a modular framework and is fully integrated across all major subsystems:
 
-1. **AURA AI Companion Guidance**:
+1. **AURA AI Companion Guidance**: ✅ **COMPLETED** (Sprint 1.8)
    - `SCAN_STARTED` → Triggers AURA dialogue: *"Analyzing spectrographic signatures of [Galaxy Name]..."*
    - `SCAN_CANCELLED` → AURA warning: *"Signal lost. Re-establish proximity threshold."*
    - `SCAN_COMPLETED` → AURA discovery announcement: *"Spectral analysis complete! Data uploaded to Knowledge Archive."*
 
-2. **Discovery Cinematic Hook**:
+2. **Discovery Cinematic Hook**: ✅ **COMPLETED** (Sprint 1.8)
    - `SCAN_COMPLETED` triggers camera smooth zoomlerp towards galaxy core with particle impulse burst before presenting discovery HUD.
 
-3. **Learning Cards & Educational Content**:
-   - React UI listens for `SCAN_COMPLETED` to open interactive 3D/HD Galaxy Overview cards featuring real NASA imagery, astronomical dimensions, and age metrics.
+3. **Learning Cards & Educational Content**: ✅ **COMPLETED** (Sprint 1.9)
+   - React UI listens for `SCAN_COMPLETED` to open interactive 2-column NASA/JWST Galaxy Overview cards featuring real imagery, astronomical dimensions, and age metrics.
 
-4. **Quiz System**:
-   - Scanning unlocks galaxy-specific interactive astrophysics quizzes in the React HUD.
+4. **Quiz System**: ✅ **COMPLETED** (Sprint 2.0)
+   - Scanning unlocks galaxy-specific interactive astrophysics quizzes in the React HUD (`QuizAssessmentModal`).
 
-5. **Discovery Log & Explorer Profile**:
-   - Marks discovered galaxy IDs in `ExplorerProfile.discoveredGalaxyIds`, rewarding XP and unlocking badges.
+5. **Discovery Log & Explorer Profile**: ✅ **COMPLETED** (Sprint 2.1 & 2.1.1)
+   - Marks discovered galaxy IDs in `profile.discoveredGalaxyIds` in `useGameStore`, populating the Galactic Archive (`ArchiveModal`) and Pilot Station (`PilotDashboardModal`).

@@ -21,21 +21,13 @@
 - ✅ **Quality Sprint 1.0**: Flight physics tuning, 100-point Plasma Energy system, multi-phase HTML5 canvas hyperdrive warp jump animation (`WarpJumpOverlay`), interactive 2D minimap (`RadarHUD`), and HUD bar streamlining.
 - ✅ **Sprint 2.0 — Adaptive Quiz & Scientific Assessment**: Dedicated `QuizController`, lazy-loaded dataset pipeline (`quizPipeline.ts`), NASA Mission Console UI (`QuizAssessmentModal`), immediate scientific feedback, score rewards, and keyboard accessibility.
 - ✅ **Stabilization Sprint 1.0**: Traced and resolved event payload mismatch in AURA transition, eliminated runtime property crashes, verified complete 9-step progression loop for all 10 galaxies, and set developer debug overlay to hidden by default.
+- ✅ **Sprint 2.1 — Discovery Log & Galactic Archive**: Persistent Galactic Archive (`ArchiveModal`), search filtering, morphology classification filters (Spiral, Elliptical, Irregular), galaxy cards with status badges, Explorer Dossier integration (`PilotDashboardModal`), discovery progress metrics, educational dossier inspection, quiz retake capability, image fallback system, and NASA-inspired dark-tech archive UI.
+- ✅ **Sprint 2.1.1 — Regression Fixes & State Synchronization**: Unified single source of truth using Zustand (`profile.discoveredGalaxyIds`), bidirectional EventBus synchronization between Phaser `GalaxyManager` and React components (`App`, `ShipStatusHUD`, `ArchiveModal`, `PilotDashboardModal`), dynamic `Map Galaxies: X/10` HUD counter sync, Archive → Inspect → Back flow state restoration, quiz retake score/stardust persistence fix, and navigation fixes.
 - ✅ **Documentation Synchronization**: Comprehensive synchronization of project state, engineering standards, system architectures, and Lean V1 roadmap.
 
 ---
 
 ## Upcoming Milestones (Lean V1 Roadmap)
-
-### Sprint 2.1 — Discovery Log & Galactic Archive
-**Goal**: Provide a persistent galactic archive and pilot logbook to review discovered galaxies and retake quizzes.
-**Deliverables**:
-- Discovery summary screen upon completing galaxy scans.
-- Persistent Galactic Archive showcasing mapped celestial objects.
-- Local save integration (`localStorage` logbook synchronization).
-- Discovery statistics and completion metrics.
-- Quiz retake capability directly from the archive.
-- NASA-inspired dark-tech archive UI interface.
 
 ### Sprint 2.2 — Asteroids & Stardust
 **Goal**: Introduce ambient space hazards and resource gathering between galaxy discoveries.

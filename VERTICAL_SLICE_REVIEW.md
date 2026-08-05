@@ -74,9 +74,12 @@ Located in `src/data/educational/contentPipeline.ts`:
 | Scanner System | **COMPLETE** | 360° radar tracking, progress bar, audio pitch modulation |
 | Cinematic Discovery | **COMPLETE** | Camera zoom, AURA dialogue, particle flares |
 | Educational Briefing | **COMPLETE** | 5-card NASA briefing with spectrographic data & Bengali support |
+| Adaptive Quiz Engine | **COMPLETE** | Mission Console UI, score tracking, stardust rewards, keyboard support |
+| Galactic Archive & Codex | **COMPLETE** | Full-screen catalog, search, morphology filters, retake quiz flow |
+| Single Source of Truth Sync | **COMPLETE** | Unified `profile.discoveredGalaxyIds` across Phaser, React & Zustand |
 | Assessment & Certification | **COMPLETE** | Quiz engine, score tracking, official certificate output |
 | Ambient Audio Engine | **COMPLETE** | Procedural space drones with MENU / GAMEPLAY / DISCOVERY modes |
 
 ---
 
-*Report generated for AP Galaxy Explorer Vertical Slice v1.95 Polish Phase.*
+*Report generated for AP Galaxy Explorer Vertical Slice after Sprint 2.1 & 2.1.1 Completion.*

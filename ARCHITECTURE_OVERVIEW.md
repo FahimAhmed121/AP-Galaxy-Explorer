@@ -54,8 +54,14 @@
 
 ### React Presentation Layer (`/src/components/`)
 - **Top HUD Bar (`ShipStatusHUD.tsx`)**:
-  - Displays Pilot Identity & Rank, Hull Integrity, Deflector Shield, Plasma Energy, Current Galaxy, Mission Objective (`Map Galaxies [x/10]`), Stardust, Score, and Command Action buttons.
+  - Displays Pilot Identity & Rank, Hull Integrity, Deflector Shield, Plasma Energy, Current Galaxy, Mission Objective (`Map Galaxies [x/10]`), Stardust, Score, and Command Action buttons (Pilot Station, Codex Archive, Settings).
   - Positioned along a single top alignment plane with high-contrast glassmorphic panels.
+- **Galactic Archive & Codex (`ArchiveModal.tsx`)**:
+  - Full-screen catalog showcasing discovered and unmapped galaxies with real-time name search, morphology filters (ALL, SPIRAL, ELLIPTICAL, IRREGULAR), discovery status badges, completion stats, and direct dossier inspection / quiz retakes.
+- **Galaxy Dossier (`GalaxyInfo.tsx`)**:
+  - Detailed scientific inspection screen providing deep-dive summaries, JWST/Hubble telescope visual showcases, key astrophysical parameters, and retake quiz button.
+- **Explorer Dossier & Station (`PilotDashboardModal.tsx`)**:
+  - Pilot profile HUD displaying flight stats, total galaxies mapped, average quiz accuracy %, stardust count, rank titles, and unlocked badges.
 - **Minimap Radar (`RadarHUD.tsx`)**:
   - Renders 2D vector radar with spatial coordinates, space station hub, player heading angle, and target dots.
 - **Dialogue Overlay (`DiscoveryOverlay.tsx`)**:
@@ -113,4 +119,4 @@ Communication between Phaser 3 WebGL engine systems and React DOM UI overlays is
 2. **Scan & Discovery**: Player presses `E`. `ScannerSystem` validates range/energy and emits `SCAN_COMPLETED`. `DiscoveryController` locks controls, lerps camera zoom, generates AURA dialogue, and emits `DISCOVERY_READY`.
 3. **Educational Briefing**: `LearningController` receives `DISCOVERY_READY`, fetches `EducationalContent` via `contentPipeline.ts`, and emits `LEARNING_STARTED`. `LearningBriefingModal` opens interactive NASA cards.
 4. **Adaptive Quiz Assessment**: On finishing briefing, `LearningBriefingModal` emits `LEARNING_COMPLETED`. `QuizController` fetches `QuizData` via `quizPipeline.ts` and emits `QUIZ_STARTED`. `QuizAssessmentModal` presents questions and evaluates answers.
-5. **Reward & Resume**: Upon passing the quiz, stardust and score rewards are dispatched to `SaveManager` and Zustand store. `QuizController` emits `RESUME_GAMEPLAY`, restoring camera and flight controls.
+5. **Reward, Save & Persistent Archive Sync**: Upon passing or completing a quiz, stardust and score rewards are persisted to Zustand store (`useGameStore`) and `SaveManager`. `profile.discoveredGalaxyIds` acts as the single source of truth across Phaser (`GalaxyManager`), top HUD (`ShipStatusHUD`), Archive (`ArchiveModal`), and Pilot Dashboard. `QuizController` emits `RESUME_GAMEPLAY`, restoring camera and flight controls. Discovered galaxies remain permanently accessible in the Galactic Archive for deep inspection and retaking assessments anytime.

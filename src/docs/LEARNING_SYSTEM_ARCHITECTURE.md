@@ -136,11 +136,13 @@ Educational files are stored in `/src/data/educational/` as JSON or generated dy
 
 ---
 
-## 7. Multilingual Strategy & Future Quiz Integration
+## 7. Multilingual Strategy & Assessment Integration Status
 
 1. **Multilingual Architecture**:
-   - The JSON schema contains a `translations` object allowing localization across languages (e.g., Bengali `BN`, Spanish `ES`).
+   - The JSON schema contains a `translations` object allowing localization across languages (e.g., Bengali `BN`).
    - `ContentPipeline` reads `GameSettings.language` to automatically hydrate localized card strings.
-2. **Sprint 2.0 Quiz Integration**:
+2. **Sprint 2.0 Quiz Integration**: ✅ **COMPLETED**
    - `LEARNING_COMPLETED` carries `timeSpentSeconds` and `galaxyData`.
-   - The game scene intercepts `LEARNING_COMPLETED` and seamlessly transitions into the interactive **Astrophysics Quiz Engine** pre-populated with questions mapped in `quizReferences`.
+   - The game scene intercepts `LEARNING_COMPLETED` and seamlessly transitions into the interactive **Astrophysics Quiz Engine** (`QuizController`).
+3. **Sprint 2.1 Galactic Archive Re-inspection**: ✅ **COMPLETED**
+   - Discovered galaxies can be re-inspected from the Galactic Archive (`ArchiveModal.tsx`), re-opening educational cards and dossiers via `GalaxyInfo.tsx` with direct retake quiz options.

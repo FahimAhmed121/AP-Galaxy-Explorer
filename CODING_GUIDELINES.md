@@ -85,7 +85,7 @@ Maintain strict separation of concerns across directories:
 
 - **JSDoc Annotation**: Annotate core architectural systems, complex algorithms, and event payload definitions with clear JSDoc descriptions.
 - **Self-Documenting Code**: Prefer descriptive function and variable names over excessive inline commentary.
-- **Handoff Records**: Keep `PROJECT_STATE.md`, `DEVELOPMENT_ROADMAP.md`, and `QUALITY_SPRINT_1_REPORT.md` updated after major quality sprints or milestone deliveries.
+- **Handoff Records**: Keep `PROJECT_STATE.md`, `DEVELOPMENT_ROADMAP.md`, `QUALITY_SPRINT_1_REPORT.md`, and `SPRINT_2_1_REPORT.md` updated after major quality sprints or milestone deliveries.
 
 ---
 

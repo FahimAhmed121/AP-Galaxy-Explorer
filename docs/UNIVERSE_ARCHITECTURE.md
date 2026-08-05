@@ -58,7 +58,7 @@ The Universe Generation System transforms the gameplay space into a living, proc
 
 ---
 
-## Future Integrations
-1. **Interactive Galaxy Entities**: Interactive celestial bodies (e.g. AP Galaxy catalog) will register their sector coordinates with `UniverseManager`.
-2. **Asteroid & Hazard Systems**: Procedural asteroid belts and magnetic dust anomalies will tie into sector hazard fields.
-3. **Scanner System**: Long-range scanner pulses will query loaded and adjacent sectors to highlight points of interest on the HUD radar.
+## System Integrations Status
+1. **Interactive Galaxy Entities**: ✅ **COMPLETED** (Sprint 1.6) - Celestial bodies in the AP Galaxy catalog register their sector coordinates with `UniverseManager`.
+2. **Scanner System**: ✅ **COMPLETED** (Sprint 1.7) - Long-range scanner pulses query loaded and adjacent sectors to highlight targets on the HUD radar.
+3. **Asteroid & Hazard Systems**: (Scheduled for Sprint 2.2) - Procedural asteroid belts and hazard fields.
