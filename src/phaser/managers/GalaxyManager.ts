@@ -4,6 +4,7 @@ import { GALAXIES } from '../../data/galaxies';
 import { GalaxyEntity } from '../entities/GalaxyEntity';
 import { eventBus } from '../../core/events';
 import { logger } from '../../core/logger';
+import { useGameStore } from '../../store/useGameStore';
 
 export class GalaxyManager {
   private scene: Phaser.Scene;
@@ -18,8 +19,11 @@ export class GalaxyManager {
     this.scene = scene;
     this.galaxyCatalog = GALAXIES;
 
+    const storeDiscovered = useGameStore.getState().profile.discoveredGalaxyIds || [];
     for (const g of this.galaxyCatalog) {
-      this.discoveryStates.set(g.id, g.discoveryState || 'UNDISCOVERED');
+      const isDiscovered = storeDiscovered.includes(g.id);
+      const state = isDiscovered ? 'DISCOVERED' : (g.discoveryState || 'UNDISCOVERED');
+      this.discoveryStates.set(g.id, state);
     }
 
     logger.info(`GalaxyManager: Initialized with ${this.galaxyCatalog.length} catalog galaxies.`);
@@ -35,6 +39,10 @@ export class GalaxyManager {
     const catalogGalaxy = this.galaxyCatalog.find((g) => g.id === galaxyId);
     if (catalogGalaxy) {
       catalogGalaxy.discoveryState = state;
+    }
+
+    if (state === 'DISCOVERED') {
+      useGameStore.getState().discoverGalaxy(galaxyId);
     }
 
     const entity = this.activeEntities.get(galaxyId);

@@ -12,10 +12,13 @@ import LearningBriefingModal from './components/hud/LearningBriefingModal';
 import QuizAssessmentModal from './components/hud/QuizAssessmentModal';
 import { useGameStore } from './store/useGameStore';
 import { audioEngine } from './engine/audioEngine';
+import { eventBus } from './core/events';
 import { Rocket, Sparkles } from 'lucide-react';
 
 export default function App() {
   const [returnState, setReturnState] = useState<GameState>('PLAYING');
+  const [openedFromArchive, setOpenedFromArchive] = useState<boolean>(false);
+
   const {
     gameState,
     selectedGalaxy,
@@ -41,6 +44,37 @@ export default function App() {
   useEffect(() => {
     audioEngine.updateMusicVolume(settings.soundEnabled, settings.bgmVolume);
   }, [settings.soundEnabled, settings.bgmVolume]);
+
+  // Listen to discovery events from Phaser and HUD systems
+  useEffect(() => {
+    const handleDiscoveryFinished = (payload: { galaxyId: string }) => {
+      if (payload && payload.galaxyId) {
+        discoverGalaxy(payload.galaxyId);
+      }
+    };
+
+    const handleScanCompleted = (payload: { targetId: string; galaxyData: Galaxy }) => {
+      if (payload && payload.targetId) {
+        discoverGalaxy(payload.targetId);
+      }
+    };
+
+    const handleDiscoveryReady = (payload: { galaxyData: Galaxy }) => {
+      if (payload && payload.galaxyData && payload.galaxyData.id) {
+        discoverGalaxy(payload.galaxyData.id);
+      }
+    };
+
+    eventBus.on('DISCOVERY_FINISHED', handleDiscoveryFinished);
+    eventBus.on('SCAN_COMPLETED', handleScanCompleted);
+    eventBus.on('DISCOVERY_READY', handleDiscoveryReady);
+
+    return () => {
+      eventBus.off('DISCOVERY_FINISHED', handleDiscoveryFinished);
+      eventBus.off('SCAN_COMPLETED', handleScanCompleted);
+      eventBus.off('DISCOVERY_READY', handleDiscoveryReady);
+    };
+  }, [discoverGalaxy]);
 
   // Handle ship state saving from GameCanvas
   const handleSaveShipState = (ship: Spaceship) => {
@@ -77,7 +111,12 @@ export default function App() {
   // Return from Galaxy Info / Certificate
   const handleReturnToSpace = () => {
     setSelectedGalaxy(null);
-    setGameState(returnState);
+    if (openedFromArchive) {
+      setOpenedFromArchive(false);
+      setGameState('ARCHIVE');
+    } else {
+      setGameState(returnState);
+    }
   };
 
   return (
@@ -92,9 +131,13 @@ export default function App() {
           onStartGame={() => setGameState('INTRO_CUTSCENE')}
           onOpenArchive={() => {
             setReturnState('MENU');
+            setOpenedFromArchive(false);
             setGameState('ARCHIVE');
           }}
-          onOpenSettings={() => setGameState('SETTINGS')}
+          onOpenSettings={() => {
+            setReturnState('MENU');
+            setGameState('SETTINGS');
+          }}
         />
       )}
 
@@ -110,6 +153,7 @@ export default function App() {
         <GameCanvas
           onDiscoverGalaxy={(galaxyId) => {
             setReturnState('PLAYING');
+            setOpenedFromArchive(false);
             handleDiscoverGalaxy(galaxyId);
           }}
           discoveredIds={profile.discoveredGalaxyIds}
@@ -119,9 +163,13 @@ export default function App() {
           onSaveShipState={handleSaveShipState}
           onOpenArchive={() => {
             setReturnState('PLAYING');
+            setOpenedFromArchive(false);
             setGameState('ARCHIVE');
           }}
-          onOpenSettings={() => setGameState('SETTINGS')}
+          onOpenSettings={() => {
+            setReturnState('PLAYING');
+            setGameState('SETTINGS');
+          }}
         />
       )}
 
@@ -199,10 +247,10 @@ export default function App() {
       {/* 6. MODAL: ARCHIVE */}
       {gameState === 'ARCHIVE' && (
         <ArchiveModal
-          onClose={() => setGameState(returnState)}
+          onClose={() => setGameState(returnState === 'ARCHIVE' ? 'PLAYING' : returnState)}
           onOpenGalaxy={(galaxy) => {
             setSelectedGalaxy(galaxy);
-            setReturnState('ARCHIVE');
+            setOpenedFromArchive(true);
             setGameState('GALAXY_INFO');
           }}
         />
@@ -210,7 +258,7 @@ export default function App() {
 
       {/* 7. MODAL: SETTINGS */}
       {gameState === 'SETTINGS' && (
-        <SettingsModal onClose={() => setGameState('MENU')} />
+        <SettingsModal onClose={() => setGameState(returnState === 'SETTINGS' ? 'MENU' : returnState)} />
       )}
     </main>
   );

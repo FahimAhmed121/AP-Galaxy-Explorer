@@ -2,6 +2,7 @@ import React from 'react';
 import { Shield, Heart, Zap, Sparkles, Award, Settings, BookOpen, SlidersHorizontal } from 'lucide-react';
 import { Spaceship } from '../../types';
 import { useGameStore } from '../../store/useGameStore';
+import { GALAXIES } from '../../data/galaxies';
 
 interface ShipStatusHUDProps {
   ship: Spaceship;
@@ -120,7 +121,7 @@ export default function ShipStatusHUD({
               {t('Mission Objective', 'মিশন লক্ষ্য')}
             </div>
             <div className="text-sm font-extrabold text-amber-300 font-mono tracking-tight">
-              {t('Map Galaxies', 'গ্যালাক্সি মানচিত্র')}: <span className="text-cyan-300 text-base">{profile.discoveredGalaxyIds.length}/10</span>
+              {t('Map Galaxies', 'গ্যালাক্সি মানচিত্র')}: <span className="text-cyan-300 text-base">{profile.discoveredGalaxyIds.length}/{GALAXIES.length}</span>
             </div>
           </div>
         </div>
