@@ -37,16 +37,18 @@
 
 The codebase is split into distinct architectural boundaries. Every developer and AI agent MUST respect these boundaries:
 
-- **React Presentation Layer (`src/components/`)**: Handles UI overlays, HUD bars, interactive modals, and accessibility controls. Strictly presentation and state display.
-- **Phaser 3 Engine Layer (`src/phaser/`)**: Manages 2D WebGL canvas rendering, physics bodies, camera tracking, particle systems, and world entity rendering.
+- **React Presentation Layer (`src/components/`)**: Handles UI overlays, HUD bars, interactive modals, Pilot Hangar upgrades, and accessibility controls. Strictly presentation and state display.
+- **Phaser 3 Engine Layer (`src/phaser/`)**: Manages 2D WebGL canvas rendering, physics bodies, camera tracking, particle systems, asteroid fields, laser projectiles, and world entity rendering. All 2D gameplay execution occurs strictly inside Phaser 3.
 - **Controllers (`src/phaser/systems/`)**: Orchestrate gameplay state machine transitions (`DiscoveryController`, `LearningController`, `QuizController`). Controllers are the sole authorities for state transitions.
-- **Managers (`src/phaser/managers/`)**: Own and manage game entities and persistent objects (`GalaxyManager`, `SaveManager`, `ParticleManager`).
+- **Managers (`src/phaser/managers/`)**: Own and manage game entities and persistent objects (`GalaxyManager`, `AsteroidManager`, `SaveManager`, `ParticleManager`).
+  - *AsteroidManager Responsibilities*: Owns procedural asteroid field generation, 7 organic cluster formations, fragmentation physics (Large → Medium → Small), collision impact mechanics, laser projectile physics, and Stardust orb spawning.
 - **Systems (`src/phaser/systems/`)**: Process continuous gameplay mechanics (`ScannerSystem`, `InputSystem`, `AudioSystem`).
-- **EventBus (`src/core/events.ts`)**: Serves as the single, decoupled Pub/Sub communication channel bridging Phaser 3 canvas events and React UI overlays without direct DOM coupling.
+  - *Input & Weapon Bindings*: Spacebar, F, K, and Mouse Click fire the Plasma Cannon. Shift strictly engages thruster boost. Never bind Spacebar to boost to avoid weapon input conflicts.
+- **EventBus (`src/core/events.ts`)**: Serves as the single, decoupled Pub/Sub communication channel bridging Phaser 3 canvas events and React UI overlays without direct DOM coupling. Includes `UPDATE_SHIP_STATS` and `SHIP_STATS_CHANGED` contracts.
 - **Data Pipelines (`src/data/`)**: Store educational datasets and quizzes in modular JSON registries with dynamic pipeline resolution (`contentPipeline.ts`, `quizPipeline.ts`).
-- **Global State Store (`src/store/useGameStore.ts`)**: Serves as the single source of truth for user profile state, discovered galaxy IDs (`profile.discoveredGalaxyIds`), quiz attempts (`profile.quizAttempts`), quiz high scores (`profile.quizHighScores`), stardust currency, and custom options.
-  - *Discovery State Management*: `useGameStore` (`profile.discoveredGalaxyIds`) is the authoritative source for discovery status. `GalaxyManager` initializes discovery state from `useGameStore` on scene start and triggers `discoverGalaxy(id)` on scan completion.
-  - *Navigation & View Management*: Modal state transitions (e.g., Main Menu → Flight Canvas → Archive → Inspect Galaxy Info → Retake Quiz → Back to Archive) are orchestrated using clean state flags (`returnState`, `openedFromArchive`) in `App.tsx`.
+- **Global State Store (`src/store/useGameStore.ts`)**: Serves as the single source of truth for user profile state, discovered galaxy IDs (`profile.discoveredGalaxyIds`), quiz attempts (`profile.quizAttempts`), quiz high scores (`profile.quizHighScores`), stardust currency, and ship upgrade levels—automatically synced to browser `localStorage`.
+  - *Ship Upgrade Synchronization*: React `PilotDashboardModal` updates Zustand `useGameStore` and emits `UPDATE_SHIP_STATS`. Phaser `PlayerShip` listens to `UPDATE_SHIP_STATS` and dynamically updates speed, shield capacity, weapon cooldown, and vacuum magnet pull radius in real-time.
+  - *Progression Architecture Rule*: Ship Hardware Upgrades (Sprint 2.2 — Ion Engine, Deflector Shield, Plasma Cannon, Vacuum Dust Magnet purchased with Stardust) and Explorer Progression (Sprint 2.3 — Explorer XP, Levels, Rank Titles, Cosmetic Unlocks, Badges, Passive Perks) MUST remain strictly separate systems. Future AI development must never merge them into a single upgrade tree. Ship upgrades modify physical ship flight and combat performance, whereas Explorer Progression tracks player career identity, rank titles, cosmetic customizations, and lightweight passive bonuses.
 
 ### Strict Execution Rules:
 1. **Never Bypass Controllers**: React UI components must emit intent to the EventBus or trigger controller methods rather than attempting to mutate Phaser internal state directly.

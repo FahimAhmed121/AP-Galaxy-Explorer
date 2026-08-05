@@ -57,10 +57,9 @@ An interactive 2D astronomy exploration game and educational platform built with
 
 ## 📍 Lean V1 Roadmap Overview
 
-- **Completed**: Foundation Refactor, Phaser Foundation, Gameplay Migration, Universe Generation, Interactive Galaxy System, Scanner System, Discovery Experience, Educational Learning Layer, Quality Sprint 1.0, Sprint 2.0 Adaptive Quiz, Stabilization Sprint 1.0, Sprint 2.1 Discovery Log & Galactic Archive, Sprint 2.1.1 Regression Fixes & State Synchronization, Documentation Synchronization & HUD Redesign.
-- **Sprint 2.2**: Asteroids & Stardust (Procedural asteroids, Laser system, Stardust harvesting).
-- **Sprint 2.3**: Progression (Explorer XP, Levels, Unlockable ships, Upgrades).
-- **Sprint 2.4**: Alien Survey Drones (Simple AI drones, Basic encounters).
+- **Completed**: Foundation Refactor, Phaser Foundation, Gameplay Migration, Universe Generation, Interactive Galaxy System, Scanner System, Discovery Experience, Educational Learning Layer, Quality Sprint 1.0, Sprint 2.0 Adaptive Quiz, Stabilization Sprint 1.0, Sprint 2.1 Discovery Log & Galactic Archive, Sprint 2.1.1 Regression Fixes & State Synchronization, Sprint 2.2 Asteroids, Stardust Economy & Ship Hardware Progression, Sprint 2.2.1 Gameplay Balance, Feel & Polish, Documentation Synchronization & HUD Redesign.
+- **Sprint 2.3**: Explorer Progression (Explorer XP, Levels & Ranks [Space Cadet → Chief Astronomer], Cosmetic Unlocks, Passive Perks).
+- **Sprint 2.4**: Alien Survey Drones (Autonomous AI survey drones, basic defensive encounters).
 - **Sprint 2.5**: Firebase Authentication & Cloud Save (User Login, Cloud sync).
 - **Sprint 2.6**: Electron Desktop Release (Desktop packaging, Installers).
 - **Beta & V1.0 Release**: Final playtesting, polish, and Version 1.0 release for Astronomy Pathshala students.

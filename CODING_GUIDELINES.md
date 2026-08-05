@@ -20,7 +20,7 @@ Maintain strict separation of concerns across directories:
 - `/src/data/`: Educational datasets, galaxy coordinate definitions, and dynamic pipeline handlers.
 - `/src/engine/`: Web Audio procedural sound synthesizer and sound effect managers.
 - `/src/phaser/entities/`: Phaser game objects (`PlayerShip`, `GalaxyObject`, `SpaceStation`).
-- `/src/phaser/managers/`: Stateful logic managers (`GalaxyManager`, `SaveManager`, `ParticleManager`).
+- `/src/phaser/managers/`: Stateful logic managers (`GalaxyManager`, `AsteroidManager`, `SaveManager`, `ParticleManager`).
 - `/src/phaser/systems/`: Low-level per-frame calculation systems (`InputSystem`, `ScannerSystem`, `DiscoveryController`).
 - `/src/store/`: Global reactive Zustand state hooks (`useGameStore`).
 
@@ -29,20 +29,20 @@ Maintain strict separation of concerns across directories:
 ## 3. Naming Conventions
 
 - **Files & Directories**:
-  - React components & Phaser Class files: `PascalCase.tsx` / `PascalCase.ts` (e.g., `DiscoveryOverlay.tsx`, `PlayerShip.ts`).
+  - React components & Phaser Class files: `PascalCase.tsx` / `PascalCase.ts` (e.g., `DiscoveryOverlay.tsx`, `PlayerShip.ts`, `AsteroidManager.ts`).
   - Helper modules, pipelines & utilities: `camelCase.ts` (e.g., `contentPipeline.ts`, `audioEngine.ts`).
   - Educational JSON files: `kebab-case.json` (e.g., `milky-way.json`, `black-eye.json`).
 - **Variables & Functions**:
   - Functions & Hooks: `camelCase` (e.g., `calculateDistance`, `useGameStore`).
   - Global Constants: `UPPER_SNAKE_CASE` (e.g., `WORLD_SIZE`, `MAX_SPEED`).
-  - React Event Handlers: `handle[Event]` prefix (e.g., `handleContinueToBriefing`, `handleSkip`).
+  - React Event Handlers: `handle[Event]` prefix (e.g., `handleContinueToBriefing`, `handleSkip`, `handleUpgrade`).
 
 ---
 
 ## 4. EventBus Rules
 
 - **Decoupled Architecture**: Direct DOM manipulation from Phaser scenes or direct calling of Phaser methods inside React components is strictly prohibited. All communication MUST pass through `eventBus` (`src/core/events.ts`).
-- **Typed Payload Interfaces**: Every event key in `EventPayloads` must have a defined interface contract.
+- **Typed Payload Interfaces**: Every event key in `EventPayloads` (e.g., `STARDUST_COLLECTED`, `UPDATE_SHIP_STATS`, `SHIP_STATS_CHANGED`, `PLAYER_DESTROYED`) must have a defined interface contract.
 - **Listener Cleanup**: Every `eventBus.on(...)` subscriber MUST be paired with `eventBus.off(...)` or cleaned up inside React `useEffect` teardown functions to prevent memory leaks.
 
 ---

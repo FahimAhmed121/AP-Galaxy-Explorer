@@ -4,7 +4,7 @@
 
 - **Purpose**: Astronomy Pathshala (AP) Galaxy Explorer is an interactive, space-themed educational simulation that combines 2D space flight, real-time spectrographic galaxy scanning, cinematic discovery reveals, and interactive NASA/JWST/Hubble educational dossiers and adaptive scientific quizzes.
 - **Target Audience**: Students, astronomy enthusiasts, self-learners, and science educators seeking an engaging visual platform to explore deep-space astrophysics.
-- **Gameplay Loop**: Safe Sector Spawn → Open-Space Navigation & Inertial Thruster Control → Galaxy Proximity Lock → Active Spectrographic Scanning → Cinematic Reveal & AURA AI Dialogue → Interactive Educational Dossier (NASA/JWST Cards) → Adaptive Scientific Mission Quiz → Stardust & Score Rewards → Galactic Archive Sync & Return to Exploration.
+- **Gameplay Loop**: Safe Sector Spawn → Open-Space Navigation & Inertial Thruster Control → Asteroid Mining & Plasma Cannon Combat → Stardust Harvesting & Magnetic Collection → Galaxy Proximity Lock → Active Spectrographic Scanning → Cinematic Reveal & AURA AI Dialogue → Interactive Educational Dossier (NASA/JWST Cards) → Adaptive Scientific Mission Quiz → Stardust & Explorer XP Rewards → Ship Hardware Upgrades in Pilot Hangar → Explorer Level & Rank Advancement → Galactic Archive Sync & Return to Exploration.
 - **Educational Goal**: Deliver authentic astrophysical insights—including galactic classification, spectral signatures, distance metrics, tidal collisions, black hole absence/presence, and Hubble/JWST discoveries—through interactive gameplay, curated educational modules, and adaptive scientific assessments.
 - **Development Philosophy**: Version 1 focuses strictly on a polished educational exploration experience. Advanced systems are intentionally postponed to avoid feature creep. Every sprint keeps the codebase lightweight, maintainable, and optimized for Google AI Studio development.
 
@@ -80,6 +80,7 @@
 
 - **Managers (`/src/phaser/managers/`)**:
   - `GalaxyManager`: Handles spatial indexing, proximity detection, galaxy entity instantiation, and discovery status tracking.
+  - `AsteroidManager`: Handles procedural asteroid field generation, organic clustering, fragmentation physics, laser beam collision overlap, and stardust orb drops.
   - `SaveManager`: Manages persistent local storage state (stardust, score, mapped galaxies, custom options).
   - `ParticleManager`: Manages thruster emissions, scanner particle beams, and explosion visual FX.
 - **Controllers (`/src/phaser/systems/`)**:
@@ -146,7 +147,11 @@
 ## 6. Implemented Features
 
 - **Spacecraft Physics**: Refined heavy inertial drift, smooth turn rates (`3.2 rad/s`), tuned acceleration (`220 px/s²`), and top speed bounds (`320 px/s` base, `520 px/s` boost).
-- **Plasma Energy System**: Dynamic 100-point energy pool powering hyperspace boosters and spectrographic scanners with automatic passive regeneration (`14/s`).
+- **Procedural Asteroid Fields & Clusters**: 7 organic deep-space asteroid clusters (Large cores, Medium bodies, Small debris fringes) with serene natural drifting speeds and realistic collision durability.
+- **Plasma Cannon Combat System**: Nose-mounted energy beam weapon fired via `Spacebar`, `F`, `K`, or `Mouse Click`, expending 6 Plasma Energy per shot to fragment and destroy asteroids.
+- **Stardust Economy & Vacuum Magnetism**: Cosmic Stardust drops from destroyed asteroids (5 stardust / orb), galaxy discoveries (50 bonus), and quiz assessments (15 per correct answer + 25 perfect score bonus), collected via proximity or magnetic attraction field.
+- **4-Tier Pilot Ship Upgrades**: Interactive upgrade console in `PilotDashboardModal.tsx` managing Ion Engine Speed, Deflector Shield Capacity & Regeneration, Plasma Cannon Damage & Fire Rate, and Vacuum Dust Magnet Attraction Radius.
+- **Plasma Energy System**: Dynamic 100-point energy pool powering hyperspace boosters, plasma cannons, and spectrographic scanners with automatic passive regeneration (`14/s`).
 - **Player-Controlled AURA Dialogue**: Paginated dialogue flow with explicit `PREV`, `NEXT`, `SKIP CINEMATIC`, and `CONTINUE TO BRIEFING` controls.
 - **NASA / JWST / Hubble Educational Cards**: Structured 2-column learning dossiers featuring high-resolution telescope visual placeholders, spectral charts, and key astrophysical metrics.
 - **Adaptive Scientific Mission Quiz**: Mission debriefing console evaluating galaxy-specific astrophysics with immediate explanation feedback, score calculation, and stardust rewards.
@@ -198,8 +203,8 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 - **D / Right Arrow**: Rotate Ship Right
 - **S / Down Arrow**: Reverse Dampeners / Slow Down
 - **Shift (Hold)**: Engage Plasma Booster
+- **Space / F / K / Left Click**: Fire Plasma Cannon Laser (Consumes 6 Energy)
 - **E**: Initiate Spectrographic Scanner / Open Briefing
-- **Space**: Quick Action / Warp Engage
 - **~ (Tilde)**: Toggle Developer Diagnostic Overlay
 - **ESC**: Skip Active Cinematic / Close Modals
 
@@ -207,7 +212,7 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 
 ## 10. Audio Architecture
 
-- **Synthesizer Engine**: Procedural Web Audio oscillator generating custom thruster rumbles, scanner sweeps, and warp tunnels.
+- **Synthesizer Engine**: Procedural Web Audio oscillator generating custom thruster rumbles, scanner sweeps, laser zaps, explosion rumbles, and warp tunnels.
 - **Multi-Channel Mixing**: Independent gain nodes for BGM (`ambientVolume`) and SFX (`sfxVolume`).
 - **Seamless Crossfading**: Dynamic volume attenuation during warp sequences, dialogue triggers, and modal overlays.
 
@@ -253,15 +258,16 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 - **Stabilization Sprint 1.0**: ✅ **COMPLETE**
 - **Sprint 2.1 — Discovery Log & Galactic Archive**: ✅ **COMPLETE**
 - **Sprint 2.1.1 — Regression Fixes & State Synchronization**: ✅ **COMPLETE**
+- **Sprint 2.2 — Asteroids, Stardust Economy & Ship Progression**: ✅ **COMPLETE**
+- **Sprint 2.2.1 — Gameplay Balance, Feel & Polish**: ✅ **COMPLETE**
 - **Documentation Synchronization & HUD Redesign**: ✅ **COMPLETE**
 
 ### Next Milestone
-- **Sprint 2.2 — Asteroids & Stardust**: Procedural asteroids, lightweight laser system, stardust collection, ambient gameplay.
+- **Sprint 2.3 — Explorer Progression**: Explorer XP system, level progression, rank titles (Space Cadet → Chief Astronomer), cosmetic unlocks (ship skins, thruster color themes, scanner pulse colors, badges, banners), lightweight passive perks, and explicit architectural separation from Sprint 2.2 Ship Upgrades.
 
 ### Future Milestones (Lean V1 Roadmap)
-- **Sprint 2.3 — Progression**: Lightweight Explorer XP, levels, unlockable ships, small upgrades.
-- **Sprint 2.4 — Alien Survey Drones**: Simple AI drones, basic defensive combat, optional encounters.
-- **Sprint 2.5 — Firebase Authentication & Cloud Save**: Login, cloud save, progress synchronization.
-- **Sprint 2.6 — Electron Desktop Release**: Desktop packaging, installer, production build.
-- **Beta Phase**: Full playtesting, bug fixing, performance optimization, UI/UX polish, audio polish.
+- **Sprint 2.4 — Alien Survey Drones**: Autonomous AI survey drones patrolling deep space sectors for optional non-destructive encounters.
+- **Sprint 2.5 — Firebase Authentication & Cloud Save**: User login (Google OAuth / Anonymous), Firestore cloud save synchronization, and cross-device progress restoration.
+- **Sprint 2.6 — Electron Desktop Release**: Desktop packaging configuration, installer creation (Windows, macOS, Linux), and production build.
+- **Beta Phase**: Full playtesting, bug fixing, performance optimization, UI/UX polish, and audio polish.
 - **Version 1.0 Release**: Educational desktop game ready for Astronomy Pathshala students.

@@ -22,11 +22,11 @@
   - `audioEngine.ts`: Custom Web Audio procedural oscillator sound synthesizer and multi-channel mixer.
 - `/src/phaser/`:
   - `entities/`: Game entities (`PlayerShip`, `GalaxyObject`, `SpaceStation`).
-  - `managers/`: Persistent state and entity managers (`GalaxyManager`, `SaveManager`, `ParticleManager`).
+  - `managers/`: Persistent state and entity managers (`GalaxyManager`, `AsteroidManager`, `SaveManager`, `ParticleManager`).
   - `systems/`: Controllers and low-level processing systems (`DiscoveryController`, `LearningController`, `QuizController`, `ScannerSystem`, `ScannerVisualSystem`, `InputSystem`, `AudioSystem`, `DebugOverlaySystem`).
   - `scenes/`: Phaser scenes (`MainGameplayScene`, `LoadingScene`).
 - `/src/store/`:
-  - `useGameStore.ts`: Zustand reactive store for pilot profile, option settings, language, and stardust currency.
+  - `useGameStore.ts`: Zustand reactive store for pilot profile, option settings, language, stardust currency, and 4-tier ship upgrade levels.
 
 ---
 
@@ -34,22 +34,23 @@
 
 ### Phaser Engine Layer (`/src/phaser/`)
 - **Entities (`/entities/`)**:
-  - `PlayerShip`: Handles physics body, rotation, thrust velocity vectors, energy consumption, and damage states.
+  - `PlayerShip`: Handles physics body, rotation, thrust velocity vectors, Plasma Energy expenditure (6 energy / laser shot), Deflector Shield regeneration, weapon firing, magnetic stardust attraction, and collision damage.
   - `GalaxyObject`: Handles galaxy sprite rendering, pulse glow animations, and coordinate positioning.
   - `SpaceStation`: Handles station rendering and docking interaction bounds.
 - **Managers (`/managers/`)**:
   - `GalaxyManager`: Handles spatial indexing, proximity detection (`checkProximity`), entity lifecycle, and discovery state tracking.
-  - `SaveManager`: Handles persistent `localStorage` synchronization for user progress, scores, and options.
-  - `ParticleManager`: Manages particle emitters for thruster exhaust, scanner beams, and warp flares.
+  - `AsteroidManager`: Handles procedural asteroid field generation across 7 organic clusters, fragmentation physics (Large → Medium → Small), collision damage calculations, laser overlap checks, and Stardust orb creation.
+  - `SaveManager`: Handles persistent `localStorage` synchronization for user progress, scores, ship upgrades, and options.
+  - `ParticleManager`: Manages particle emitters for thruster exhaust, scanner beams, laser flashes, and warp flares.
 - **Controllers (`/systems/`)**:
   - `DiscoveryController`: Manages the discovery state machine (`IDLE` → `DISCOVERING` → `AURA_PRESENTING` → `READY_FOR_LEARNING` → `FINISHED`), camera zooming, and ship velocity dampening.
   - `LearningController`: Manages the educational briefing state machine (`IDLE` → `LOADING` → `PRESENTING` → `COMPLETED`), loading content via `contentPipeline.ts`.
   - `QuizController`: Manages the adaptive quiz assessment state machine (`IDLE` → `LOADING` → `QUESTION_ACTIVE` → `EVALUATING` → `PASSED` / `FAILED` → `COMPLETED`), timing, and score calculations.
 - **Systems (`/systems/`)**:
   - `ScannerSystem`: Computes scanning range, plasma energy expenditure, and triggers scan completion.
-  - `InputSystem`: Binds WASD/Arrow/Touch inputs to thruster forces and rotation rates.
+  - `InputSystem`: Binds WASD/Arrow/Touch inputs to thruster forces, `Shift` to Plasma Booster, and `Spacebar`/`F`/`K`/`Left Click` to Plasma Cannon firing.
   - `ScannerVisualSystem`: Renders dynamic WebGL spectrographic reticles and scan rays.
-  - `AudioSystem`: Bridges EventBus events with procedural sound synthesis.
+  - `AudioSystem`: Bridges EventBus events with procedural sound synthesis (thruster rumbles, laser zaps, explosion rumbles, scanner sweeps).
   - `DebugOverlaySystem`: Toggleable developer overlay (`~` key) for inspecting performance and coordinates.
 
 ### React Presentation Layer (`/src/components/`)
@@ -72,6 +73,16 @@
   - NASA Mission Console interface presenting adaptive MCQ questions, immediate scientific feedback, and score debriefing.
 - **Warp Jump Hyperdrive (`WarpJumpOverlay.tsx`)**:
   - Canvas overlay rendering star stretching, camera shake, and hyperdrive particle tunnels.
+
+### Progression Subsystems & State Architecture:
+- **Ship Hardware Progression (Sprint 2.2)**:
+  - *Currency & Cost*: Stardust reserves earned from asteroid mining, galaxy discoveries, and quiz completions.
+  - *Upgrade Path*: Ion Engine Speed, Deflector Shield Capacity & Regen, Plasma Cannon Damage & Fire Rate, Vacuum Dust Magnet Radius.
+  - *Data Flow*: React `PilotDashboardModal` → Zustand `useGameStore` → `UPDATE_SHIP_STATS` EventBus event → Phaser `PlayerShip` dynamic hardware property update. Modifies physical flight, combat, and resource gathering performance.
+- **Explorer Career Progression (Sprint 2.3)**:
+  - *XP & Ranks*: Explorer XP earned from discovery milestones and quiz scores → Explorer Levels & Rank Titles (Space Cadet → Junior Explorer → Stellar Navigator → Galactic Cartographer → Senior Astronomer → Chief Astronomer).
+  - *Customization & Perks*: Unlockable ship skins, thruster color themes, scanner pulse FX, badges, banners, and lightweight passive perks (scanner range expansion, energy regen efficiency).
+  - *Data Flow*: Zustand `useGameStore` profile career metrics → UI profile displays and cosmetic visual overlays. Operates independently from ship hardware upgrades to maintain architectural separation between physical flight performance and career identity.
 
 ---
 

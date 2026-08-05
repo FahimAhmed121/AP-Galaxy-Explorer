@@ -61,4 +61,4 @@ The Universe Generation System transforms the gameplay space into a living, proc
 ## System Integrations Status
 1. **Interactive Galaxy Entities**: ✅ **COMPLETED** (Sprint 1.6) - Celestial bodies in the AP Galaxy catalog register their sector coordinates with `UniverseManager`.
 2. **Scanner System**: ✅ **COMPLETED** (Sprint 1.7) - Long-range scanner pulses query loaded and adjacent sectors to highlight targets on the HUD radar.
-3. **Asteroid & Hazard Systems**: (Scheduled for Sprint 2.2) - Procedural asteroid belts and hazard fields.
+3. **Asteroid & Hazard Systems**: ✅ **COMPLETED** (Sprint 2.2 & 2.2.1) - Procedural asteroid fields, organic clusters, fragmentation physics, collision damage, and stardust drop mechanics via Phaser `AsteroidManager`.

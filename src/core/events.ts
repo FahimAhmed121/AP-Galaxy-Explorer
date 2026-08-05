@@ -9,6 +9,9 @@ export type GameEventType =
   | 'SHIP_SHIELD_CHANGED'
   | 'SHIP_ENERGY_CHANGED'
   | 'SHIP_POSITION_CHANGED'
+  | 'SHIP_STATS_CHANGED'
+  | 'UPDATE_SHIP_STATS'
+  | 'PLAYER_DESTROYED'
   | 'STARDUST_COLLECTED'
   | 'GALAXY_PROXIMITY_ENTER'
   | 'GALAXY_PROXIMITY_EXIT'
@@ -41,7 +44,10 @@ export interface GameEventPayloads {
   SHIP_SHIELD_CHANGED: { current: number; max: number };
   SHIP_ENERGY_CHANGED: { current: number; max: number };
   SHIP_POSITION_CHANGED: { x: number; y: number; angle: number; speed: number };
-  STARDUST_COLLECTED: { amount: number; total: number };
+  SHIP_STATS_CHANGED: any;
+  UPDATE_SHIP_STATS: any;
+  PLAYER_DESTROYED: { x: number; y: number };
+  STARDUST_COLLECTED: { amount: number; total?: number };
   GALAXY_PROXIMITY_ENTER: { galaxyId: string; galaxyName: string };
   GALAXY_PROXIMITY_EXIT: { galaxyId: string };
   SCAN_STARTED: { targetId: string; targetName: string; duration: number };

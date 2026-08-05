@@ -71,6 +71,10 @@ Located in `src/data/educational/contentPipeline.ts`:
 | :--- | :--- | :--- |
 | First-Time Player Experience | **COMPLETE** | 35-45s cinematic onboarding with skippable ESC key |
 | Safe Sector Spawn | **COMPLETE** | Player spawns in Safe Sector Alpha (2500, 1700) with ~25s flight buffer |
+| Asteroid Field & Hazards | **COMPLETE** | Procedural `AsteroidManager`, 7 organic clusters, drifting physics, fragmentation |
+| Plasma Cannon Combat | **COMPLETE** | Nose-mounted energy laser, key bindings (Space/F/K/Click), 6 energy / shot |
+| Stardust Economy & Magnetism | **COMPLETE** | Asteroid drops, discovery rewards, quiz bonuses, magnetic dust attraction field |
+| Ship Progression & Hangar | **COMPLETE** | 4-tier upgrade console (Engine, Shield, Weapon, Magnet), real-time Phaser sync |
 | Scanner System | **COMPLETE** | 360° radar tracking, progress bar, audio pitch modulation |
 | Cinematic Discovery | **COMPLETE** | Camera zoom, AURA dialogue, particle flares |
 | Educational Briefing | **COMPLETE** | 5-card NASA briefing with spectrographic data & Bengali support |
@@ -82,4 +86,4 @@ Located in `src/data/educational/contentPipeline.ts`:
 
 ---
 
-*Report generated for AP Galaxy Explorer Vertical Slice after Sprint 2.1 & 2.1.1 Completion.*
+*Report generated for AP Galaxy Explorer Vertical Slice after Sprint 2.2 & 2.2.1 Completion.*

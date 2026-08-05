@@ -4,6 +4,7 @@ import { eventBus } from '../../core/events';
 import { logger } from '../../core/logger';
 import { PlayerShip } from '../entities/PlayerShip';
 import { WorldManager } from '../managers/WorldManager';
+import { AsteroidManager } from '../managers/AsteroidManager';
 import { InputSystem } from '../systems/InputSystem';
 import { AudioSystem } from '../systems/AudioSystem';
 import { DebugOverlaySystem } from '../systems/DebugOverlaySystem';
@@ -17,6 +18,7 @@ export class MainGameplayScene extends Phaser.Scene {
 
   // Systems & Managers
   private worldManager?: WorldManager;
+  private asteroidManager?: AsteroidManager;
   private inputSystem?: InputSystem;
   private audioSystem?: AudioSystem;
   private debugOverlay?: DebugOverlaySystem;
@@ -58,22 +60,25 @@ export class MainGameplayScene extends Phaser.Scene {
     const spawnY = GAME_CONFIG.world.height / 2 - 800;
     this.playerShip = new PlayerShip(this, spawnX, spawnY);
 
-    // 6. Configure Camera Follow & Lerp
+    // 7. Initialize Asteroid & Stardust Manager
+    this.asteroidManager = new AsteroidManager(this, this.playerShip);
+
+    // 8. Configure Camera Follow & Lerp
     const camera = this.cameras.main;
     camera.setBounds(0, 0, GAME_CONFIG.world.width, GAME_CONFIG.world.height);
     camera.startFollow(this.playerShip, true, 0.08, 0.08);
     camera.setZoom(1.0);
 
-    // 7. Initialize Debug Overlay System
+    // 9. Initialize Debug Overlay System
     this.debugOverlay = new DebugOverlaySystem(this);
 
-    // 8. Setup EventBus Listeners
+    // 10. Setup EventBus Listeners
     this.setupEventBus();
 
-    // 9. Handle Resize Events
+    // 11. Handle Resize Events
     this.scale.on('resize', this.handleResize, this);
 
-    // 10. Notify React Shell of Readiness
+    // 12. Notify React Shell of Readiness
     eventBus.emit('PHASER_READY', { sceneKey: 'MainGameplayScene' });
     logger.info('MainGameplayScene: Player entity active and camera locked.');
   }
@@ -91,6 +96,16 @@ export class MainGameplayScene extends Phaser.Scene {
 
     // 3. Update Player Ship Movement & Physics
     this.playerShip.handleInput(inputState, delta);
+
+    // 3.5 Laser Firing
+    if (inputState.fireRequested && this.asteroidManager) {
+      this.asteroidManager.fireLaser();
+    }
+
+    // 3.6 Update Asteroids, Lasers & Stardust Pickup Loops
+    if (this.asteroidManager) {
+      this.asteroidManager.update(delta);
+    }
 
     // 4. Update World, Universe & Galaxy Streaming
     if (this.worldManager) {
@@ -182,6 +197,7 @@ export class MainGameplayScene extends Phaser.Scene {
 
   private cleanUpSystems(): void {
     if (this.worldManager) this.worldManager.destroy();
+    if (this.asteroidManager) this.asteroidManager.destroy();
     if (this.inputSystem) this.inputSystem.destroy();
     if (this.audioSystem) this.audioSystem.destroy();
     if (this.debugOverlay) this.debugOverlay.destroy();

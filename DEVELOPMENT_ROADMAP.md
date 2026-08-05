@@ -23,29 +23,22 @@
 - ✅ **Stabilization Sprint 1.0**: Traced and resolved event payload mismatch in AURA transition, eliminated runtime property crashes, verified complete 9-step progression loop for all 10 galaxies, and set developer debug overlay to hidden by default.
 - ✅ **Sprint 2.1 — Discovery Log & Galactic Archive**: Persistent Galactic Archive (`ArchiveModal`), search filtering, morphology classification filters (Spiral, Elliptical, Irregular), galaxy cards with status badges, Explorer Dossier integration (`PilotDashboardModal`), discovery progress metrics, educational dossier inspection, quiz retake capability, image fallback system, and NASA-inspired dark-tech archive UI.
 - ✅ **Sprint 2.1.1 — Regression Fixes & State Synchronization**: Unified single source of truth using Zustand (`profile.discoveredGalaxyIds`), bidirectional EventBus synchronization between Phaser `GalaxyManager` and React components (`App`, `ShipStatusHUD`, `ArchiveModal`, `PilotDashboardModal`), dynamic `Map Galaxies: X/10` HUD counter sync, Archive → Inspect → Back flow state restoration, quiz retake score/stardust persistence fix, and navigation fixes.
+- ✅ **Sprint 2.2 — Asteroids, Stardust Economy & Ship Progression**: Procedural Phaser-based `AsteroidManager`, organic asteroid fields, plasma cannon laser combat, fragmentation physics, stardust harvesting, vacuum dust magnetics, and 4-tier Pilot Dashboard upgrade progression system (Ion Engine, Deflector Shield, Plasma Cannon, Vacuum Dust Magnet).
+- ✅ **Sprint 2.2.1 — Gameplay Balance, Feel & Polish**: Natural drifting asteroid velocities, 7 organic deep-space clusters, enlarged visual scale (~1.5-2x), increased collision ramming durability, Spacebar weapon firing input fix, Plasma Energy audit and consumption (6 energy/shot), tuned shield regeneration (2.0/s), balanced Stardust economy curves ($60 \cdot 2^{lvl-1}$ upgrades), and full documentation synchronization.
 - ✅ **Documentation Synchronization**: Comprehensive synchronization of project state, engineering standards, system architectures, and Lean V1 roadmap.
 
 ---
 
 ## Upcoming Milestones (Lean V1 Roadmap)
 
-### Sprint 2.2 — Asteroids & Stardust
-**Goal**: Introduce ambient space hazards and resource gathering between galaxy discoveries.
+### Sprint 2.3 — Explorer Progression
+**Goal**: Introduce lightweight long-term player career progression and cosmetic rewards while keeping educational exploration as the primary gameplay focus.
 **Deliverables**:
-- Procedural asteroid field spawning across outer sector zones.
-- Lightweight laser beam system to break down asteroids.
-- Stardust collection nodes and pickup magnetics.
-- Small particle impact and fragmentation visual effects.
-- Engaging ambient gameplay loops while traveling between galaxies.
-
-### Sprint 2.3 — Progression
-**Goal**: Add lightweight pilot progression and cosmetic/stat rewards.
-**Deliverables**:
-- Explorer XP system derived from quiz accuracy and galaxy mapping.
-- Explorer Levels and rank titles (Space Cadet → Chief Astronomer).
-- Unlockable ship skins and visual thruster themes.
-- Small gameplay upgrades (scanner range, energy recharge speed).
-*(Note: Keep progression lightweight to maintain focus on educational exploration).*
+- **Explorer XP System**: Earn XP from galaxy discoveries, quiz performances, and exploration milestones.
+- **Explorer Levels & Ranks**: Progress through titles (Space Cadet → Junior Explorer → Stellar Navigator → Galactic Cartographer → Senior Astronomer → Chief Astronomer).
+- **Cosmetic Unlocks**: Unlockable ship skins, thruster color themes, scanner pulse colors, explorer badges, and profile banners.
+- **Passive Explorer Perks**: Lightweight passive bonuses (slight scanner range expansion, energy regen efficiency boost, small discovery XP multiplier).
+- **Architectural Separation**: Operates independently from Sprint 2.2 Ship Hardware Upgrades (which use Stardust currency for hardware stats). Explorer Progression tracks career achievement, cosmetics, and rank titles.
 
 ### Sprint 2.4 — Alien Survey Drones
 **Goal**: Introduce autonomous AI survey drones for optional environmental encounters.
@@ -67,7 +60,7 @@
 **Deliverables**:
 - Desktop packaging configuration using Electron.
 - Executable installers (Windows, macOS, Linux).
-- Production bundle verification and release candidate candidate build.
+- Production bundle verification and release candidate build.
 
 ---
 

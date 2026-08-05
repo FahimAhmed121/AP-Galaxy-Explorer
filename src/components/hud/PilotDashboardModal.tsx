@@ -17,17 +17,17 @@ export default function PilotDashboardModal({
   onWarpToGalaxy,
   onClose,
 }: PilotDashboardModalProps) {
-  const { profile, settings } = useGameStore();
+  const { profile, settings, spendStardust } = useGameStore();
   const [activeTab, setActiveTab] = useState<'UPGRADES' | 'DOSSIER' | 'ATLAS'>('UPGRADES');
 
   const isBN = settings.language === 'BN';
   const t = (en: string, bn: string) => (isBN ? bn : en);
 
-  // Upgrade costs logic
-  const speedCost = Math.floor(15 * Math.pow(1.6, ship.speedUpgrade));
-  const shieldCost = Math.floor(20 * Math.pow(1.6, ship.shieldUpgrade));
-  const weaponCost = Math.floor(25 * Math.pow(1.6, ship.weaponUpgrade));
-  const magnetCost = Math.floor(15 * Math.pow(1.6, ship.magnetUpgrade || 0));
+  // Upgrade costs logic (balanced progression curve)
+  const speedCost = Math.floor(60 * Math.pow(2.0, Math.max(0, ship.speedUpgrade - 1)));
+  const shieldCost = Math.floor(75 * Math.pow(2.0, Math.max(0, ship.shieldUpgrade - 1)));
+  const weaponCost = Math.floor(90 * Math.pow(2.0, Math.max(0, ship.weaponUpgrade - 1)));
+  const magnetCost = Math.floor(50 * Math.pow(2.0, Math.max(0, (ship.magnetUpgrade || 1) - 1)));
 
   const handleUpgrade = (type: 'speed' | 'shield' | 'weapon' | 'magnet', cost: number) => {
     if (ship.stardust < cost) return;
@@ -47,6 +47,7 @@ export default function PilotDashboardModal({
       newShip.magnetUpgrade = (newShip.magnetUpgrade || 0) + 1;
     }
 
+    spendStardust(cost);
     onUpdateShip(newShip);
   };
 

@@ -17,6 +17,12 @@ export class PlayerShip extends Phaser.GameObjects.Container {
   public stardust: number = 0;
   public score: number = 0;
 
+  // Upgrade Levels
+  public speedUpgrade: number = 1;
+  public shieldUpgrade: number = 1;
+  public weaponUpgrade: number = 1;
+  public magnetUpgrade: number = 1;
+
   // Visual Components
   private shipGraphics: Phaser.GameObjects.Graphics;
   private thrusterGraphics: Phaser.GameObjects.Graphics;
@@ -48,8 +54,47 @@ export class PlayerShip extends Phaser.GameObjects.Container {
 
     this.drawShipShape();
     this.createThrusterParticles();
+    this.setupEventListeners();
 
     logger.info(`PlayerShip: Spawned at (${x}, ${y}) with Arcade Physics body.`);
+  }
+
+  private setupEventListeners(): void {
+    const handleUpdate = (updatedShip: any) => {
+      if (!updatedShip) return;
+      this.applyShipState(updatedShip);
+    };
+
+    eventBus.on('UPDATE_SHIP_STATS', handleUpdate);
+
+    this.once('destroy', () => {
+      eventBus.off('UPDATE_SHIP_STATS', handleUpdate);
+    });
+  }
+
+  public applyShipState(state: any): void {
+    if (state.speedUpgrade !== undefined) this.speedUpgrade = state.speedUpgrade;
+    if (state.shieldUpgrade !== undefined) this.shieldUpgrade = state.shieldUpgrade;
+    if (state.weaponUpgrade !== undefined) this.weaponUpgrade = state.weaponUpgrade;
+    if (state.magnetUpgrade !== undefined) this.magnetUpgrade = state.magnetUpgrade;
+
+    if (state.stardust !== undefined) this.stardust = state.stardust;
+    if (state.score !== undefined) this.score = state.score;
+
+    // Apply upgrade effects to physics constants
+    this.maxSpeed = 320 + (this.speedUpgrade - 1) * 35;
+    this.accelerationRate = 220 + (this.speedUpgrade - 1) * 30;
+
+    const newMaxShield = 100 + (this.shieldUpgrade - 1) * 25;
+    if (newMaxShield !== this.maxShield) {
+      this.maxShield = newMaxShield;
+      this.shield = Math.min(this.shield, this.maxShield);
+    }
+
+    if (state.health !== undefined) this.health = Math.min(state.health, this.maxHealth);
+    if (state.shield !== undefined) this.shield = Math.min(state.shield, this.maxShield);
+
+    this.syncState();
   }
 
   private drawShipShape(): void {
@@ -219,7 +264,43 @@ export class PlayerShip extends Phaser.GameObjects.Container {
       this.body.velocity.y *= scale;
     }
 
+    // Passive Shield Recharge (slower, ~2.0/s)
+    if (this.shield < this.maxShield) {
+      this.shield = Math.min(this.maxShield, this.shield + 2.0 * dt);
+    }
+
     // Sync state continuously
+    this.syncState();
+  }
+
+  public takeDamage(damage: number): void {
+    if (this.shield > 0) {
+      const shieldDmg = Math.min(this.shield, damage);
+      this.shield -= shieldDmg;
+      const leftover = damage - shieldDmg;
+      if (leftover > 0) {
+        this.health = Math.max(0, this.health - leftover);
+      }
+    } else {
+      this.health = Math.max(0, this.health - damage);
+    }
+
+    this.syncState();
+
+    if (this.health <= 0) {
+      eventBus.emit('PLAYER_DESTROYED', { x: this.x, y: this.y });
+    }
+  }
+
+  public collectStardust(amount: number): void {
+    this.stardust += amount;
+    this.score += 15;
+    eventBus.emit('STARDUST_COLLECTED', { amount, total: this.stardust });
+    this.syncState();
+  }
+
+  public addScore(points: number): void {
+    this.score += points;
     this.syncState();
   }
 
@@ -259,6 +340,18 @@ export class PlayerShip extends Phaser.GameObjects.Container {
     eventBus.emit('SHIP_HEALTH_CHANGED', { current: this.health, max: this.maxHealth });
     eventBus.emit('SHIP_SHIELD_CHANGED', { current: this.shield, max: this.maxShield });
     eventBus.emit('SHIP_ENERGY_CHANGED', { current: this.energy, max: this.maxEnergy });
+    eventBus.emit('SHIP_STATS_CHANGED', {
+      stardust: this.stardust,
+      score: this.score,
+      speedUpgrade: this.speedUpgrade,
+      shieldUpgrade: this.shieldUpgrade,
+      weaponUpgrade: this.weaponUpgrade,
+      magnetUpgrade: this.magnetUpgrade,
+      health: this.health,
+      maxHealth: this.maxHealth,
+      shield: this.shield,
+      maxShield: this.maxShield,
+    });
   }
 
   public destroy(fromScene?: boolean): void {

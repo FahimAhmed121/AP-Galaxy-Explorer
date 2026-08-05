@@ -7,6 +7,7 @@ export interface InputState {
   left: boolean;
   right: boolean;
   boost: boolean;
+  fireRequested: boolean;
   scanRequested: boolean;
   scanJustPressed: boolean;
   skipJustPressed: boolean;
@@ -21,8 +22,11 @@ export class InputSystem {
   private keyS?: Phaser.Input.Keyboard.Key;
   private keyD?: Phaser.Input.Keyboard.Key;
   private keyE?: Phaser.Input.Keyboard.Key;
+  private keyF?: Phaser.Input.Keyboard.Key;
+  private keyK?: Phaser.Input.Keyboard.Key;
   private keyEsc?: Phaser.Input.Keyboard.Key;
   private keySpace?: Phaser.Input.Keyboard.Key;
+  private keyShift?: Phaser.Input.Keyboard.Key;
   private keyTilde?: Phaser.Input.Keyboard.Key;
   private keyF2?: Phaser.Input.Keyboard.Key;
 
@@ -43,12 +47,15 @@ export class InputSystem {
     this.keyS = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.keyD = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.keyE = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
+    this.keyK = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
     this.keyEsc = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.keyShift = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
     this.keyTilde = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.BACKTICK);
     this.keyF2 = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F2);
 
-    logger.info('InputSystem: Keyboard keys mapped successfully (W, A, S, D, E, Esc, Space).');
+    logger.info('InputSystem: Keyboard keys mapped successfully (W, A, S, D, E, F, K, Esc, Space, Shift).');
   }
 
   public getInputState(): InputState {
@@ -65,7 +72,14 @@ export class InputSystem {
       (this.keyD && this.keyD.isDown) || (this.cursors && this.cursors.right.isDown)
     );
     const boost = Boolean(
-      (this.keySpace && this.keySpace.isDown) || (this.cursors && this.cursors.space.isDown)
+      (this.keyShift && this.keyShift.isDown)
+    );
+
+    const fireRequested = Boolean(
+      (this.keySpace && this.keySpace.isDown) ||
+      (this.keyF && this.keyF.isDown) ||
+      (this.keyK && this.keyK.isDown) ||
+      (this.scene.input.activePointer && this.scene.input.activePointer.isDown)
     );
 
     const scanRequested = Boolean(this.keyE && this.keyE.isDown);
@@ -83,6 +97,7 @@ export class InputSystem {
       left,
       right,
       boost,
+      fireRequested,
       scanRequested,
       scanJustPressed,
       skipJustPressed,
