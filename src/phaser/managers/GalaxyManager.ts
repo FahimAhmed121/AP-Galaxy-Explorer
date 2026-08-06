@@ -19,27 +19,44 @@ export class GalaxyManager {
     this.scene = scene;
     this.galaxyCatalog = GALAXIES;
 
-    const storeDiscovered = useGameStore.getState().profile.discoveredGalaxyIds || [];
-    for (const g of this.galaxyCatalog) {
-      const isDiscovered = storeDiscovered.includes(g.id);
-      const state = isDiscovered ? 'DISCOVERED' : (g.discoveryState || 'UNDISCOVERED');
-      this.discoveryStates.set(g.id, state);
-    }
+    this.syncDiscoveryStates();
+
+    eventBus.on('RESET_GAME', this.handleResetGame);
 
     logger.info(`GalaxyManager: Initialized with ${this.galaxyCatalog.length} catalog galaxies.`);
   }
 
+  private handleResetGame = () => {
+    logger.info('GalaxyManager: RESET_GAME received. Clearing all local discovery states.');
+    this.discoveryStates.clear();
+    for (const g of this.galaxyCatalog) {
+      delete g.discoveryState;
+    }
+    this.syncDiscoveryStates();
+    this.activeEntities.forEach((entity) => {
+      entity.setDiscoveryState('UNDISCOVERED', 0);
+    });
+  };
+
+  private syncDiscoveryStates(): void {
+    const storeDiscovered = useGameStore.getState().profile?.discoveredGalaxyIds || [];
+    for (const g of this.galaxyCatalog) {
+      const isDiscovered = storeDiscovered.includes(g.id);
+      const state = isDiscovered ? 'DISCOVERED' : (this.discoveryStates.get(g.id) || 'UNDISCOVERED');
+      this.discoveryStates.set(g.id, state);
+    }
+  }
+
   public getDiscoveryState(galaxyId: string): 'UNDISCOVERED' | 'SCANNING' | 'DISCOVERED' {
+    const storeDiscovered = useGameStore.getState().profile?.discoveredGalaxyIds || [];
+    if (storeDiscovered.includes(galaxyId)) {
+      return 'DISCOVERED';
+    }
     return this.discoveryStates.get(galaxyId) || 'UNDISCOVERED';
   }
 
   public setDiscoveryState(galaxyId: string, state: 'UNDISCOVERED' | 'SCANNING' | 'DISCOVERED', progress: number = 0): void {
     this.discoveryStates.set(galaxyId, state);
-
-    const catalogGalaxy = this.galaxyCatalog.find((g) => g.id === galaxyId);
-    if (catalogGalaxy) {
-      catalogGalaxy.discoveryState = state;
-    }
 
     if (state === 'DISCOVERED') {
       useGameStore.getState().discoverGalaxy(galaxyId);
@@ -179,6 +196,7 @@ export class GalaxyManager {
 
   public destroy(): void {
     logger.info('GalaxyManager: Unloading all galaxy entities...');
+    eventBus.off('RESET_GAME', this.handleResetGame);
     for (const entity of this.activeEntities.values()) {
       entity.destroy();
     }

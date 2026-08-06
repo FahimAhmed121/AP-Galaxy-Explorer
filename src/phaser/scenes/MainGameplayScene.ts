@@ -12,6 +12,7 @@ import { ScannerSystem } from '../systems/ScannerSystem';
 import { ScannerVisualSystem } from '../systems/ScannerVisualSystem';
 import { DiscoveryController } from '../systems/DiscoveryController';
 import { LearningController } from '../systems/LearningController';
+import { useGameStore } from '../../store/useGameStore';
 
 export class MainGameplayScene extends Phaser.Scene {
   private isPaused: boolean = false;
@@ -55,10 +56,17 @@ export class MainGameplayScene extends Phaser.Scene {
     this.discoveryController.setCamera(this.cameras.main);
     this.learningController = new LearningController();
 
-    // 6. Spawn Player Ship at Safe Sector Alpha (2500, 1700)
-    const spawnX = GAME_CONFIG.world.width / 2;
-    const spawnY = GAME_CONFIG.world.height / 2 - 800;
+    // 6. Spawn Player Ship (Use saved position if available)
+    const savedState = useGameStore.getState().savedShipState;
+    const spawnX = (savedState && typeof savedState.x === 'number') ? savedState.x : GAME_CONFIG.world.width / 2;
+    const spawnY = (savedState && typeof savedState.y === 'number') ? savedState.y : GAME_CONFIG.world.height / 2 - 800;
     this.playerShip = new PlayerShip(this, spawnX, spawnY);
+    if (savedState) {
+      if (typeof savedState.angle === 'number') {
+        this.playerShip.rotation = savedState.angle;
+      }
+      this.playerShip.applyShipState(savedState);
+    }
 
     // 7. Initialize Asteroid & Stardust Manager
     this.asteroidManager = new AsteroidManager(this, this.playerShip);

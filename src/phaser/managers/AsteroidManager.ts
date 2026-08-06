@@ -4,6 +4,7 @@ import { GAME_CONFIG } from '../../core/config';
 import { eventBus } from '../../core/events';
 import { audioEngine } from '../../engine/audioEngine';
 import { logger } from '../../core/logger';
+import { useGameStore } from '../../store/useGameStore';
 
 export interface AsteroidData {
   id: string;
@@ -186,12 +187,12 @@ export class AsteroidManager {
     const asteroid = this.asteroidGroup.create(x, y, key) as Phaser.Physics.Arcade.Sprite;
     asteroid.setCircle(radius, (asteroid.width - radius * 2) / 2, (asteroid.height - radius * 2) / 2);
 
-    // Natural drifting speeds (Large moves slowest)
-    const maxSpd = type === 'large' ? 25 : type === 'medium' ? 42 : 65;
+    // Natural drifting speeds (Large moves slowest - heavy, smooth deep space motion)
+    const maxSpd = type === 'large' ? 12 : type === 'medium' ? 22 : 35;
     const vx = velX !== undefined ? velX : (Math.random() - 0.5) * maxSpd * 2;
     const vy = velY !== undefined ? velY : (Math.random() - 0.5) * maxSpd * 2;
     asteroid.setVelocity(vx, vy);
-    asteroid.setAngularVelocity((Math.random() - 0.5) * 25);
+    asteroid.setAngularVelocity((Math.random() - 0.5) * 10);
 
     const health = type === 'large' ? 150 : type === 'medium' ? 80 : 35;
     const points = type === 'large' ? 120 : type === 'medium' ? 60 : 30;
@@ -408,8 +409,9 @@ export class AsteroidManager {
 
     // Magnetic attraction for Stardust towards PlayerShip
     const magnetLevel = this.playerShip.magnetUpgrade || 1;
-    const magnetRange = 120 + magnetLevel * 50;
-    const pullSpeed = 300 + magnetLevel * 40;
+    const magnetPerkBonus = useGameStore.getState().getActivePerkBonus('MAGNET_RANGE');
+    const magnetRange = (120 + magnetLevel * 50) * (1 + magnetPerkBonus);
+    const pullSpeed = (300 + magnetLevel * 40) * (1 + magnetPerkBonus * 0.5);
     const dt = delta / 1000;
 
     this.stardustGroup.getChildren().forEach((obj) => {

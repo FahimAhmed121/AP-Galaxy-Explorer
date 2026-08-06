@@ -83,6 +83,7 @@ export default function App() {
 
   // Trigger Galaxy Discovery & Hyperspace Warp
   const handleDiscoverGalaxy = (galaxyId: string) => {
+    setReturnState('PLAYING');
     const galaxy = GALAXIES.find((g) => g.id === galaxyId);
     if (!galaxy) return;
 
@@ -128,7 +129,10 @@ export default function App() {
       {/* 1. STATE: MENU */}
       {gameState === 'MENU' && (
         <MainMenu
-          onStartGame={() => setGameState('INTRO_CUTSCENE')}
+          onStartGame={() => {
+            setReturnState('PLAYING');
+            setGameState('INTRO_CUTSCENE');
+          }}
           onOpenArchive={() => {
             setReturnState('MENU');
             setOpenedFromArchive(false);
@@ -144,12 +148,15 @@ export default function App() {
       {/* 1.5. STATE: INTRO_CUTSCENE */}
       {gameState === 'INTRO_CUTSCENE' && (
         <OpeningCinematic
-          onComplete={() => setGameState('PLAYING')}
+          onComplete={() => {
+            setReturnState('PLAYING');
+            setGameState('PLAYING');
+          }}
         />
       )}
 
-      {/* 2. STATE: PLAYING */}
-      {gameState === 'PLAYING' && (
+      {/* 2. STATE: PLAYING (also keep mounted during SETTINGS/ARCHIVE overlays when returnState is PLAYING) */}
+      {(gameState === 'PLAYING' || ((gameState === 'SETTINGS' || gameState === 'ARCHIVE') && returnState === 'PLAYING')) && (
         <GameCanvas
           onDiscoverGalaxy={(galaxyId) => {
             setReturnState('PLAYING');
@@ -164,10 +171,12 @@ export default function App() {
           onOpenArchive={() => {
             setReturnState('PLAYING');
             setOpenedFromArchive(false);
+            eventBus.emit('PAUSE_GAMEPLAY');
             setGameState('ARCHIVE');
           }}
           onOpenSettings={() => {
             setReturnState('PLAYING');
+            eventBus.emit('PAUSE_GAMEPLAY');
             setGameState('SETTINGS');
           }}
         />
@@ -247,7 +256,13 @@ export default function App() {
       {/* 6. MODAL: ARCHIVE */}
       {gameState === 'ARCHIVE' && (
         <ArchiveModal
-          onClose={() => setGameState(returnState === 'ARCHIVE' ? 'PLAYING' : returnState)}
+          onClose={() => {
+            const nextState = returnState === 'ARCHIVE' ? 'PLAYING' : returnState;
+            setGameState(nextState);
+            if (nextState === 'PLAYING') {
+              eventBus.emit('RESUME_GAMEPLAY');
+            }
+          }}
           onOpenGalaxy={(galaxy) => {
             setSelectedGalaxy(galaxy);
             setOpenedFromArchive(true);
@@ -258,7 +273,19 @@ export default function App() {
 
       {/* 7. MODAL: SETTINGS */}
       {gameState === 'SETTINGS' && (
-        <SettingsModal onClose={() => setGameState(returnState === 'SETTINGS' ? 'MENU' : returnState)} />
+        <SettingsModal
+          onClose={() => {
+            const currentStoreState = useGameStore.getState().gameState;
+            const nextState = currentStoreState === 'MENU' ? 'MENU' : (returnState === 'SETTINGS' ? 'MENU' : returnState);
+            if (nextState === 'MENU') {
+              setReturnState('MENU');
+            }
+            setGameState(nextState);
+            if (nextState === 'PLAYING') {
+              eventBus.emit('RESUME_GAMEPLAY');
+            }
+          }}
+        />
       )}
     </main>
   );

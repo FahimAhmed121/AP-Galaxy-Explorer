@@ -17,6 +17,7 @@
   - `quizzes/`: Handcrafted quiz JSON question banks.
   - `contentPipeline.ts`: Dynamic educational dossier loader with fallback safety.
   - `quizPipeline.ts`: Asynchronous quiz loader and question generator.
+  - `progressionData.ts`: Explorer levels, rank titles, merit badges, cosmetic items, and passive perk definitions.
   - `galaxies.json`: Master galaxy spatial catalog and astrophysical properties.
 - `/src/engine/`:
   - `audioEngine.ts`: Custom Web Audio procedural oscillator sound synthesizer and multi-channel mixer.

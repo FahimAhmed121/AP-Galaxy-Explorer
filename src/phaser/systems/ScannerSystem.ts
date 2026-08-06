@@ -4,6 +4,7 @@ import { eventBus } from '../../core/events';
 import { logger } from '../../core/logger';
 import { GalaxyManager } from '../managers/GalaxyManager';
 import { PlayerShip } from '../entities/PlayerShip';
+import { useGameStore } from '../../store/useGameStore';
 
 export type ScannerState = 'IDLE' | 'SCANNING' | 'COOLDOWN';
 
@@ -14,9 +15,27 @@ export class ScannerSystem {
   private duration: number = SCANNER_CONFIG.scanDuration;
   private cooldownRemaining: number = 0; // seconds
   private nearbyTarget: Galaxy | null = null; // Target currently in scanner range
+  private lastGalaxyManager: GalaxyManager | null = null;
 
   constructor() {
     logger.info('ScannerSystem: Production Scanner System initialized.');
+
+    const handleTriggerScan = () => {
+      if (this.state === 'IDLE' && this.nearbyTarget && this.lastGalaxyManager) {
+        this.startScan(this.nearbyTarget, this.lastGalaxyManager);
+      }
+    };
+
+    const handleResetGame = () => {
+      this.state = 'IDLE';
+      this.currentTarget = null;
+      this.elapsedTime = 0;
+      this.cooldownRemaining = 0;
+      this.nearbyTarget = null;
+    };
+
+    eventBus.on('TRIGGER_SCAN', handleTriggerScan);
+    eventBus.on('RESET_GAME', handleResetGame);
   }
 
   public update(
@@ -29,6 +48,7 @@ export class ScannerSystem {
     playerShip?: PlayerShip
   ): void {
     const deltaSec = delta / 1000;
+    this.lastGalaxyManager = galaxyManager;
 
     // 1. Always evaluate nearest scannable target within scanner radius
     this.nearbyTarget = galaxyManager.getScannableGalaxyNear(
@@ -133,6 +153,9 @@ export class ScannerSystem {
     this.state = 'SCANNING';
     this.currentTarget = target;
     this.elapsedTime = 0;
+
+    const scanSpeedBonus = useGameStore.getState().getActivePerkBonus('SCAN_SPEED');
+    this.duration = SCANNER_CONFIG.scanDuration / (1 + scanSpeedBonus);
 
     galaxyManager.setDiscoveryState(target.id, 'SCANNING', 0);
 

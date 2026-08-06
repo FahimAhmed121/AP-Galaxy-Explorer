@@ -37,9 +37,19 @@ export class QuizController {
   }
 
   private setupListeners(): void {
-    // Optional: automatically listen to LEARNING_COMPLETED if debriefing auto-triggers quiz
     eventBus.on('LEARNING_COMPLETED', this.handleLearningCompleted);
+    eventBus.on('RESET_GAME', this.handleReset);
+    eventBus.on('RESUME_GAMEPLAY', this.handleReset);
   }
+
+  private handleReset = () => {
+    this.state = 'IDLE';
+    this.currentGalaxy = null;
+    this.questions = [];
+    this.selectedOption = null;
+    this.isCorrect = null;
+    this.resetMetrics();
+  };
 
   private handleLearningCompleted = async (payload: { galaxyId: string; galaxyData: Galaxy }) => {
     logger.info(`QuizController: Received LEARNING_COMPLETED for [${payload.galaxyData.name}]. Preparing assessment.`);
@@ -280,9 +290,7 @@ export class QuizController {
   }
 
   public destroy(): void {
-    eventBus.off('LEARNING_COMPLETED', this.handleLearningCompleted);
-    this.currentGalaxy = null;
-    this.questions = [];
+    this.handleReset();
   }
 }
 

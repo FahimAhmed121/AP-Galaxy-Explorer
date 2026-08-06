@@ -122,3 +122,14 @@ The quiz system communicates asynchronously via `eventBus`:
 
 ### Reduced Motion Support:
 Detects `prefers-reduced-motion` and disables pulsing borders, bouncing icons, and entrance animations for full accessibility compliance.
+
+---
+
+## 7. Progression & Reward Integration (Sprint 2.3)
+
+* **Explorer XP Integration**: Passing a quiz awards +50 Explorer XP (+25 bonus XP for 100% accuracy). XP rewards are scaled by +25% when the *Curiosity Matrix* passive perk (`perk_xp_1`) is unlocked.
+* **Merit Badge Evaluation**:
+  * `Curious Scholar` (`badge_curious_mind`): Unlocks on completing first quiz assessment.
+  * `Perfect Scholar` (`badge_perfect_score`): Unlocks when achieving 100% accuracy on any galaxy quiz, dynamically evaluated against the target galaxy quiz question count (`score >= maxScore`).
+* **Stardust Rewards**: +15 Stardust per correct answer + 25 Stardust bonus for 100% accuracy.
+

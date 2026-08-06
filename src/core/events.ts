@@ -27,19 +27,28 @@ export type GameEventType =
   | 'LEARNING_STARTED'
   | 'LEARNING_CARD_CHANGED'
   | 'LEARNING_COMPLETED'
+  | 'LEARNING_FINISHED'
+  | 'TRIGGER_SCAN'
   | 'QUIZ_STARTED'
   | 'QUESTION_ANSWERED'
   | 'QUIZ_PASSED'
   | 'QUIZ_FAILED'
   | 'QUIZ_COMPLETED'
   | 'WARP_JUMP_TRIGGERED'
-  | 'GAME_OVER_TRIGGERED';
+  | 'GAME_OVER_TRIGGERED'
+  | 'PROGRESSION_XP_GAINED'
+  | 'PROGRESSION_LEVEL_UP'
+  | 'BADGE_UNLOCKED'
+  | 'COSMETICS_CHANGED'
+  | 'RESET_GAME';
 
 export interface GameEventPayloads {
   PHASER_READY: { sceneKey: string };
   PHASER_DESTROYED: void;
-  PAUSE_GAMEPLAY: void;
-  RESUME_GAMEPLAY: void;
+  PAUSE_GAMEPLAY: any;
+  RESUME_GAMEPLAY: any;
+  TRIGGER_SCAN: any;
+  LEARNING_FINISHED: any;
   SHIP_HEALTH_CHANGED: { current: number; max: number };
   SHIP_SHIELD_CHANGED: { current: number; max: number };
   SHIP_ENERGY_CHANGED: { current: number; max: number };
@@ -69,6 +78,11 @@ export interface GameEventPayloads {
   QUIZ_COMPLETED: { galaxyId: string; passed: boolean; score: number; accuracy: number; totalTimeSeconds: number };
   WARP_JUMP_TRIGGERED: { targetGalaxyId: string };
   GAME_OVER_TRIGGERED: { finalScore: number };
+  PROGRESSION_XP_GAINED: { amount: number; totalXp: number; source?: string };
+  PROGRESSION_LEVEL_UP: { level: number; rankTitle: string; stardustReward: number };
+  BADGE_UNLOCKED: { badgeId: string; title: string; description: string; iconName: string };
+  COSMETICS_CHANGED: { equippedCosmetics: any };
+  RESET_GAME: void;
 }
 
 type EventCallback<T> = (payload: T) => void;
@@ -88,9 +102,9 @@ class EventBus {
     this.listeners[event] = this.listeners[event]!.filter((cb) => cb !== callback);
   }
 
-  emit<K extends GameEventType>(event: K, payload: GameEventPayloads[K]) {
+  emit<K extends GameEventType>(event: K, payload?: GameEventPayloads[K]) {
     if (!this.listeners[event]) return;
-    this.listeners[event]!.forEach((cb) => cb(payload));
+    this.listeners[event]!.forEach((cb) => cb(payload as any));
   }
 }
 

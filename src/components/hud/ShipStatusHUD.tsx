@@ -34,12 +34,17 @@ export default function ShipStatusHUD({
       {/* 1. Top Left Panel: Pilot Identity & Ship Vitals */}
       <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/80 backdrop-blur-md pointer-events-auto w-64 shadow-2xl transition-all">
         {/* Pilot Identity */}
-        <div>
-          <div className="text-xs font-mono font-bold text-amber-400 tracking-wider uppercase truncate">
-            {profile.name || 'COSMIC EXPLORER'}
+        <div className="flex items-center justify-between">
+          <div className="truncate">
+            <div className="text-xs font-mono font-bold text-amber-400 tracking-wider uppercase truncate">
+              {profile.name || 'COSMIC EXPLORER'}
+            </div>
+            <div className="text-[10px] font-mono text-slate-400 truncate">
+              {profile.rankTitle || 'Space Cadet'}
+            </div>
           </div>
-          <div className="text-[10px] font-mono text-slate-400 truncate">
-            {profile.rankTitle || 'Space Cadet'}
+          <div className="px-2 py-0.5 rounded bg-amber-400/10 border border-amber-400/30 text-[10px] font-mono font-bold text-amber-300 shrink-0">
+            Lvl {profile.level || 1}
           </div>
         </div>
 

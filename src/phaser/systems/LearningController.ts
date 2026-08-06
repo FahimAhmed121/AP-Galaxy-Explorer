@@ -14,10 +14,21 @@ export class LearningController {
   private startTime: number = 0;
 
   private handleDiscoveryReady = async (payload: { galaxyData: Galaxy }) => {
-    if (this.state !== 'IDLE') return;
+    // If state is not IDLE, force reset to IDLE first to ensure learning briefing always launches
+    if (this.state !== 'IDLE') {
+      logger.warn(`LearningController: DISCOVERY_READY received while state was [${this.state}]. Resetting to IDLE.`);
+      this.resetState();
+    }
 
     logger.info(`LearningController: Received DISCOVERY_READY for [${payload.galaxyData.name}]. Initializing briefing pipeline.`);
     await this.startBriefing(payload.galaxyData);
+  };
+
+  private resetState = () => {
+    this.state = 'IDLE';
+    this.currentGalaxy = null;
+    this.currentContent = null;
+    this.currentCardIndex = 0;
   };
 
   constructor() {
@@ -27,6 +38,11 @@ export class LearningController {
 
   private setupListeners(): void {
     eventBus.on('DISCOVERY_READY', this.handleDiscoveryReady);
+    eventBus.on('LEARNING_COMPLETED', this.resetState);
+    eventBus.on('QUIZ_STARTED', this.resetState);
+    eventBus.on('QUIZ_COMPLETED', this.resetState);
+    eventBus.on('RESUME_GAMEPLAY', this.resetState);
+    eventBus.on('RESET_GAME', this.resetState);
   }
 
   public async startBriefing(galaxy: Galaxy): Promise<void> {
@@ -141,6 +157,11 @@ export class LearningController {
 
   public destroy(): void {
     eventBus.off('DISCOVERY_READY', this.handleDiscoveryReady);
+    eventBus.off('LEARNING_COMPLETED', this.resetState);
+    eventBus.off('QUIZ_STARTED', this.resetState);
+    eventBus.off('QUIZ_COMPLETED', this.resetState);
+    eventBus.off('RESUME_GAMEPLAY', this.resetState);
+    eventBus.off('RESET_GAME', this.resetState);
     this.currentGalaxy = null;
     this.currentContent = null;
   }

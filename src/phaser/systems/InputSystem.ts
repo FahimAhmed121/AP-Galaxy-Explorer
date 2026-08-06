@@ -75,11 +75,19 @@ export class InputSystem {
       (this.keyShift && this.keyShift.isDown)
     );
 
+    const activePointer = this.scene.input.activePointer;
+    const isPointerOverCanvas = Boolean(
+      activePointer &&
+      activePointer.isDown &&
+      activePointer.event &&
+      (activePointer.event.target as HTMLElement)?.tagName === 'CANVAS'
+    );
+
     const fireRequested = Boolean(
       (this.keySpace && this.keySpace.isDown) ||
       (this.keyF && this.keyF.isDown) ||
       (this.keyK && this.keyK.isDown) ||
-      (this.scene.input.activePointer && this.scene.input.activePointer.isDown)
+      isPointerOverCanvas
     );
 
     const scanRequested = Boolean(this.keyE && this.keyE.isDown);

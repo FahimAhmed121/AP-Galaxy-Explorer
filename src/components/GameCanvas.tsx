@@ -58,7 +58,7 @@ export default function GameCanvas({
       maxHealth: 100,
       shield: 100,
       maxShield: 100,
-      stardust: profile.stardustReserves || 50,
+      stardust: profile.stardustReserves ?? 0,
       score: profile.totalScore || 0,
       level: 1,
       speedUpgrade: 1,
@@ -68,8 +68,34 @@ export default function GameCanvas({
     }
   );
 
+  const [isScanOrDiscoveryActive, setIsScanOrDiscoveryActive] = useState(false);
+
   // 1. Sync Ship Stats & State from Phaser EventBus
   useEffect(() => {
+    const handleResetGame = () => {
+      setHudShip({
+        x: WORLD_SIZE / 2,
+        y: WORLD_SIZE / 2 - 800,
+        vx: 0,
+        vy: 0,
+        angle: -Math.PI / 2,
+        radius: 18,
+        health: 100,
+        maxHealth: 100,
+        shield: 100,
+        maxShield: 100,
+        stardust: 0,
+        score: 0,
+        level: 1,
+        speedUpgrade: 1,
+        shieldUpgrade: 1,
+        weaponUpgrade: 1,
+        magnetUpgrade: 1,
+      });
+      setIsScanOrDiscoveryActive(false);
+      setIsGameOver(false);
+      setNearGalaxy(null);
+    };
     const handlePos = (data: { x: number; y: number; angle: number; speed: number }) => {
       setHudShip((prev) => {
         const next = { ...prev, x: data.x, y: data.y, angle: data.angle };
@@ -114,6 +140,13 @@ export default function GameCanvas({
       setIsGameOver(true);
     };
 
+    const handleScanStarted = () => setIsScanOrDiscoveryActive(true);
+    const handleScanEnded = () => setIsScanOrDiscoveryActive(false);
+    const handleDiscoveryStarted = () => setIsScanOrDiscoveryActive(true);
+    const handleDiscoveryFinished = () => setIsScanOrDiscoveryActive(false);
+    const handleLearningStarted = () => setIsScanOrDiscoveryActive(true);
+    const handleLearningFinished = () => setIsScanOrDiscoveryActive(false);
+
     eventBus.on('SHIP_POSITION_CHANGED', handlePos);
     eventBus.on('SHIP_HEALTH_CHANGED', handleHealth);
     eventBus.on('SHIP_SHIELD_CHANGED', handleShield);
@@ -121,6 +154,15 @@ export default function GameCanvas({
     eventBus.on('SHIP_STATS_CHANGED', handleStats);
     eventBus.on('STARDUST_COLLECTED', handleStardustCollected);
     eventBus.on('PLAYER_DESTROYED', handlePlayerDestroyed);
+
+    eventBus.on('SCAN_STARTED', handleScanStarted);
+    eventBus.on('SCAN_COMPLETED', handleScanEnded);
+    eventBus.on('SCAN_CANCELLED', handleScanEnded);
+    eventBus.on('DISCOVERY_STARTED', handleDiscoveryStarted);
+    eventBus.on('DISCOVERY_FINISHED', handleDiscoveryFinished);
+    eventBus.on('LEARNING_STARTED', handleLearningStarted);
+    eventBus.on('LEARNING_FINISHED', handleLearningFinished);
+    eventBus.on('RESET_GAME', handleResetGame);
 
     return () => {
       eventBus.off('SHIP_POSITION_CHANGED', handlePos);
@@ -130,15 +172,21 @@ export default function GameCanvas({
       eventBus.off('SHIP_STATS_CHANGED', handleStats);
       eventBus.off('STARDUST_COLLECTED', handleStardustCollected);
       eventBus.off('PLAYER_DESTROYED', handlePlayerDestroyed);
+
+      eventBus.off('SCAN_STARTED', handleScanStarted);
+      eventBus.off('SCAN_COMPLETED', handleScanEnded);
+      eventBus.off('SCAN_CANCELLED', handleScanEnded);
+      eventBus.off('DISCOVERY_STARTED', handleDiscoveryStarted);
+      eventBus.off('DISCOVERY_FINISHED', handleDiscoveryFinished);
+      eventBus.off('LEARNING_STARTED', handleLearningStarted);
+      eventBus.off('LEARNING_FINISHED', handleLearningFinished);
+      eventBus.off('RESET_GAME', handleResetGame);
     };
   }, [addStardust, onSaveShipState]);
 
-  // 2. Keyboard Event Listeners for Dashboard & Quick Discovery
+  // 2. Keyboard Event Listeners for Dashboard
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'KeyE' && nearGalaxy && !isGameOver) {
-        onDiscoverGalaxy(nearGalaxy.id);
-      }
       if (e.code === 'KeyP' || e.code === 'Tab') {
         e.preventDefault();
         setShowDashboard((prev) => !prev);
@@ -147,7 +195,7 @@ export default function GameCanvas({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [nearGalaxy, isGameOver, onDiscoverGalaxy]);
+  }, []);
 
   // Handle Ship Upgrades & Updates
   const handleUpdateShip = (updatedShip: Spaceship) => {
@@ -213,7 +261,7 @@ export default function GameCanvas({
       />
 
       {/* 4. Near Galaxy Discovery Prompt */}
-      {nearGalaxy && !isGameOver && (
+      {nearGalaxy && !isGameOver && !isScanOrDiscoveryActive && !showDashboard && (
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
           <div className="px-5 py-3 rounded-2xl bg-slate-950/85 border border-amber-400/40 shadow-2xl shadow-amber-500/10 backdrop-blur-lg flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left transition-all">
             <div className="p-2.5 rounded-xl bg-amber-400/10 text-amber-400 border border-amber-400/20">
@@ -228,10 +276,10 @@ export default function GameCanvas({
               </div>
             </div>
             <button
-              onClick={() => onDiscoverGalaxy(nearGalaxy.id)}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-mono font-bold text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 active:scale-95 transition-all cursor-pointer border border-amber-300/30"
+              onClick={() => eventBus.emit('TRIGGER_SCAN')}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/20 active:scale-95 transition-all cursor-pointer border border-cyan-300/30"
             >
-              {t('Press E to Warp Jump', 'ওয়ার্প লাফ দিন (E)')}
+              {t('PRESS [E] TO SCAN GALAXY', 'গ্যালাক্সি স্ক্যান করুন [E]')}
             </button>
           </div>
         </div>

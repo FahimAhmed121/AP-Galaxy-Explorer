@@ -133,6 +133,12 @@ export interface QuizQuestion {
   };
 }
 
+export interface EquippedCosmetics {
+  shipSkin: string;     // Cosmetic item ID
+  thrusterFx: string;   // Cosmetic item ID
+  scannerFx: string;    // Cosmetic item ID
+}
+
 export interface ExplorerBadge {
   id: string;
   title: string;
@@ -145,11 +151,18 @@ export interface ExplorerProfile {
   name: string;
   rankTitle: string;
   xp: number;
+  level: number;
   totalScore: number;
   stardustReserves: number;
   discoveredGalaxyIds: string[];
   quizBestScores: Record<string, number>; // galaxyId -> score
   unlockedBadges: string[]; // Badge IDs
+  equippedCosmetics: EquippedCosmetics;
+  unlockedCosmetics: string[]; // Cosmetic item IDs
+  equippedPerks: string[]; // Perk IDs
+  unlockedPerks: string[]; // Perk IDs
+  maxActivePerks?: number;
+  quizAttempts?: Array<{ galaxyId: string; score: number; total: number; timestamp: string }>;
 }
 
 export interface GameSettings {

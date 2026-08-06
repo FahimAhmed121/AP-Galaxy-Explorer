@@ -86,7 +86,6 @@ export class GalaxyEntity extends Phaser.GameObjects.Container {
   public setDiscoveryState(state: 'UNDISCOVERED' | 'SCANNING' | 'DISCOVERED', progress: number = 0): void {
     this.discoveryState = state;
     this.scanProgress = progress;
-    this.galaxyData.discoveryState = state;
     this.updateStatusBadge();
     this.drawLabelBackground();
   }

@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { ScannerSystem } from './ScannerSystem';
 import { PlayerShip } from '../entities/PlayerShip';
+import { useGameStore } from '../../store/useGameStore';
+import { SCANNER_FX } from '../../data/progressionData';
 
 export class ScannerVisualSystem {
   private scene: Phaser.Scene;
@@ -21,25 +23,34 @@ export class ScannerVisualSystem {
     const currentTarget = scannerSystem.getCurrentTarget();
     const nearbyTarget = scannerSystem.getNearbyTarget();
 
+    // Query active scanner FX colors
+    const profile = useGameStore.getState().profile;
+    const fxId = profile?.equippedCosmetics?.scannerFx || 'scanner_cyan_pulse';
+    const fxDef = SCANNER_FX.find((f) => f.id === fxId) || SCANNER_FX[0];
+
+    const mainColor = fxDef.colors.primary;
+    const arcColor = fxDef.colors.secondary;
+    const coreColor = fxDef.colors.accent;
+
     // 1. Render Target Lock Indicator when nearby a scannable galaxy (IDLE)
     if (state === 'IDLE' && nearbyTarget) {
-      this.drawTargetLock(nearbyTarget.x, nearbyTarget.y, nearbyTarget.discoveryRadius || 280);
-      this.drawScannerBeam(ship.x, ship.y, nearbyTarget.x, nearbyTarget.y, 0.2, 0x38bdf8);
+      this.drawTargetLock(nearbyTarget.x, nearbyTarget.y, nearbyTarget.discoveryRadius || 280, mainColor);
+      this.drawScannerBeam(ship.x, ship.y, nearbyTarget.x, nearbyTarget.y, 0.2, mainColor);
     }
 
     // 2. Render Active Scanning Beam & FX when SCANNING
     if (state === 'SCANNING' && currentTarget) {
       const progress = scannerSystem.getScanProgress();
-      this.drawActiveScan(ship.x, ship.y, currentTarget.x, currentTarget.y, progress);
+      this.drawActiveScan(ship.x, ship.y, currentTarget.x, currentTarget.y, progress, mainColor, arcColor, coreColor);
     }
   }
 
-  private drawTargetLock(tx: number, ty: number, radius: number): void {
+  private drawTargetLock(tx: number, ty: number, radius: number, color: number): void {
     const g = this.graphics;
     const pulseScale = 1.0 + Math.sin(this.animTimer * 4) * 0.05;
     const r = (radius * 0.45) * pulseScale;
 
-    g.lineStyle(2, 0x38bdf8, 0.7);
+    g.lineStyle(2, color, 0.7);
 
     // 4 Corner Reticle Brackets
     const bracketSize = 16;
@@ -92,20 +103,23 @@ export class ScannerVisualSystem {
     sy: number,
     tx: number,
     ty: number,
-    progress: number
+    progress: number,
+    mainColor: number,
+    arcColor: number,
+    coreColor: number
   ): void {
     const g = this.graphics;
 
     // 1. Pulse scanner beam
     const pulseWidth = 3 + Math.sin(this.animTimer * 12) * 2;
-    g.lineStyle(pulseWidth, 0x38bdf8, 0.8);
+    g.lineStyle(pulseWidth, mainColor, 0.8);
     g.beginPath();
     g.moveTo(sx, sy);
     g.lineTo(tx, ty);
     g.strokePath();
 
     // Central beam core highlight
-    g.lineStyle(1.5, 0xffffff, 0.9);
+    g.lineStyle(1.5, coreColor, 0.9);
     g.beginPath();
     g.moveTo(sx, sy);
     g.lineTo(tx, ty);
@@ -118,16 +132,16 @@ export class ScannerVisualSystem {
     const waveX = sx + Math.cos(beamAngle) * dist * wavePos;
     const waveY = sy + Math.sin(beamAngle) * dist * wavePos;
 
-    g.fillStyle(0x38bdf8, 0.8);
+    g.fillStyle(mainColor, 0.8);
     g.fillCircle(waveX, waveY, 5);
 
     // 3. Scanner Ring around ship
     const shipRingR = 32 + Math.sin(this.animTimer * 6) * 4;
-    g.lineStyle(1.5, 0x38bdf8, 0.6);
+    g.lineStyle(1.5, mainColor, 0.6);
     g.strokeCircle(sx, sy, shipRingR);
 
     // 4. Progress HUD arc around ship
-    g.lineStyle(3, 0x10b981, 0.9);
+    g.lineStyle(3, arcColor, 0.9);
     g.beginPath();
     g.arc(sx, sy, shipRingR + 6, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2, false);
     g.strokePath();

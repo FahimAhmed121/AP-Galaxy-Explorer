@@ -1,8 +1,33 @@
 import React, { useState } from 'react';
-import { X, SlidersHorizontal, User, Award, Shield, Zap, Crosshair, Magnet, Sparkles, BookOpen, Navigation, Rocket } from 'lucide-react';
+import {
+  X,
+  SlidersHorizontal,
+  User,
+  Award,
+  Shield,
+  Zap,
+  Crosshair,
+  Magnet,
+  Sparkles,
+  Navigation,
+  Rocket,
+  Palette,
+  CheckCircle,
+  Lock,
+  Cpu,
+  Heart,
+} from 'lucide-react';
 import { Spaceship, Galaxy } from '../../types';
 import { GALAXIES } from '../../data/galaxies';
 import { useGameStore } from '../../store/useGameStore';
+import {
+  EXPLORER_BADGES,
+  SHIP_SKINS,
+  THRUSTER_FX,
+  SCANNER_FX,
+  PASSIVE_PERKS,
+  getXpForLevel,
+} from '../../data/progressionData';
 
 interface PilotDashboardModalProps {
   ship: Spaceship;
@@ -17,17 +42,21 @@ export default function PilotDashboardModal({
   onWarpToGalaxy,
   onClose,
 }: PilotDashboardModalProps) {
-  const { profile, settings, spendStardust } = useGameStore();
-  const [activeTab, setActiveTab] = useState<'UPGRADES' | 'DOSSIER' | 'ATLAS'>('UPGRADES');
+  const { profile, settings, spendStardust, equipCosmetic, unlockCosmetic, toggleEquipPerk } =
+    useGameStore();
+  const [activeTab, setActiveTab] = useState<'UPGRADES' | 'CUSTOMIZE' | 'DOSSIER' | 'ATLAS'>('UPGRADES');
+  const [customCategory, setCustomCategory] = useState<'SKIN' | 'THRUSTER' | 'SCANNER' | 'PERKS'>('SKIN');
 
   const isBN = settings.language === 'BN';
   const t = (en: string, bn: string) => (isBN ? bn : en);
 
-  // Upgrade costs logic (balanced progression curve)
+  // Upgrade costs logic
   const speedCost = Math.floor(60 * Math.pow(2.0, Math.max(0, ship.speedUpgrade - 1)));
   const shieldCost = Math.floor(75 * Math.pow(2.0, Math.max(0, ship.shieldUpgrade - 1)));
   const weaponCost = Math.floor(90 * Math.pow(2.0, Math.max(0, ship.weaponUpgrade - 1)));
   const magnetCost = Math.floor(50 * Math.pow(2.0, Math.max(0, (ship.magnetUpgrade || 1) - 1)));
+  const hullRepairCost = 25;
+  const isHullDamaged = ship.health < ship.maxHealth;
 
   const handleUpgrade = (type: 'speed' | 'shield' | 'weapon' | 'magnet', cost: number) => {
     if (ship.stardust < cost) return;
@@ -51,9 +80,43 @@ export default function PilotDashboardModal({
     onUpdateShip(newShip);
   };
 
+  const handleRepairHull = () => {
+    if (ship.stardust < hullRepairCost || !isHullDamaged) return;
+    const newStardust = ship.stardust - hullRepairCost;
+    const newHealth = Math.min(ship.maxHealth, ship.health + 30);
+    const newShip = { ...ship, stardust: newStardust, health: newHealth };
+
+    spendStardust(hullRepairCost);
+    onUpdateShip(newShip);
+  };
+
+  const level = profile.level || 1;
+  const currentXp = profile.xp || 0;
+  const currentLevelXpFloor = getXpForLevel(level);
+  const nextLevelXpCeil = getXpForLevel(level + 1);
+  const xpInCurrentLevel = Math.max(0, currentXp - currentLevelXpFloor);
+  const xpNeededForLevel = Math.max(1, nextLevelXpCeil - currentLevelXpFloor);
+  const progressPercent = Math.min(100, Math.floor((xpInCurrentLevel / xpNeededForLevel) * 100));
+
+  const equipped = profile.equippedCosmetics || {
+    shipSkin: 'skin_standard_cobalt',
+    thrusterFx: 'thruster_plasma_blue',
+    scannerFx: 'scanner_cyan_pulse',
+  };
+
+  const unlockedCosmetics = profile.unlockedCosmetics || [
+    'skin_standard_cobalt',
+    'thruster_plasma_blue',
+    'scanner_cyan_pulse',
+  ];
+
+  const unlockedPerks = profile.unlockedPerks || ['perk_scanner_boost_1', 'perk_engine_tuning_1'];
+  const equippedPerks = profile.equippedPerks || ['perk_scanner_boost_1'];
+  const maxActivePerks = profile.maxActivePerks || 2;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md font-sans select-none">
-      <div 
+      <div
         id="pilot-dashboard-modal"
         className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-sm border border-white/10 bg-[#050508]/95 text-slate-100 shadow-2xl flex flex-col glow-gold"
       >
@@ -86,46 +149,59 @@ export default function PilotDashboardModal({
         </div>
 
         {/* Tab Navigation */}
-        <div className="p-3 bg-black/40 border-b border-white/10 flex gap-2 shrink-0">
+        <div className="p-3 bg-black/40 border-b border-white/10 flex gap-2 shrink-0 overflow-x-auto">
           <button
             onClick={() => setActiveTab('UPGRADES')}
-            className={`flex-1 py-2 text-xs font-mono font-bold uppercase tracking-wider rounded-sm flex items-center justify-center gap-2 cursor-pointer transition-all ${
+            className={`flex-1 py-2 px-3 text-xs font-mono font-bold uppercase tracking-wider rounded-sm flex items-center justify-center gap-1.5 cursor-pointer transition-all whitespace-nowrap ${
               activeTab === 'UPGRADES'
                 ? 'bg-gold text-black shadow-md'
                 : 'bg-white/5 text-slate-400 hover:text-white'
             }`}
           >
             <Zap size={14} />
-            <span>{t('Tech Deck Upgrades', 'টেক ডেক আপগ্রেড')}</span>
+            <span>{t('Upgrades', 'আপগ্রেড')}</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('CUSTOMIZE')}
+            className={`flex-1 py-2 px-3 text-xs font-mono font-bold uppercase tracking-wider rounded-sm flex items-center justify-center gap-1.5 cursor-pointer transition-all whitespace-nowrap ${
+              activeTab === 'CUSTOMIZE'
+                ? 'bg-gold text-black shadow-md'
+                : 'bg-white/5 text-slate-400 hover:text-white'
+            }`}
+          >
+            <Palette size={14} />
+            <span>{t('Customize', 'কাস্টমাইজ')}</span>
           </button>
 
           <button
             onClick={() => setActiveTab('DOSSIER')}
-            className={`flex-1 py-2 text-xs font-mono font-bold uppercase tracking-wider rounded-sm flex items-center justify-center gap-2 cursor-pointer transition-all ${
+            className={`flex-1 py-2 px-3 text-xs font-mono font-bold uppercase tracking-wider rounded-sm flex items-center justify-center gap-1.5 cursor-pointer transition-all whitespace-nowrap ${
               activeTab === 'DOSSIER'
                 ? 'bg-gold text-black shadow-md'
                 : 'bg-white/5 text-slate-400 hover:text-white'
             }`}
           >
             <User size={14} />
-            <span>{t('Explorer Dossier', 'অভিযাত্রী প্রোফাইল')}</span>
+            <span>{t('Dossier & Badges', 'ডসিয়ার ও ব্যাজ')}</span>
           </button>
 
           <button
             onClick={() => setActiveTab('ATLAS')}
-            className={`flex-1 py-2 text-xs font-mono font-bold uppercase tracking-wider rounded-sm flex items-center justify-center gap-2 cursor-pointer transition-all ${
+            className={`flex-1 py-2 px-3 text-xs font-mono font-bold uppercase tracking-wider rounded-sm flex items-center justify-center gap-1.5 cursor-pointer transition-all whitespace-nowrap ${
               activeTab === 'ATLAS'
                 ? 'bg-gold text-black shadow-md'
                 : 'bg-white/5 text-slate-400 hover:text-white'
             }`}
           >
             <Navigation size={14} />
-            <span>{t('Galactic Warp Map', 'ওয়ার্প মানচিত্র')}</span>
+            <span>{t('Warp Map', 'ওয়ার্প মানচিত্র')}</span>
           </button>
         </div>
 
         {/* Tab Content */}
         <div className="p-6 overflow-y-auto max-h-[60vh] space-y-4">
+          {/* UPGRADES TAB */}
           {activeTab === 'UPGRADES' && (
             <div className="space-y-4">
               {/* Available Stardust Header */}
@@ -270,46 +346,493 @@ export default function PilotDashboardModal({
                     </button>
                   </div>
                 </div>
+
+                {/* Hull Repair Nanobots */}
+                <div className="p-4 rounded-sm border border-emerald-500/20 bg-emerald-950/10 flex flex-col justify-between gap-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="text-xs font-mono font-bold text-emerald-300 uppercase flex items-center gap-1.5">
+                        <Heart size={14} className="text-emerald-400" />
+                        <span>{t('Hull Repair Nanobots', 'হাল মেরামত ন্যানোবটস')}</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        {t('Deploys micro-drones to restore ship structural integrity (+30 HP).', 'জাহাজের অবকাঠামো পুনর্গঠনের জন্য মাইক্রো-ড্রোন মোতায়েন করে (+৩০ HP)।')}
+                      </p>
+                    </div>
+                    <span className="text-[10px] font-mono bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-800">
+                      {Math.round(ship.health)}/{ship.maxHealth} HP
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                    <span className="text-xs font-mono text-amber-300 font-bold">{hullRepairCost} Stardust</span>
+                    <button
+                      onClick={handleRepairHull}
+                      disabled={ship.stardust < hullRepairCost || !isHullDamaged}
+                      className={`px-3 py-1.5 rounded-sm text-[10px] font-mono font-bold uppercase tracking-wider cursor-pointer transition-all ${
+                        ship.stardust >= hullRepairCost && isHullDamaged
+                          ? 'bg-emerald-500 text-black hover:bg-emerald-400'
+                          : 'bg-white/5 text-slate-600 border border-white/5 cursor-not-allowed'
+                      }`}
+                    >
+                      {!isHullDamaged ? t('Full Hull', 'পূর্ণ হাল') : t('Repair (+30 HP)', 'মেরামত (+৩০ HP)')}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}
 
+          {/* CUSTOMIZE TAB */}
+          {activeTab === 'CUSTOMIZE' && (
+            <div className="space-y-4">
+              {/* Category sub-buttons */}
+              <div className="flex gap-2 border-b border-white/10 pb-3">
+                <button
+                  onClick={() => setCustomCategory('SKIN')}
+                  className={`px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-sm border transition-all ${
+                    customCategory === 'SKIN'
+                      ? 'border-gold bg-gold/20 text-gold'
+                      : 'border-white/10 bg-white/5 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {t('Ship Skins', 'জাহাজের স্কিন')}
+                </button>
+                <button
+                  onClick={() => setCustomCategory('THRUSTER')}
+                  className={`px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-sm border transition-all ${
+                    customCategory === 'THRUSTER'
+                      ? 'border-gold bg-gold/20 text-gold'
+                      : 'border-white/10 bg-white/5 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {t('Thruster FX', 'থ্রাস্টার এফএক্স')}
+                </button>
+                <button
+                  onClick={() => setCustomCategory('SCANNER')}
+                  className={`px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-sm border transition-all ${
+                    customCategory === 'SCANNER'
+                      ? 'border-gold bg-gold/20 text-gold'
+                      : 'border-white/10 bg-white/5 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {t('Scanner FX', 'স্ক্যানার এফএক্স')}
+                </button>
+                <button
+                  onClick={() => setCustomCategory('PERKS')}
+                  className={`px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-sm border transition-all ${
+                    customCategory === 'PERKS'
+                      ? 'border-gold bg-gold/20 text-gold'
+                      : 'border-white/10 bg-white/5 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {t('Passive Perks', 'প্যাসিভ পার্কস')}
+                </button>
+              </div>
+
+              {/* SHIP SKINS */}
+              {customCategory === 'SKIN' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {SHIP_SKINS.map((skin) => {
+                    const isUnlocked = unlockedCosmetics.includes(skin.id);
+                    const isEquipped = equipped.shipSkin === skin.id;
+                    const canAfford = (profile.stardustReserves || 0) >= skin.unlockCost;
+                    const levelReqMet = level >= skin.unlockLevel;
+
+                    return (
+                      <div
+                        key={skin.id}
+                        className={`p-3.5 rounded-sm border flex items-center justify-between gap-3 transition-all ${
+                          isEquipped
+                            ? 'border-gold bg-gold/10'
+                            : isUnlocked
+                            ? 'border-white/10 bg-white/[0.02] hover:border-white/20'
+                            : 'border-white/5 bg-white/[0.01] opacity-75'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-8 h-8 rounded-full border-2 border-white/20 flex items-center justify-center shrink-0"
+                            style={{ backgroundColor: `#${skin.colors.primary.toString(16).padStart(6, '0')}` }}
+                          >
+                            <div
+                              className="w-4 h-4 rounded-full"
+                              style={{ backgroundColor: `#${skin.colors.secondary.toString(16).padStart(6, '0')}` }}
+                            />
+                          </div>
+                          <div>
+                            <div className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
+                              <span>{skin.name}</span>
+                              {isEquipped && <CheckCircle size={12} className="text-gold" />}
+                            </div>
+                            <p className="text-[10px] text-slate-400">{skin.description}</p>
+                          </div>
+                        </div>
+
+                        <div>
+                          {isEquipped ? (
+                            <span className="text-[9px] font-mono uppercase text-gold font-bold px-2 py-1 bg-gold/10 rounded">
+                              {t('EQUIPPED', 'ইকুইপড')}
+                            </span>
+                          ) : isUnlocked ? (
+                            <button
+                              onClick={() => equipCosmetic('SHIP_SKIN', skin.id)}
+                              className="px-2.5 py-1 text-[10px] font-mono font-bold uppercase rounded bg-gold text-black hover:bg-yellow-400 cursor-pointer"
+                            >
+                              {t('EQUIP', 'ইকুইপ')}
+                            </button>
+                          ) : (
+                            <button
+                              disabled={!canAfford || !levelReqMet}
+                              onClick={() => unlockCosmetic(skin.id)}
+                              className={`px-2.5 py-1 text-[10px] font-mono font-bold uppercase rounded flex items-center gap-1 ${
+                                canAfford && levelReqMet
+                                  ? 'bg-amber-500 text-black hover:bg-amber-400 cursor-pointer'
+                                  : 'bg-white/5 text-slate-500 border border-white/5 cursor-not-allowed'
+                              }`}
+                            >
+                              <Lock size={10} />
+                              <span>
+                                {!levelReqMet
+                                  ? `Lvl ${skin.unlockLevel}`
+                                  : `${skin.unlockCost} Stardust`}
+                              </span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* THRUSTER FX */}
+              {customCategory === 'THRUSTER' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {THRUSTER_FX.map((thruster) => {
+                    const isUnlocked = unlockedCosmetics.includes(thruster.id);
+                    const isEquipped = equipped.thrusterFx === thruster.id;
+                    const canAfford = (profile.stardustReserves || 0) >= thruster.unlockCost;
+                    const levelReqMet = level >= thruster.unlockLevel;
+
+                    return (
+                      <div
+                        key={thruster.id}
+                        className={`p-3.5 rounded-sm border flex items-center justify-between gap-3 transition-all ${
+                          isEquipped
+                            ? 'border-gold bg-gold/10'
+                            : isUnlocked
+                            ? 'border-white/10 bg-white/[0.02] hover:border-white/20'
+                            : 'border-white/5 bg-white/[0.01] opacity-75'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-8 h-8 rounded-full border-2 border-white/20 flex items-center justify-center shrink-0"
+                            style={{ backgroundColor: `#${thruster.colors.primary.toString(16).padStart(6, '0')}` }}
+                          >
+                            <Zap size={14} className="text-white" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
+                              <span>{thruster.name}</span>
+                              {isEquipped && <CheckCircle size={12} className="text-gold" />}
+                            </div>
+                            <p className="text-[10px] text-slate-400">{thruster.description}</p>
+                          </div>
+                        </div>
+
+                        <div>
+                          {isEquipped ? (
+                            <span className="text-[9px] font-mono uppercase text-gold font-bold px-2 py-1 bg-gold/10 rounded">
+                              {t('EQUIPPED', 'ইকুইপড')}
+                            </span>
+                          ) : isUnlocked ? (
+                            <button
+                              onClick={() => equipCosmetic('THRUSTER_FX', thruster.id)}
+                              className="px-2.5 py-1 text-[10px] font-mono font-bold uppercase rounded bg-gold text-black hover:bg-yellow-400 cursor-pointer"
+                            >
+                              {t('EQUIP', 'ইকুইপ')}
+                            </button>
+                          ) : (
+                            <button
+                              disabled={!canAfford || !levelReqMet}
+                              onClick={() => unlockCosmetic(thruster.id)}
+                              className={`px-2.5 py-1 text-[10px] font-mono font-bold uppercase rounded flex items-center gap-1 ${
+                                canAfford && levelReqMet
+                                  ? 'bg-amber-500 text-black hover:bg-amber-400 cursor-pointer'
+                                  : 'bg-white/5 text-slate-500 border border-white/5 cursor-not-allowed'
+                              }`}
+                            >
+                              <Lock size={10} />
+                              <span>
+                                {!levelReqMet
+                                  ? `Lvl ${thruster.unlockLevel}`
+                                  : `${thruster.unlockCost} Stardust`}
+                              </span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* SCANNER FX */}
+              {customCategory === 'SCANNER' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {SCANNER_FX.map((scanner) => {
+                    const isUnlocked = unlockedCosmetics.includes(scanner.id);
+                    const isEquipped = equipped.scannerFx === scanner.id;
+                    const canAfford = (profile.stardustReserves || 0) >= scanner.unlockCost;
+                    const levelReqMet = level >= scanner.unlockLevel;
+
+                    return (
+                      <div
+                        key={scanner.id}
+                        className={`p-3.5 rounded-sm border flex items-center justify-between gap-3 transition-all ${
+                          isEquipped
+                            ? 'border-gold bg-gold/10'
+                            : isUnlocked
+                            ? 'border-white/10 bg-white/[0.02] hover:border-white/20'
+                            : 'border-white/5 bg-white/[0.01] opacity-75'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-8 h-8 rounded-full border-2 border-white/20 flex items-center justify-center shrink-0"
+                            style={{ backgroundColor: `#${scanner.colors.primary.toString(16).padStart(6, '0')}` }}
+                          >
+                            <Crosshair size={14} className="text-white" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
+                              <span>{scanner.name}</span>
+                              {isEquipped && <CheckCircle size={12} className="text-gold" />}
+                            </div>
+                            <p className="text-[10px] text-slate-400">{scanner.description}</p>
+                          </div>
+                        </div>
+
+                        <div>
+                          {isEquipped ? (
+                            <span className="text-[9px] font-mono uppercase text-gold font-bold px-2 py-1 bg-gold/10 rounded">
+                              {t('EQUIPPED', 'ইকুইপড')}
+                            </span>
+                          ) : isUnlocked ? (
+                            <button
+                              onClick={() => equipCosmetic('SCANNER_FX', scanner.id)}
+                              className="px-2.5 py-1 text-[10px] font-mono font-bold uppercase rounded bg-gold text-black hover:bg-yellow-400 cursor-pointer"
+                            >
+                              {t('EQUIP', 'ইকুইপ')}
+                            </button>
+                          ) : (
+                            <button
+                              disabled={!canAfford || !levelReqMet}
+                              onClick={() => unlockCosmetic(scanner.id)}
+                              className={`px-2.5 py-1 text-[10px] font-mono font-bold uppercase rounded flex items-center gap-1 ${
+                                canAfford && levelReqMet
+                                  ? 'bg-amber-500 text-black hover:bg-amber-400 cursor-pointer'
+                                  : 'bg-white/5 text-slate-500 border border-white/5 cursor-not-allowed'
+                              }`}
+                            >
+                              <Lock size={10} />
+                              <span>
+                                {!levelReqMet
+                                  ? `Lvl ${scanner.unlockLevel}`
+                                  : `${scanner.unlockCost} Stardust`}
+                              </span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* PASSIVE PERKS */}
+              {customCategory === 'PERKS' && (
+                <div className="space-y-3 font-mono">
+                  <div className="p-3 bg-white/[0.02] border border-white/10 rounded flex items-center justify-between text-xs">
+                    <span className="text-slate-300">
+                      {t('Active Perk Slots:', 'সক্রিয় পার্ক স্লট:')} {equippedPerks.length} / {maxActivePerks}
+                    </span>
+                    <span className="text-[10px] text-amber-400">
+                      {t('Equipped perks provide passive gameplay buffs', 'ইকুইপড পার্ক প্যাসিভ সুবিধা প্রদান করে')}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-2.5">
+                    {PASSIVE_PERKS.map((perk) => {
+                      const isUnlocked = unlockedPerks.includes(perk.id) || level >= perk.unlockLevel;
+                      const isEquipped = equippedPerks.includes(perk.id);
+
+                      return (
+                        <div
+                          key={perk.id}
+                          className={`p-3 rounded border flex items-center justify-between gap-3 ${
+                            isEquipped
+                              ? 'border-gold/60 bg-gold/10'
+                              : isUnlocked
+                              ? 'border-white/10 bg-black/40'
+                              : 'border-white/5 bg-white/[0.01] opacity-60'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 rounded bg-cyan-950 text-cyan-400 border border-cyan-800">
+                              <Cpu size={16} />
+                            </div>
+                            <div>
+                              <div className="text-xs font-bold text-white flex items-center gap-2">
+                                <span>{perk.name}</span>
+                                <span className="text-[9px] text-cyan-400 bg-cyan-950/60 px-1.5 py-0.5 rounded border border-cyan-800">
+                                  {perk.category}
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-slate-400 mt-0.5">{perk.description}</p>
+                            </div>
+                          </div>
+
+                          <div>
+                            {isUnlocked ? (
+                              <button
+                                onClick={() => toggleEquipPerk(perk.id)}
+                                className={`px-3 py-1 text-[10px] font-bold uppercase rounded cursor-pointer ${
+                                  isEquipped
+                                    ? 'bg-amber-500 text-black hover:bg-amber-400'
+                                    : 'bg-white/10 text-white hover:bg-white/20'
+                                }`}
+                              >
+                                {isEquipped ? t('ACTIVE', 'সক্রিয়') : t('EQUIP', 'ইকুইপ')}
+                              </button>
+                            ) : (
+                              <div className="flex items-center gap-1 text-[10px] text-slate-500">
+                                <Lock size={12} />
+                                <span>Lvl {perk.unlockLevel}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* DOSSIER TAB */}
           {activeTab === 'DOSSIER' && (
             <div className="space-y-4 font-mono">
-              <div className="p-4 rounded-sm border border-gold/30 bg-black/60 flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-bold text-white">{profile.name}</div>
-                  <div className="text-xs text-gold mt-0.5">{profile.rankTitle}</div>
+              {/* Profile Card & Level Progress */}
+              <div className="p-4 rounded-sm border border-gold/30 bg-black/60 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold flex items-center justify-center font-bold text-gold text-sm">
+                      Lvl {level}
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-white">{profile.name}</div>
+                      <div className="text-xs text-gold mt-0.5">{profile.rankTitle}</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] text-slate-400">{t('TOTAL SCORE', 'মোট স্কোর')}</div>
+                    <div className="text-lg font-bold text-gold">{profile.totalScore} pts</div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-[10px] text-slate-400">{t('TOTAL SCORE', 'মোট স্কোর')}</div>
-                  <div className="text-lg font-bold text-gold">{profile.totalScore} pts</div>
+
+                {/* Level Progress Bar */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[10px] text-slate-400">
+                    <span>{t(`XP Progress (Level ${level})`, `এক্সপি অগ্রগতি (লেভেল ${level})`)}</span>
+                    <span className="text-gold font-bold">
+                      {currentXp} / {nextLevelXpCeil} XP ({progressPercent}%)
+                    </span>
+                  </div>
+                  <div className="w-full h-2 rounded bg-white/10 overflow-hidden border border-white/10">
+                    <div
+                      className="h-full bg-gradient-to-r from-amber-500 to-gold transition-all duration-300"
+                      style={{ width: `${progressPercent}%` }}
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {/* Stats Summary */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div className="p-3 bg-white/[0.02] border border-white/5 rounded text-center">
-                  <div className="text-xs text-slate-400">{t('Discovered Galaxies', 'আবিষ্কৃত গ্যালাক্সি')}</div>
-                  <div className="text-lg font-bold text-cyan-400 mt-1">
+                  <div className="text-[10px] text-slate-400">{t('Discovered', 'আবিষ্কৃত')}</div>
+                  <div className="text-base font-bold text-cyan-400 mt-0.5">
                     {profile.discoveredGalaxyIds.length} / {GALAXIES.length}
                   </div>
                 </div>
 
                 <div className="p-3 bg-white/[0.02] border border-white/5 rounded text-center">
-                  <div className="text-xs text-slate-400">{t('Explorer XP', 'অভিযাত্রী এক্সপি')}</div>
-                  <div className="text-lg font-bold text-amber-400 mt-1">{profile.xp} XP</div>
+                  <div className="text-[10px] text-slate-400">{t('Total XP', 'মোট এক্সপি')}</div>
+                  <div className="text-base font-bold text-amber-400 mt-0.5">{profile.xp} XP</div>
                 </div>
 
                 <div className="p-3 bg-white/[0.02] border border-white/5 rounded text-center">
-                  <div className="text-xs text-slate-400">{t('Badges Earned', 'অর্জিত ব্যাজ')}</div>
-                  <div className="text-lg font-bold text-gold mt-1">
-                    {profile.discoveredGalaxyIds.length > 0 ? profile.discoveredGalaxyIds.length : 0}
+                  <div className="text-[10px] text-slate-400">{t('Quizzes', 'কুইজ উত্তর')}</div>
+                  <div className="text-base font-bold text-emerald-400 mt-0.5">
+                    {Object.keys(profile.quizBestScores || {}).length}
                   </div>
+                </div>
+
+                <div className="p-3 bg-white/[0.02] border border-white/5 rounded text-center">
+                  <div className="text-[10px] text-slate-400">{t('Badges', 'ব্যাজ')}</div>
+                  <div className="text-base font-bold text-gold mt-0.5">
+                    {profile.unlockedBadges?.length || 0} / {EXPLORER_BADGES.length}
+                  </div>
+                </div>
+              </div>
+
+              {/* Badges Grid */}
+              <div className="space-y-2">
+                <div className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                  <Award size={14} className="text-gold" />
+                  <span>{t('Explorer Merit Badges', 'অভিযাত্রী মেধা ব্যাজ')}</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {EXPLORER_BADGES.map((badge) => {
+                    const isEarned = profile.unlockedBadges?.includes(badge.id);
+
+                    return (
+                      <div
+                        key={badge.id}
+                        className={`p-3 rounded border flex items-center gap-3 ${
+                          isEarned
+                            ? 'border-gold/40 bg-gold/5 text-white'
+                            : 'border-white/5 bg-white/[0.01] text-slate-500 opacity-60'
+                        }`}
+                      >
+                        <div
+                          className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
+                            isEarned ? 'bg-gold/20 text-gold border border-gold/40' : 'bg-white/5 text-slate-600'
+                          }`}
+                        >
+                          <Award size={18} />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                            <span>{badge.title}</span>
+                            {isEarned && <CheckCircle size={12} className="text-gold" />}
+                          </div>
+                          <p className="text-[10px] text-slate-400 mt-0.5">{badge.description}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           )}
 
+          {/* ATLAS TAB */}
           {activeTab === 'ATLAS' && (
             <div className="space-y-3 font-mono">
               <p className="text-xs text-slate-400">

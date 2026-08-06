@@ -52,6 +52,7 @@ export class DiscoveryController {
     eventBus.on('DISCOVERY_FINISHED', this.handleResetOrFinish);
     eventBus.on('RESUME_GAMEPLAY', this.handleResetOrFinish);
     eventBus.on('QUIZ_COMPLETED', this.handleResetOrFinish);
+    eventBus.on('RESET_GAME', this.handleResetOrFinish);
   }
 
   public setCamera(camera: Phaser.Cameras.Scene2D.Camera): void {
@@ -193,6 +194,7 @@ export class DiscoveryController {
     eventBus.off('DISCOVERY_FINISHED', this.handleResetOrFinish);
     eventBus.off('RESUME_GAMEPLAY', this.handleResetOrFinish);
     eventBus.off('QUIZ_COMPLETED', this.handleResetOrFinish);
+    eventBus.off('RESET_GAME', this.handleResetOrFinish);
     this.currentTarget = null;
   }
 }
