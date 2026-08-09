@@ -3,16 +3,22 @@ import { ScannerSystem } from './ScannerSystem';
 import { PlayerShip } from '../entities/PlayerShip';
 import { useGameStore } from '../../store/useGameStore';
 import { SCANNER_FX } from '../../data/progressionData';
+import { eventBus } from '../../core/events';
 
 export class ScannerVisualSystem {
   private scene: Phaser.Scene;
   private graphics: Phaser.GameObjects.Graphics;
   private animTimer: number = 0;
+  private isInterferenceActive: boolean = false;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.graphics = this.scene.add.graphics();
     this.graphics.setDepth(20); // Above ship and galaxies
+
+    eventBus.on('SCANNER_INTERFERENCE_CHANGED', (payload) => {
+      this.isInterferenceActive = payload.active;
+    });
   }
 
   public update(delta: number, scannerSystem: ScannerSystem, ship: PlayerShip): void {
@@ -110,19 +116,31 @@ export class ScannerVisualSystem {
   ): void {
     const g = this.graphics;
 
+    // Apply interference jitter offset if active
+    let jitterX = 0;
+    let jitterY = 0;
+    if (this.isInterferenceActive && Math.random() < 0.45) {
+      jitterX = (Math.random() - 0.5) * 12;
+      jitterY = (Math.random() - 0.5) * 12;
+    }
+
+    const drawTx = tx + jitterX;
+    const drawTy = ty + jitterY;
+    const beamColor = this.isInterferenceActive && Math.random() < 0.3 ? 0xf59e0b : mainColor;
+
     // 1. Pulse scanner beam
     const pulseWidth = 3 + Math.sin(this.animTimer * 12) * 2;
-    g.lineStyle(pulseWidth, mainColor, 0.8);
+    g.lineStyle(pulseWidth, beamColor, 0.8);
     g.beginPath();
     g.moveTo(sx, sy);
-    g.lineTo(tx, ty);
+    g.lineTo(drawTx, drawTy);
     g.strokePath();
 
     // Central beam core highlight
     g.lineStyle(1.5, coreColor, 0.9);
     g.beginPath();
     g.moveTo(sx, sy);
-    g.lineTo(tx, ty);
+    g.lineTo(drawTx, drawTy);
     g.strokePath();
 
     // 2. Expanding scanner ring along beam line

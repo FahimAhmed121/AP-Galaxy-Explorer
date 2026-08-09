@@ -50,6 +50,14 @@ export class AudioSystem {
     audioEngine.playSound('learning-complete');
   };
 
+  private handleDroneDetected = () => {
+    audioEngine.playSound('drone-alert');
+  };
+
+  private handleDroneAttacked = () => {
+    audioEngine.playSound('drone-alert');
+  };
+
   constructor() {
     logger.info('AudioSystem: Game Audio System initialized.');
     this.setupListeners();
@@ -66,7 +74,20 @@ export class AudioSystem {
     eventBus.on('LEARNING_STARTED', this.handleLearningStarted);
     eventBus.on('LEARNING_CARD_CHANGED', this.handleLearningCardChanged);
     eventBus.on('LEARNING_COMPLETED', this.handleLearningCompleted);
+    eventBus.on('DRONE_DETECTED', this.handleDroneDetected);
+    eventBus.on('DRONE_ATTACKED', this.handleDroneAttacked);
+    eventBus.on('PLAYER_DESTROYED', this.handlePlayerDestroyed);
+    eventBus.on('PLAYER_RESPAWNED', this.handlePlayerRespawned);
   }
+
+  private handlePlayerDestroyed = () => {
+    this.isThrustPlaying = false;
+    audioEngine.playSound('explosion', true, 0.8);
+  };
+
+  private handlePlayerRespawned = () => {
+    this.isThrustPlaying = false;
+  };
 
   public updateThrustSound(isThrusting: boolean, _isBoosting: boolean): void {
     if (isThrusting && !this.isThrustPlaying) {
@@ -104,6 +125,10 @@ export class AudioSystem {
     eventBus.off('LEARNING_STARTED', this.handleLearningStarted);
     eventBus.off('LEARNING_CARD_CHANGED', this.handleLearningCardChanged);
     eventBus.off('LEARNING_COMPLETED', this.handleLearningCompleted);
+    eventBus.off('DRONE_DETECTED', this.handleDroneDetected);
+    eventBus.off('DRONE_ATTACKED', this.handleDroneAttacked);
+    eventBus.off('PLAYER_DESTROYED', this.handlePlayerDestroyed);
+    eventBus.off('PLAYER_RESPAWNED', this.handlePlayerRespawned);
     this.isThrustPlaying = false;
   }
 }

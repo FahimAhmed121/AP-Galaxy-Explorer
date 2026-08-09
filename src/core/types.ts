@@ -157,6 +157,8 @@ export interface ExplorerProfile {
   discoveredGalaxyIds: string[];
   quizBestScores: Record<string, number>; // galaxyId -> score
   unlockedBadges: string[]; // Badge IDs
+  dronesDefeated?: number;
+  droneEncountersCount?: number;
   equippedCosmetics: EquippedCosmetics;
   unlockedCosmetics: string[]; // Cosmetic item IDs
   equippedPerks: string[]; // Perk IDs

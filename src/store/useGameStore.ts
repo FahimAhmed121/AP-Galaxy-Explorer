@@ -38,6 +38,8 @@ interface GameStoreState {
   addXP: (amount: number, source?: string) => void;
   discoverGalaxy: (galaxyId: string) => void;
   recordQuizScore: (galaxyId: string, score: number, maxScore: number) => void;
+  recordDroneDefeated: (stardustReward: number, xpReward: number) => void;
+  recordDroneEncounter: () => void;
   addStardust: (amount: number) => void;
   spendStardust: (amount: number) => void;
   setExplorerName: (name: string) => void;
@@ -75,6 +77,8 @@ const DEFAULT_PROFILE: ExplorerProfile = {
   discoveredGalaxyIds: [],
   quizBestScores: {},
   unlockedBadges: [],
+  dronesDefeated: 0,
+  droneEncountersCount: 0,
   equippedCosmetics: DEFAULT_COSMETICS,
   unlockedCosmetics: ['skin_standard_cobalt', 'thruster_plasma_blue', 'scanner_cyan_pulse'],
   equippedPerks: [],
@@ -293,6 +297,37 @@ export const useGameStore = create<GameStoreState>()(
         });
       },
 
+      recordDroneDefeated: (stardustReward, xpReward) => {
+        set((state) => {
+          const currentDefeated = (state.profile.dronesDefeated || 0) + 1;
+          const newStardust = (state.profile.stardustReserves || 0) + stardustReward;
+          const baseProfile = {
+            ...state.profile,
+            dronesDefeated: currentDefeated,
+            totalScore: state.profile.totalScore + 250,
+            stardustReserves: newStardust,
+          };
+
+          const updatedProfile = evaluateProfileProgression(baseProfile, xpReward, 'DRONE_DEFECTED');
+
+          return {
+            profile: updatedProfile,
+            savedShipState: state.savedShipState
+              ? { ...state.savedShipState, stardust: (state.savedShipState.stardust || 0) + stardustReward }
+              : null,
+          };
+        });
+      },
+
+      recordDroneEncounter: () => {
+        set((state) => ({
+          profile: {
+            ...state.profile,
+            droneEncountersCount: (state.profile.droneEncountersCount || 0) + 1,
+          },
+        }));
+      },
+
       addStardust: (amount) => {
         if (amount <= 0) return;
         set((state) => {
@@ -437,6 +472,8 @@ export const useGameStore = create<GameStoreState>()(
           discoveredGalaxyIds: p.discoveredGalaxyIds || DEFAULT_PROFILE.discoveredGalaxyIds,
           quizBestScores: p.quizBestScores || DEFAULT_PROFILE.quizBestScores,
           unlockedBadges: p.unlockedBadges || DEFAULT_PROFILE.unlockedBadges,
+          dronesDefeated: p.dronesDefeated ?? 0,
+          droneEncountersCount: p.droneEncountersCount ?? 0,
           equippedCosmetics: {
             shipSkin: p.equippedCosmetics?.shipSkin || DEFAULT_COSMETICS.shipSkin,
             thrusterFx: p.equippedCosmetics?.thrusterFx || DEFAULT_COSMETICS.thrusterFx,

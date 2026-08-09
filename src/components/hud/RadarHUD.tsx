@@ -48,7 +48,10 @@ export default function RadarHUD({
 
   // Sync props ship position fallback
   useEffect(() => {
-    setLiveShip({ x: ship.x, y: ship.y, angle: ship.angle });
+    setLiveShip((prev) => {
+      if (prev.x === ship.x && prev.y === ship.y && prev.angle === ship.angle) return prev;
+      return { x: ship.x, y: ship.y, angle: ship.angle };
+    });
   }, [ship.x, ship.y, ship.angle]);
 
   const radarSize = 160;

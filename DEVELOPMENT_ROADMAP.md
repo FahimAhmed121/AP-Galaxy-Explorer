@@ -26,19 +26,12 @@
 - ✅ **Sprint 2.2 — Asteroids, Stardust Economy & Ship Progression**: Procedural Phaser-based `AsteroidManager`, organic asteroid fields, plasma cannon laser combat, fragmentation physics, stardust harvesting, vacuum dust magnetics, and 4-tier Pilot Dashboard upgrade progression system (Ion Engine, Deflector Shield, Plasma Cannon, Vacuum Dust Magnet).
 - ✅ **Sprint 2.2.1 — Gameplay Balance, Feel & Polish**: Natural drifting asteroid velocities, 7 organic deep-space clusters, enlarged visual scale (~1.5-2x), increased collision ramming durability, Spacebar weapon firing input fix, Plasma Energy audit and consumption (6 energy/shot), tuned shield regeneration (2.0/s), balanced Stardust economy curves ($60 \cdot 2^{lvl-1}$ upgrades), and full documentation synchronization.
 - ✅ **Sprint 2.3 — Explorer Progression & Cosmetic Unlocks**: Centralized career progression system (`progressionData.ts`), 15 Explorer levels & rank titles (Space Cadet → Master Voyager of the Cosmos), Explorer XP reward pipeline (discoveries, quizzes, perfect score bonuses), 7 Merit Badges across 4 categories, 5 Passive Perks (scanner speed, magnet radius, max speed, shield regen, XP bonus), 12 customizable cosmetics (Ship Skins, Thruster Effects, Scanner Effects), interactive Pilot Dashboard customization tab, top HUD rank/level display, and comprehensive stabilization fixes.
-- ✅ **Documentation Synchronization**: Comprehensive synchronization of project state, engineering standards, system architectures, and Lean V1 roadmap.
+- ✅ **Sprint 2.4 — Alien Survey Drones**: Autonomous AI survey drones (`AlienSurveyDrone.ts`), 5-state AI FSM (PATROL, SURVEY, INVESTIGATE, ATTACK, RETURN), off-screen galaxy-centric sector spawning (`DroneManager.ts`), proximity/context-driven AURA alerts, defensive plasma laser combat, Arcade Physics overlap object identity collision safeguards, Stardust and XP rewards, and forensic audit cleanup.
+- ✅ **Documentation Synchronization**: Comprehensive synchronization of project state, engineering standards, system architectures, drone system architecture, and Lean V1 roadmap.
 
 ---
 
 ## Upcoming Milestones (Lean V1 Roadmap)
-
-### Sprint 2.4 — Alien Survey Drones
-**Goal**: Introduce autonomous AI survey drones for optional environmental encounters.
-**Deliverables**:
-- Simple AI survey drone entities patrolling deep space sectors.
-- Basic defensive combat mechanics and sensor jammer abilities.
-- Optional non-destructive encounters.
-*(Educational exploration remains the primary focus).*
 
 ### Sprint 2.5 — Firebase Authentication & Cloud Save
 **Goal**: Implement user account management and cross-device save state persistence.

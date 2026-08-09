@@ -35,6 +35,7 @@ export class AsteroidManager {
   private stardustTextureKey = 'stardust_orb_tex';
 
   private lastShotTime: number = 0;
+  private lastPlayerAsteroidCollisionTime: number = 0;
 
   constructor(scene: Phaser.Scene, playerShip: PlayerShip) {
     this.scene = scene;
@@ -226,7 +227,7 @@ export class AsteroidManager {
   }
 
   public fireLaser(soundEnabled: boolean = true, sfxVolume: number = 0.5): void {
-    const now = this.scene.time.now;
+    const now = this.scene && this.scene.time ? this.scene.time.now : Date.now();
     const weaponLevel = this.playerShip.weaponUpgrade || 1;
     const cooldown = Math.max(120, 320 - (weaponLevel - 1) * 45);
 
@@ -269,14 +270,26 @@ export class AsteroidManager {
     this.scene.physics.add.overlap(
       this.laserGroup,
       this.asteroidGroup,
-      (laserObj, asteroidObj) => {
-        const laser = laserObj as Phaser.Physics.Arcade.Sprite;
-        const asteroid = asteroidObj as Phaser.Physics.Arcade.Sprite;
+      (objA, objB) => {
+        let laser: Phaser.Physics.Arcade.Sprite | null = null;
+        let asteroid: Phaser.Physics.Arcade.Sprite | null = null;
+
+        if (this.laserGroup.contains(objA as Phaser.GameObjects.GameObject)) {
+          laser = objA as Phaser.Physics.Arcade.Sprite;
+          asteroid = objB as Phaser.Physics.Arcade.Sprite;
+        } else if (this.laserGroup.contains(objB as Phaser.GameObjects.GameObject)) {
+          laser = objB as Phaser.Physics.Arcade.Sprite;
+          asteroid = objA as Phaser.Physics.Arcade.Sprite;
+        }
+
+        if (!laser || !asteroid || (laser as unknown) === (this.playerShip as unknown)) return;
+        if (!laser.active || !asteroid.active) return;
 
         const data = asteroid.getData('asteroidData') as AsteroidData;
         const damage = (laser.getData('damage') as number) || 25;
 
         // Destroy laser
+        if (laser.body) laser.body.enable = false;
         laser.destroy();
 
         if (!data) return;
@@ -298,26 +311,50 @@ export class AsteroidManager {
     this.scene.physics.add.overlap(
       this.playerShip,
       this.asteroidGroup,
-      (_, asteroidObj) => {
-        const asteroid = asteroidObj as Phaser.Physics.Arcade.Sprite;
-        const data = asteroid.getData('asteroidData') as AsteroidData;
+      (objA, objB) => {
+        let ship: PlayerShip | null = null;
+        let asteroid: Phaser.Physics.Arcade.Sprite | null = null;
 
+        if (objA === this.playerShip) {
+          ship = this.playerShip;
+          asteroid = objB as Phaser.Physics.Arcade.Sprite;
+        } else if (objB === this.playerShip) {
+          ship = this.playerShip;
+          asteroid = objA as Phaser.Physics.Arcade.Sprite;
+        } else if (this.asteroidGroup.contains(objA as Phaser.GameObjects.GameObject)) {
+          asteroid = objA as Phaser.Physics.Arcade.Sprite;
+          ship = this.playerShip;
+        } else if (this.asteroidGroup.contains(objB as Phaser.GameObjects.GameObject)) {
+          asteroid = objB as Phaser.Physics.Arcade.Sprite;
+          ship = this.playerShip;
+        }
+
+        if (!ship || !asteroid || (asteroid as unknown) === (ship as unknown)) return;
+        if (ship.isDead || !asteroid.active) return;
+
+        const data = asteroid.getData('asteroidData') as AsteroidData;
         if (!data) return;
 
+        const now = this.scene && this.scene.time ? this.scene.time.now : Date.now();
+        if (now - this.lastPlayerAsteroidCollisionTime < 400) return;
+        this.lastPlayerAsteroidCollisionTime = now;
+
         // Impact damage to ship
-        const shipDmg = data.type === 'large' ? 40 : data.type === 'medium' ? 25 : 15;
-        this.playerShip.takeDamage(shipDmg);
+        const shipDmg = data.type === 'large' ? 30 : data.type === 'medium' ? 20 : 10;
+        ship.takeDamage(shipDmg);
 
         // Asteroid takes collision damage (does not instant-die unless health reaches 0)
         const astDmg = 40;
         data.health -= astDmg;
 
         // Push/bounce asteroid slightly away from ship
-        const bounceAngle = Math.atan2(asteroid.y - this.playerShip.y, asteroid.x - this.playerShip.x);
+        const bounceAngle = Math.atan2(asteroid.y - ship.y, asteroid.x - ship.x);
         asteroid.setVelocity(Math.cos(bounceAngle) * 90, Math.sin(bounceAngle) * 90);
 
         // Screen shake
-        this.scene.cameras.main.shake(150, 0.008);
+        if (this.scene && this.scene.cameras && this.scene.cameras.main) {
+          this.scene.cameras.main.shake(150, 0.008);
+        }
         audioEngine.playSound('impact', true, 0.6);
 
         if (data.health <= 0) {
@@ -332,14 +369,34 @@ export class AsteroidManager {
     this.scene.physics.add.overlap(
       this.playerShip,
       this.stardustGroup,
-      (_, dustObj) => {
-        const dust = dustObj as Phaser.Physics.Arcade.Sprite;
+      (objA, objB) => {
+        let ship: PlayerShip | null = null;
+        let dust: Phaser.Physics.Arcade.Sprite | null = null;
+
+        if (objA === this.playerShip) {
+          ship = this.playerShip;
+          dust = objB as Phaser.Physics.Arcade.Sprite;
+        } else if (objB === this.playerShip) {
+          ship = this.playerShip;
+          dust = objA as Phaser.Physics.Arcade.Sprite;
+        } else if (this.stardustGroup.contains(objA as Phaser.GameObjects.GameObject)) {
+          dust = objA as Phaser.Physics.Arcade.Sprite;
+          ship = this.playerShip;
+        } else if (this.stardustGroup.contains(objB as Phaser.GameObjects.GameObject)) {
+          dust = objB as Phaser.Physics.Arcade.Sprite;
+          ship = this.playerShip;
+        }
+
+        if (!ship || !dust || (dust as unknown) === (ship as unknown)) return;
+        if (ship.isDead || !dust.active) return;
+
         const data = dust.getData('stardustData') as StardustData;
         const val = data ? data.value : 5;
 
+        if (dust.body) dust.body.enable = false;
         dust.destroy();
 
-        this.playerShip.collectStardust(val);
+        ship.collectStardust(val);
         audioEngine.playSound('powerup', true, 0.4);
       }
     );
@@ -395,8 +452,12 @@ export class AsteroidManager {
     }
   }
 
+  public getLaserGroup(): Phaser.Physics.Arcade.Group {
+    return this.laserGroup;
+  }
+
   public update(delta: number): void {
-    const now = this.scene.time.now;
+    const now = this.scene && this.scene.time ? this.scene.time.now : Date.now();
 
     // Clean up old laser beams
     this.laserGroup.getChildren().forEach((obj) => {

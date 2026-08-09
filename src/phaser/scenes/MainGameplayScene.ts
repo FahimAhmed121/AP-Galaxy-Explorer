@@ -5,6 +5,7 @@ import { logger } from '../../core/logger';
 import { PlayerShip } from '../entities/PlayerShip';
 import { WorldManager } from '../managers/WorldManager';
 import { AsteroidManager } from '../managers/AsteroidManager';
+import { DroneManager } from '../managers/DroneManager';
 import { InputSystem } from '../systems/InputSystem';
 import { AudioSystem } from '../systems/AudioSystem';
 import { DebugOverlaySystem } from '../systems/DebugOverlaySystem';
@@ -20,6 +21,7 @@ export class MainGameplayScene extends Phaser.Scene {
   // Systems & Managers
   private worldManager?: WorldManager;
   private asteroidManager?: AsteroidManager;
+  private droneManager?: DroneManager;
   private inputSystem?: InputSystem;
   private audioSystem?: AudioSystem;
   private debugOverlay?: DebugOverlaySystem;
@@ -71,6 +73,9 @@ export class MainGameplayScene extends Phaser.Scene {
     // 7. Initialize Asteroid & Stardust Manager
     this.asteroidManager = new AsteroidManager(this, this.playerShip);
 
+    // 7.5 Initialize Alien Drone Manager
+    this.droneManager = new DroneManager(this, this.playerShip);
+
     // 8. Configure Camera Follow & Lerp
     const camera = this.cameras.main;
     camera.setBounds(0, 0, GAME_CONFIG.world.width, GAME_CONFIG.world.height);
@@ -113,6 +118,11 @@ export class MainGameplayScene extends Phaser.Scene {
     // 3.6 Update Asteroids, Lasers & Stardust Pickup Loops
     if (this.asteroidManager) {
       this.asteroidManager.update(delta);
+    }
+
+    // 3.7 Update Alien Survey Drones
+    if (this.droneManager && this.worldManager) {
+      this.droneManager.update(delta, this.worldManager.getGalaxyManager(), this.asteroidManager);
     }
 
     // 4. Update World, Universe & Galaxy Streaming
@@ -188,12 +198,48 @@ export class MainGameplayScene extends Phaser.Scene {
       logger.info('MainGameplayScene: Scene resumed and player ship controls/camera restored via EventBus.');
     };
 
+    const handlePlayerRespawned = (payload: { x?: number; y?: number }) => {
+      this.isPaused = false;
+      if (this.scene) {
+        this.scene.resume();
+      }
+      if (this.physics && this.physics.world) {
+        this.physics.world.resume();
+      }
+      if (this.input) {
+        this.input.enabled = true;
+      }
+
+      const spawnX = typeof payload?.x === 'number' ? payload.x : GAME_CONFIG.world.width / 2;
+      const spawnY = typeof payload?.y === 'number' ? payload.y : GAME_CONFIG.world.height / 2 - 800;
+
+      if (this.playerShip) {
+        this.playerShip.setPosition(spawnX, spawnY);
+        this.playerShip.alpha = 1.0;
+        this.playerShip.isDead = false;
+        this.playerShip.isControlsLocked = false;
+        if (this.playerShip.body) {
+          this.playerShip.body.enable = true;
+          this.playerShip.body.setVelocity(0, 0);
+        }
+      }
+
+      if (this.cameras && this.cameras.main && this.playerShip) {
+        this.cameras.main.setZoom(1.0);
+        this.cameras.main.centerOn(spawnX, spawnY);
+        this.cameras.main.startFollow(this.playerShip, true, 0.08, 0.08);
+      }
+      logger.info('MainGameplayScene: PLAYER_RESPAWNED handled. Scene unpaused, controls unlocked, camera restored.');
+    };
+
     eventBus.on('PAUSE_GAMEPLAY', handlePause);
     eventBus.on('RESUME_GAMEPLAY', handleResume);
+    eventBus.on('PLAYER_RESPAWNED', handlePlayerRespawned);
 
     this.events.once('shutdown', () => {
       eventBus.off('PAUSE_GAMEPLAY', handlePause);
       eventBus.off('RESUME_GAMEPLAY', handleResume);
+      eventBus.off('PLAYER_RESPAWNED', handlePlayerRespawned);
       this.cleanUpSystems();
     });
   }
@@ -206,6 +252,7 @@ export class MainGameplayScene extends Phaser.Scene {
   private cleanUpSystems(): void {
     if (this.worldManager) this.worldManager.destroy();
     if (this.asteroidManager) this.asteroidManager.destroy();
+    if (this.droneManager) this.droneManager.destroy();
     if (this.inputSystem) this.inputSystem.destroy();
     if (this.audioSystem) this.audioSystem.destroy();
     if (this.debugOverlay) this.debugOverlay.destroy();

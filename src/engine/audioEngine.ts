@@ -183,6 +183,22 @@ class AudioEngine {
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
         osc.start(now);
         osc.stop(now + 0.8);
+      } else if (type === 'drone-survey') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(640, now + 0.35);
+        gain.gain.setValueAtTime(baseGain * 0.7, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.start(now);
+        osc.stop(now + 0.35);
+      } else if (type === 'drone-alert') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(580, now);
+        osc.frequency.setValueAtTime(440, now + 0.12);
+        gain.gain.setValueAtTime(baseGain * 1.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+        osc.start(now);
+        osc.stop(now + 0.28);
       }
     } catch (e) {
       console.warn('Audio play failed', e);

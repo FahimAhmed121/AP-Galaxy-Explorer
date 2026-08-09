@@ -60,16 +60,18 @@
 │   ├── engine/                 # Custom sound engine & audio management
 │   │   └── audioEngine.ts      # Web Audio procedural oscillator & SFX synthesis
 │   ├── phaser/                 # Phaser game engine architecture
-│   │   ├── entities/           # PlayerShip, GalaxyObject, SpaceStation entities
-│   │   ├── managers/           # GalaxyManager, SaveManager, ParticleManager
+│   │   ├── entities/           # PlayerShip, GalaxyObject, SpaceStation, AlienSurveyDrone entities
+│   │   ├── managers/           # GalaxyManager, AsteroidManager, DroneManager, SaveManager, ParticleManager
 │   │   ├── scenes/             # MainGameplayScene & LoadingScene
 │   │   └── systems/            # ScannerSystem, DiscoveryController, QuizController, LearningController, InputSystem, AudioSystem, DebugOverlaySystem
 │   ├── store/                  # Zustand global state (game options, user profile, language)
 │   └── App.tsx / main.tsx      # Main application entry point & canvas integration
-├── docs/                       # Architecture & engineering documentation
+├── docs/                       # Architecture & engineering documentation (including DRONE_SYSTEM_ARCHITECTURE.md)
 ├── PROJECT_STATE.md            # Master project state documentation
 ├── DEVELOPMENT_ROADMAP.md      # Development milestone roadmap
 ├── ARCHITECTURE_OVERVIEW.md    # High-level architecture map
+├── SPRINT_2_4_REPORT.md        # Sprint 2.4 Completion & Verification report
+├── SPRINT_2_3_REPORT.md        # Sprint 2.3 Completion & Verification report
 ├── QUALITY_SPRINT_1_REPORT.md  # Quality Sprint execution report
 └── STABILIZATION_SPRINT_1_REPORT.md # Stabilization & Root Cause Analysis report
 ```
@@ -81,6 +83,7 @@
 - **Managers (`/src/phaser/managers/`)**:
   - `GalaxyManager`: Handles spatial indexing, proximity detection, galaxy entity instantiation, and discovery status tracking.
   - `AsteroidManager`: Handles procedural asteroid field generation, organic clustering, fragmentation physics, laser beam collision overlap, and stardust orb drops.
+  - `DroneManager`: Manages off-screen autonomous AI survey probe spawning near distant unmapped galaxies, start-of-game spawn cooldown (60s), red plasma laser projectile pooling, proximity detection, and context-driven AURA alerts.
   - `SaveManager`: Manages persistent local storage state (stardust, score, mapped galaxies, custom options).
   - `ParticleManager`: Manages thruster emissions, scanner particle beams, and explosion visual FX.
 - **Controllers (`/src/phaser/systems/`)**:
@@ -173,6 +176,9 @@
 - **Mission Objective HUD Synchronization**: Dynamic `Map Galaxies: X/10` display updated in real-time in `ShipStatusHUD`.
 - **Reliable Fallback Visual System**: SVG/WebGL procedural deep-space rendering for galaxies when external images are absent or mock assets.
 - **Handcrafted Educational Datasets**: Complete astrophysical datasets for 10 major galaxies.
+- **Autonomous Alien Survey Drones & FSM AI (`AlienSurveyDrone.ts`)**: 5-state AI FSM (`PATROL`, `SURVEY`, `INVESTIGATE`, `ATTACK`, `RETURN`) prioritizing galaxy spectrographic surveying, cautious approach at ~220px observation distance, defensive plasma laser combat, and Stardust/XP rewards upon destruction.
+- **Contextual Proximity AURA Alerts & Drone Spawning (`DroneManager.ts`)**: Off-screen sector spawning near distant unmapped galaxies with a 60-second start-of-game cooldown, distance-driven AURA warnings (< 600px relevance radius), and 15-second alert throttling.
+- **Arcade Physics Collision Identity Safeguards**: Strict object identity disambiguation (`objA` vs `objB`) in physics overlap callbacks preventing accidental player ship destruction during laser/drone collisions.
 - **Bilingual Interface**: Seamless runtime toggle between English and Bengali (বাংলা) across all HUD elements and modals.
 
 ---
@@ -270,11 +276,9 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 - **Sprint 2.2.1 — Gameplay Balance, Feel & Polish**: ✅ **COMPLETE**
 - **Documentation Synchronization & HUD Redesign**: ✅ **COMPLETE**
 - **Sprint 2.3 — Explorer Progression & Cosmetics**: ✅ **COMPLETE**
+- **Sprint 2.4 — Alien Survey Drones**: ✅ **COMPLETE**
 
 ### Next Milestone
-- **Sprint 2.4 — Alien Survey Drones**: Autonomous AI survey drones patrolling deep space sectors for optional non-destructive encounters.
-
-### Future Milestones (Lean V1 Roadmap)
 - **Sprint 2.5 — Firebase Authentication & Cloud Save**: User login (Google OAuth / Anonymous), Firestore cloud save synchronization, and cross-device progress restoration.
 - **Sprint 2.6 — Electron Desktop Release**: Desktop packaging configuration, installer creation (Windows, macOS, Linux), and production build.
 - **Beta Phase**: Full playtesting, bug fixing, performance optimization, UI/UX polish, and audio polish.

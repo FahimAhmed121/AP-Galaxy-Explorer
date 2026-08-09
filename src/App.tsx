@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { GameState, Galaxy, Spaceship } from './types';
 import { GALAXIES } from './data/galaxies';
 import MainMenu from './components/views/MainMenu';
@@ -10,6 +10,7 @@ import ArchiveModal from './components/views/ArchiveModal';
 import SettingsModal from './components/views/SettingsModal';
 import LearningBriefingModal from './components/hud/LearningBriefingModal';
 import QuizAssessmentModal from './components/hud/QuizAssessmentModal';
+import ContextualAlertBanner from './components/hud/ContextualAlertBanner';
 import { useGameStore } from './store/useGameStore';
 import { audioEngine } from './engine/audioEngine';
 import { eventBus } from './core/events';
@@ -77,9 +78,9 @@ export default function App() {
   }, [discoverGalaxy]);
 
   // Handle ship state saving from GameCanvas
-  const handleSaveShipState = (ship: Spaceship) => {
+  const handleSaveShipState = useCallback((ship: Spaceship) => {
     saveShipState(ship);
-  };
+  }, [saveShipState]);
 
   // Trigger Galaxy Discovery & Hyperspace Warp
   const handleDiscoverGalaxy = (galaxyId: string) => {
@@ -157,7 +158,9 @@ export default function App() {
 
       {/* 2. STATE: PLAYING (also keep mounted during SETTINGS/ARCHIVE overlays when returnState is PLAYING) */}
       {(gameState === 'PLAYING' || ((gameState === 'SETTINGS' || gameState === 'ARCHIVE') && returnState === 'PLAYING')) && (
-        <GameCanvas
+        <>
+          <ContextualAlertBanner />
+          <GameCanvas
           onDiscoverGalaxy={(galaxyId) => {
             setReturnState('PLAYING');
             setOpenedFromArchive(false);
@@ -180,6 +183,7 @@ export default function App() {
             setGameState('SETTINGS');
           }}
         />
+        </>
       )}
 
       {/* 3. STATE: WARPING (Hyperspace jump cutscene) */}

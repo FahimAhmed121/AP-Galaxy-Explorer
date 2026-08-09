@@ -1,5 +1,6 @@
 import { Galaxy } from '../../core/types';
 import { SCANNER_CONFIG } from '../../core/config';
+import { DRONE_CONFIG } from '../../core/constants';
 import { eventBus } from '../../core/events';
 import { logger } from '../../core/logger';
 import { GalaxyManager } from '../managers/GalaxyManager';
@@ -16,26 +17,63 @@ export class ScannerSystem {
   private cooldownRemaining: number = 0; // seconds
   private nearbyTarget: Galaxy | null = null; // Target currently in scanner range
   private lastGalaxyManager: GalaxyManager | null = null;
+  private isInterferenceActive: boolean = false;
+
+  private handleTriggerScanRef?: () => void;
+  private handleInterferenceRef?: (payload: { active: boolean }) => void;
+  private handleResetGameRef?: () => void;
+  private handlePlayerDestroyedRef?: () => void;
+  private handlePlayerRespawnedRef?: () => void;
 
   constructor() {
     logger.info('ScannerSystem: Production Scanner System initialized.');
 
-    const handleTriggerScan = () => {
+    this.handleTriggerScanRef = () => {
       if (this.state === 'IDLE' && this.nearbyTarget && this.lastGalaxyManager) {
         this.startScan(this.nearbyTarget, this.lastGalaxyManager);
       }
     };
 
-    const handleResetGame = () => {
+    this.handleInterferenceRef = (payload: { active: boolean }) => {
+      this.isInterferenceActive = payload.active;
+    };
+
+    this.handleResetGameRef = () => {
+      if (this.state === 'SCANNING' && this.lastGalaxyManager) {
+        this.cancelScan('GAME_RESET', this.lastGalaxyManager);
+      }
       this.state = 'IDLE';
       this.currentTarget = null;
       this.elapsedTime = 0;
       this.cooldownRemaining = 0;
       this.nearbyTarget = null;
+      this.isInterferenceActive = false;
     };
 
-    eventBus.on('TRIGGER_SCAN', handleTriggerScan);
-    eventBus.on('RESET_GAME', handleResetGame);
+    this.handlePlayerDestroyedRef = () => {
+      if (this.state === 'SCANNING' && this.lastGalaxyManager) {
+        this.cancelScan('PLAYER_DESTROYED', this.lastGalaxyManager);
+      }
+      this.state = 'IDLE';
+      this.currentTarget = null;
+      this.elapsedTime = 0;
+      this.cooldownRemaining = 0;
+      this.isInterferenceActive = false;
+    };
+
+    this.handlePlayerRespawnedRef = () => {
+      this.state = 'IDLE';
+      this.currentTarget = null;
+      this.elapsedTime = 0;
+      this.cooldownRemaining = 0;
+      this.isInterferenceActive = false;
+    };
+
+    eventBus.on('TRIGGER_SCAN', this.handleTriggerScanRef);
+    eventBus.on('SCANNER_INTERFERENCE_CHANGED', this.handleInterferenceRef);
+    eventBus.on('RESET_GAME', this.handleResetGameRef);
+    eventBus.on('PLAYER_DESTROYED', this.handlePlayerDestroyedRef);
+    eventBus.on('PLAYER_RESPAWNED', this.handlePlayerRespawnedRef);
   }
 
   public update(
@@ -155,7 +193,10 @@ export class ScannerSystem {
     this.elapsedTime = 0;
 
     const scanSpeedBonus = useGameStore.getState().getActivePerkBonus('SCAN_SPEED');
-    this.duration = SCANNER_CONFIG.scanDuration / (1 + scanSpeedBonus);
+    const baseDuration = SCANNER_CONFIG.scanDuration / (1 + scanSpeedBonus);
+    // Apply tuned duration penalty (15%) under alien drone interference
+    const penaltyMult = 1 + DRONE_CONFIG.SCANNER_INTERFERENCE_PENALTY;
+    this.duration = this.isInterferenceActive ? baseDuration * penaltyMult : baseDuration;
 
     galaxyManager.setDiscoveryState(target.id, 'SCANNING', 0);
 
@@ -237,6 +278,12 @@ export class ScannerSystem {
   }
 
   public destroy(): void {
+    if (this.handleTriggerScanRef) eventBus.off('TRIGGER_SCAN', this.handleTriggerScanRef);
+    if (this.handleInterferenceRef) eventBus.off('SCANNER_INTERFERENCE_CHANGED', this.handleInterferenceRef);
+    if (this.handleResetGameRef) eventBus.off('RESET_GAME', this.handleResetGameRef);
+    if (this.handlePlayerDestroyedRef) eventBus.off('PLAYER_DESTROYED', this.handlePlayerDestroyedRef);
+    if (this.handlePlayerRespawnedRef) eventBus.off('PLAYER_RESPAWNED', this.handlePlayerRespawnedRef);
+
     this.currentTarget = null;
     this.nearbyTarget = null;
   }

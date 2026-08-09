@@ -40,8 +40,10 @@ The codebase is split into distinct architectural boundaries. Every developer an
 - **React Presentation Layer (`src/components/`)**: Handles UI overlays, HUD bars, interactive modals, Pilot Hangar upgrades, and accessibility controls. Strictly presentation and state display.
 - **Phaser 3 Engine Layer (`src/phaser/`)**: Manages 2D WebGL canvas rendering, physics bodies, camera tracking, particle systems, asteroid fields, laser projectiles, and world entity rendering. All 2D gameplay execution occurs strictly inside Phaser 3.
 - **Controllers (`src/phaser/systems/`)**: Orchestrate gameplay state machine transitions (`DiscoveryController`, `LearningController`, `QuizController`). Controllers are the sole authorities for state transitions.
-- **Managers (`src/phaser/managers/`)**: Own and manage game entities and persistent objects (`GalaxyManager`, `AsteroidManager`, `SaveManager`, `ParticleManager`).
+- **Managers (`src/phaser/managers/`)**: Own and manage game entities and persistent objects (`GalaxyManager`, `AsteroidManager`, `DroneManager`, `SaveManager`, `ParticleManager`).
   - *AsteroidManager Responsibilities*: Owns procedural asteroid field generation, 7 organic cluster formations, fragmentation physics (Large → Medium → Small), collision impact mechanics, laser projectile physics, and Stardust orb spawning.
+  - *DroneManager Responsibilities*: Owns off-screen spawning of autonomous survey probes (`AlienSurveyDrone.ts`), start-of-game spawn cooldown enforcement, proximity-driven AURA alerts, laser projectile pooling, and Arcade Physics collision safety.
+  - *Arcade Physics Collision Identity Rule*: Never assume positional parameter order (`obj1`, `obj2`) in `physics.add.overlap` callbacks. Always compare `objA` and `objB` against explicit entity references (`objA === this.playerShip`) to prevent accidental destruction of player entities when clearing laser projectiles.
 - **Systems (`src/phaser/systems/`)**: Process continuous gameplay mechanics (`ScannerSystem`, `InputSystem`, `AudioSystem`).
   - *Input & Weapon Bindings*: Spacebar, F, K, and Mouse Click fire the Plasma Cannon. Shift strictly engages thruster boost. Never bind Spacebar to boost to avoid weapon input conflicts.
 - **EventBus (`src/core/events.ts`)**: Serves as the single, decoupled Pub/Sub communication channel bridging Phaser 3 canvas events and React UI overlays without direct DOM coupling. Includes `UPDATE_SHIP_STATS` and `SHIP_STATS_CHANGED` contracts.
@@ -109,8 +111,8 @@ Before writing code or making edits, AI assistants and developers MUST inspect d
 3. `DEVELOPMENT_ROADMAP.md` (Lean V1 roadmap and milestone status)
 4. `ARCHITECTURE_OVERVIEW.md` (High-level architecture and EventBus flows)
 5. `docs/ENGINEERING_STANDARDS.md` (Detailed coding standards)
-6. Relevant system architecture doc in `docs/` (`DISCOVERY_SYSTEM_ARCHITECTURE.md`, `LEARNING_SYSTEM_ARCHITECTURE.md`, `QUIZ_SYSTEM_ARCHITECTURE.md`, etc.)
-7. Latest sprint reports (`SPRINT_2_1_REPORT.md`, `STABILIZATION_SPRINT_1_REPORT.md`, `QUALITY_SPRINT_1_REPORT.md`)
+6. Relevant system architecture doc in `docs/` (`DISCOVERY_SYSTEM_ARCHITECTURE.md`, `LEARNING_SYSTEM_ARCHITECTURE.md`, `QUIZ_SYSTEM_ARCHITECTURE.md`, `DRONE_SYSTEM_ARCHITECTURE.md`, etc.)
+7. Latest sprint reports (`SPRINT_2_4_REPORT.md`, `SPRINT_2_3_REPORT.md`, `SPRINT_2_1_REPORT.md`, `STABILIZATION_SPRINT_1_REPORT.md`, `QUALITY_SPRINT_1_REPORT.md`)
 
 ---
 

@@ -18,6 +18,27 @@ export class PlayerShip extends Phaser.GameObjects.Container {
   public maxEnergy: number = 100;
   public stardust: number = 0;
   public score: number = 0;
+  public isDead: boolean = false;
+  public isControlsLocked: boolean = false;
+
+  // Invulnerability window (i-frame) to prevent instant destruction from multi-body overlaps
+  private lastDamageTime: number = 0;
+  private invulnerabilityDuration: number = 450;
+  private damageFlashTimer?: Phaser.Time.TimerEvent;
+
+  // Diagnostic State Monitor
+  private debugLastState = {
+    alpha: 1.0,
+    visible: true,
+    active: true,
+    depth: 10,
+    isDead: false,
+    isControlsLocked: false,
+    bodyEnable: true,
+    shipGVisible: true,
+    shipGAlpha: 1.0,
+    thrusterGVisible: true,
+  };
 
   // Upgrade Levels
   public speedUpgrade: number = 1;
@@ -91,6 +112,7 @@ export class PlayerShip extends Phaser.GameObjects.Container {
     const handleResetGame = () => {
       this.setPosition(GAME_CONFIG.world.width / 2, GAME_CONFIG.world.height / 2 - 800);
       if (this.body) {
+        this.body.enable = true;
         this.body.setVelocity(0, 0);
       }
       this.health = 100;
@@ -105,23 +127,56 @@ export class PlayerShip extends Phaser.GameObjects.Container {
       this.shieldUpgrade = 1;
       this.weaponUpgrade = 1;
       this.magnetUpgrade = 1;
+      this.isDead = false;
       this.isControlsLocked = false;
       this.loadEquippedCosmetics();
       this.drawShipShape();
     };
 
+    const handlePlayerRespawned = (payload: { x?: number; y?: number }) => {
+      const spawnX = typeof payload?.x === 'number' ? payload.x : GAME_CONFIG.world.width / 2;
+      const spawnY = typeof payload?.y === 'number' ? payload.y : GAME_CONFIG.world.height / 2 - 800;
+      this.setPosition(spawnX, spawnY);
+      this.alpha = 1.0;
+      if (this.shipGraphics) {
+        this.shipGraphics.setPosition(0, 0);
+      }
+      if (this.body) {
+        this.body.enable = true;
+        this.body.setVelocity(0, 0);
+      }
+      this.health = this.maxHealth;
+      this.shield = this.maxShield;
+      this.energy = this.maxEnergy;
+      this.isDead = false;
+      this.isControlsLocked = false;
+      this.loadEquippedCosmetics();
+      this.drawShipShape();
+      this.syncState();
+    };
+
     eventBus.on('UPDATE_SHIP_STATS', handleUpdate);
     eventBus.on('COSMETICS_CHANGED', handleCosmeticsChanged);
     eventBus.on('RESET_GAME', handleResetGame);
+    eventBus.on('PLAYER_RESPAWNED', handlePlayerRespawned);
 
     this.once('destroy', () => {
       eventBus.off('UPDATE_SHIP_STATS', handleUpdate);
       eventBus.off('COSMETICS_CHANGED', handleCosmeticsChanged);
       eventBus.off('RESET_GAME', handleResetGame);
+      eventBus.off('PLAYER_RESPAWNED', handlePlayerRespawned);
     });
   }
 
   public applyShipState(state: any): void {
+    if (typeof state.x === 'number' && typeof state.y === 'number') {
+      this.setPosition(state.x, state.y);
+      if (this.body) {
+        this.body.enable = true;
+        this.body.setVelocity(0, 0);
+      }
+    }
+
     if (state.speedUpgrade !== undefined) this.speedUpgrade = state.speedUpgrade;
     if (state.shieldUpgrade !== undefined) this.shieldUpgrade = state.shieldUpgrade;
     if (state.weaponUpgrade !== undefined) this.weaponUpgrade = state.weaponUpgrade;
@@ -144,6 +199,14 @@ export class PlayerShip extends Phaser.GameObjects.Container {
 
     if (state.health !== undefined) this.health = Math.min(state.health, this.maxHealth);
     if (state.shield !== undefined) this.shield = Math.min(state.shield, this.maxShield);
+
+    if (this.health > 0) {
+      this.isDead = false;
+      this.isControlsLocked = false;
+      if (this.body) {
+        this.body.enable = true;
+      }
+    }
 
     this.syncState();
   }
@@ -235,8 +298,6 @@ export class PlayerShip extends Phaser.GameObjects.Container {
     this.particleEmitter.setDepth(9);
   }
 
-  public isControlsLocked: boolean = false;
-
   public applyVibration(intensity: number = 1.5): void {
     const offsetX = (Math.random() - 0.5) * intensity;
     const offsetY = (Math.random() - 0.5) * intensity;
@@ -249,15 +310,19 @@ export class PlayerShip extends Phaser.GameObjects.Container {
     // Reset graphics vibration offset when normal
     this.shipGraphics.setPosition(0, 0);
 
-    if (this.isControlsLocked) {
+    if (this.isDead || this.isControlsLocked) {
       this.isThrusting = false;
       this.drawThrusterGlow(false, false);
-      if (this.particleEmitter) this.particleEmitter.stop();
+      if (this.particleEmitter) this.particleEmitter.emitting = false;
       // Smoothly dampen ship movement
-      this.body.velocity.x *= Math.pow(0.85, dt * 60);
-      this.body.velocity.y *= Math.pow(0.85, dt * 60);
+      if (this.body && this.body.velocity) {
+        this.body.velocity.x *= Math.pow(0.85, dt * 60);
+        this.body.velocity.y *= Math.pow(0.85, dt * 60);
+      }
       return;
     }
+
+    if (!this.body || !this.body.velocity) return;
 
     this.isThrusting = input.forward;
 
@@ -339,23 +404,122 @@ export class PlayerShip extends Phaser.GameObjects.Container {
     this.syncState();
   }
 
+  public logStateIfChanged(reason: string): void {
+    const curAlpha = this.alpha;
+    const curVis = this.visible;
+    const curActive = this.active;
+    const curDepth = this.depth;
+    const curDead = this.isDead;
+    const curLocked = this.isControlsLocked;
+    const curBodyEnable = this.body ? this.body.enable : false;
+    const curShipVis = this.shipGraphics ? this.shipGraphics.visible : false;
+    const curShipAlpha = this.shipGraphics ? this.shipGraphics.alpha : 0;
+    const curThrusterVis = this.thrusterGraphics ? this.thrusterGraphics.visible : false;
+
+    const prev = this.debugLastState;
+    if (
+      curAlpha !== prev.alpha ||
+      curVis !== prev.visible ||
+      curActive !== prev.active ||
+      curDepth !== prev.depth ||
+      curDead !== prev.isDead ||
+      curLocked !== prev.isControlsLocked ||
+      curBodyEnable !== prev.bodyEnable ||
+      curShipVis !== prev.shipGVisible ||
+      curShipAlpha !== prev.shipGAlpha ||
+      curThrusterVis !== prev.thrusterGVisible
+    ) {
+      logger.info(
+        `[AP-DEBUG] PlayerShip State Change (${reason}): ` +
+        `alpha=${curAlpha} (was ${prev.alpha}), visible=${curVis}, active=${curActive}, ` +
+        `depth=${curDepth}, isDead=${curDead}, isControlsLocked=${curLocked}, ` +
+        `bodyEnable=${curBodyEnable}, shipGVis=${curShipVis}, shipGAlpha=${curShipAlpha}, ` +
+        `thrusterGVis=${curThrusterVis}, pos=(${Math.round(this.x)},${Math.round(this.y)})`
+      );
+
+      this.debugLastState = {
+        alpha: curAlpha,
+        visible: curVis,
+        active: curActive,
+        depth: curDepth,
+        isDead: curDead,
+        isControlsLocked: curLocked,
+        bodyEnable: curBodyEnable,
+        shipGVisible: curShipVis,
+        shipGAlpha: curShipAlpha,
+        thrusterGVisible: curThrusterVis,
+      };
+    }
+  }
+
   public takeDamage(damage: number): void {
+    if (this.isDead || this.health <= 0) return;
+
+    const validDamage = Number.isFinite(damage) ? Math.max(0, damage) : 20;
+
+    const now = this.scene && this.scene.time ? this.scene.time.now : Date.now();
+    if (now - this.lastDamageTime < this.invulnerabilityDuration) {
+      return; // Ignore damage during invulnerability window
+    }
+    this.lastDamageTime = now;
+
+    // Visual damage vibration & timer-based alpha pulse feedback (no tween engine side-effects)
+    this.applyVibration(2.5);
+
+    if (this.damageFlashTimer) {
+      this.damageFlashTimer.remove();
+      this.damageFlashTimer = undefined;
+    }
+
+    this.alpha = 0.35;
+    this.logStateIfChanged('takeDamage-flash-start');
+
+    if (this.scene && this.scene.time) {
+      this.damageFlashTimer = this.scene.time.delayedCall(100, () => {
+        if (!this.isDead) {
+          this.alpha = 1.0;
+          this.logStateIfChanged('takeDamage-flash-end');
+        }
+      });
+    } else {
+      if (!this.isDead) this.alpha = 1.0;
+    }
+
     if (this.shield > 0) {
-      const shieldDmg = Math.min(this.shield, damage);
+      const shieldDmg = Math.min(this.shield, validDamage);
       this.shield -= shieldDmg;
-      const leftover = damage - shieldDmg;
+      const leftover = validDamage - shieldDmg;
       if (leftover > 0) {
         // Reduced direct hull damage taken when shield depleted
         this.health = Math.max(0, this.health - leftover * 0.5);
       }
     } else {
       // Direct hull damage absorbs impact with 50% structural resistance
-      this.health = Math.max(0, this.health - damage * 0.5);
+      this.health = Math.max(0, this.health - validDamage * 0.5);
     }
 
     this.syncState();
 
     if (this.health <= 0) {
+      this.health = 0;
+      this.isDead = true;
+      this.isControlsLocked = true;
+
+      if (this.damageFlashTimer) {
+        this.damageFlashTimer.remove();
+        this.damageFlashTimer = undefined;
+      }
+      this.alpha = 1.0;
+      this.logStateIfChanged('player-dead');
+
+      this.drawThrusterGlow(false, false);
+      if (this.particleEmitter) {
+        this.particleEmitter.emitting = false;
+      }
+      if (this.body) {
+        this.body.setVelocity(0, 0);
+        this.body.enable = false;
+      }
       eventBus.emit('PLAYER_DESTROYED', { x: this.x, y: this.y });
     }
   }
@@ -405,6 +569,15 @@ export class PlayerShip extends Phaser.GameObjects.Container {
   }
 
   public syncState(): void {
+    if (!this.isDead) {
+      if (!this.visible) this.visible = true;
+      if (!this.active) this.active = true;
+      if (this.shipGraphics && !this.shipGraphics.visible) this.shipGraphics.visible = true;
+      if (this.thrusterGraphics && !this.thrusterGraphics.visible) this.thrusterGraphics.visible = true;
+    }
+
+    this.logStateIfChanged('syncState');
+
     eventBus.emit('SHIP_POSITION_CHANGED', {
       x: this.x,
       y: this.y,

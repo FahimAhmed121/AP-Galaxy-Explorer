@@ -12,6 +12,7 @@ export type GameEventType =
   | 'SHIP_STATS_CHANGED'
   | 'UPDATE_SHIP_STATS'
   | 'PLAYER_DESTROYED'
+  | 'PLAYER_RESPAWNED'
   | 'STARDUST_COLLECTED'
   | 'GALAXY_PROXIMITY_ENTER'
   | 'GALAXY_PROXIMITY_EXIT'
@@ -40,7 +41,13 @@ export type GameEventType =
   | 'PROGRESSION_LEVEL_UP'
   | 'BADGE_UNLOCKED'
   | 'COSMETICS_CHANGED'
-  | 'RESET_GAME';
+  | 'RESET_GAME'
+  | 'DRONE_DETECTED'
+  | 'DRONE_STATE_CHANGED'
+  | 'DRONE_ATTACKED'
+  | 'DRONE_DESTROYED'
+  | 'SCANNER_INTERFERENCE_CHANGED'
+  | 'AURA_ALERT';
 
 export interface GameEventPayloads {
   PHASER_READY: { sceneKey: string };
@@ -56,6 +63,7 @@ export interface GameEventPayloads {
   SHIP_STATS_CHANGED: any;
   UPDATE_SHIP_STATS: any;
   PLAYER_DESTROYED: { x: number; y: number };
+  PLAYER_RESPAWNED: { x: number; y: number };
   STARDUST_COLLECTED: { amount: number; total?: number };
   GALAXY_PROXIMITY_ENTER: { galaxyId: string; galaxyName: string };
   GALAXY_PROXIMITY_EXIT: { galaxyId: string };
@@ -83,6 +91,12 @@ export interface GameEventPayloads {
   BADGE_UNLOCKED: { badgeId: string; title: string; description: string; iconName: string };
   COSMETICS_CHANGED: { equippedCosmetics: any };
   RESET_GAME: void;
+  DRONE_DETECTED: { droneId: string; galaxyName?: string; x: number; y: number };
+  DRONE_STATE_CHANGED: { droneId: string; state: 'PATROL' | 'SURVEY' | 'INVESTIGATE' | 'ATTACK' | 'RETURN' };
+  DRONE_ATTACKED: { droneId: string };
+  DRONE_DESTROYED: { droneId: string; x: number; y: number; stardust: number; xp: number };
+  SCANNER_INTERFERENCE_CHANGED: { active: boolean; intensity: number; droneId?: string };
+  AURA_ALERT: { message: string; severity?: 'info' | 'warning' | 'danger' };
 }
 
 type EventCallback<T> = (payload: T) => void;

@@ -97,19 +97,17 @@ export default function GameCanvas({
       setNearGalaxy(null);
     };
     const handlePos = (data: { x: number; y: number; angle: number; speed: number }) => {
-      setHudShip((prev) => {
-        const next = { ...prev, x: data.x, y: data.y, angle: data.angle };
-        // Check near galaxy
-        let currentNear: Galaxy | null = null;
-        GALAXIES.forEach((g) => {
-          const dist = Math.hypot(data.x - g.x, data.y - g.y);
-          if (dist < g.radius * 1.6) {
-            currentNear = g;
-          }
-        });
-        setNearGalaxy(currentNear);
-        return next;
+      setHudShip((prev) => ({ ...prev, x: data.x, y: data.y, angle: data.angle }));
+
+      // Check near galaxy outside state updater
+      let currentNear: Galaxy | null = null;
+      GALAXIES.forEach((g) => {
+        const dist = Math.hypot(data.x - g.x, data.y - g.y);
+        if (dist < g.radius * 1.6) {
+          currentNear = g;
+        }
       });
+      setNearGalaxy((prev) => (prev?.id === currentNear?.id ? prev : currentNear));
     };
 
     const handleHealth = (data: { current: number; max: number }) => {
@@ -125,11 +123,7 @@ export default function GameCanvas({
     };
 
     const handleStats = (data: Partial<Spaceship>) => {
-      setHudShip((prev) => {
-        const updated = { ...prev, ...data };
-        onSaveShipState(updated);
-        return updated;
-      });
+      setHudShip((prev) => ({ ...prev, ...data }));
     };
 
     const handleStardustCollected = (data: { amount: number }) => {
@@ -209,14 +203,17 @@ export default function GameCanvas({
 
   const handleRespawn = () => {
     setIsGameOver(false);
+    const spawnX = WORLD_SIZE / 2;
+    const spawnY = WORLD_SIZE / 2 - 800;
     const respawnShip = {
       ...hudShip,
       health: hudShip.maxHealth,
       shield: hudShip.maxShield,
-      x: WORLD_SIZE / 2,
-      y: WORLD_SIZE / 2 - 800,
+      x: spawnX,
+      y: spawnY,
     };
     handleUpdateShip(respawnShip);
+    eventBus.emit('PLAYER_RESPAWNED', { x: spawnX, y: spawnY });
   };
 
   return (
