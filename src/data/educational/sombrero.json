@@ -13,45 +13,100 @@
   "observationTips": "Visible with binoculars under dark skies; 8-inch telescopes reveal the dark dust lane across the bright core.",
   "funFacts": [
     "Possesses an unusually large globular cluster population estimated at nearly 2,000 clusters.",
-    "Houses a supermassive black hole with a mass 1 billion times that of our Sun at its center.",
-    "X-ray imaging shows hot gas extending over 60,000 light-years into space."
+    "Houses a supermassive black hole with a mass 1 billion times that of our Sun at its center."
   ],
+  "quizReferences": ["sombrero-q1", "sombrero-q2", "sombrero-q3", "sombrero-q4", "sombrero-q5"],
   "cards": [
     {
       "id": "sombrero-card-1",
-      "title": "Galactic Profile",
-      "subtitle": "Unbarred Spiral & Massive Dark Dust Ring",
+      "title": "Arrival: The Wide-Brimmed Cosmic Hat",
+      "subtitle": "Messier 104 Overview",
       "category": "OVERVIEW",
-      "body": "The Sombrero Galaxy (M104) is renowned for its brilliant white core surrounded by a striking dark rim of interstellar dust.",
+      "body": "Welcome to the Sombrero Galaxy (M104), one of the most visually distinctive galaxies in the cosmos. Located 31 million light-years away on the border of Virgo and Corvus, M104 features a brilliant white nuclear bulge encircled by a prominent dark equatorial lane of interstellar dust, giving it the shape of a broad-brimmed Mexican hat.",
       "keyMetrics": [
         { "label": "CLASSIFICATION", "value": "Unbarred Spiral (SAa)" },
-        { "label": "CONSTELLATION", "value": "Virgo / Corvus" },
-        { "label": "DISTANCE", "value": "31 Million Light-Years" },
-        { "label": "DIAMETER", "value": "50,000 Light-Years" }
+        { "label": "DISTANCE FROM EARTH", "value": "31 Million Light Years" },
+        { "label": "DIAMETER", "value": "50,000 Light Years" },
+        { "label": "CONSTELLATION", "value": "Virgo / Corvus" }
       ],
       "visualPlaceholder": {
-        "title": "Hubble Deep Space View",
-        "caption": "High-resolution mosaic of M104 showing its sharp dust rim.",
-        "assetType": "TELESCOPE_IMAGE"
+        "title": "Sombrero Galaxy Optical Portrait",
+        "caption": "Hubble Space Telescope ultra-deep optical view showing M104's prominent dust lane.",
+        "assetType": "TELESCOPE_IMAGE",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/5e/M104_ngc4594_sombrero_galaxy_hubble_ultradeep.jpg"
       }
     },
     {
       "id": "sombrero-card-2",
-      "title": "Supermassive Core",
-      "subtitle": "1 Billion Solar Mass Black Hole Engine",
-      "category": "STRUCTURE",
-      "body": "Spectroscopic measurements indicate that M104 contains one of the most massive black holes ever detected in a relatively nearby galaxy.",
+      "title": "Discovery: Pierre Méchain & The Dust Lane",
+      "subtitle": "Catalogue History",
+      "category": "HISTORY",
+      "body": "Discovered on May 11, 1781 by French astronomer Pierre Méchain, M104 was added to Messier's catalog posthumously by Camille Flammarion in 1921. Early 20th-century spectroscopic measurements by Vesto Slipher revealed its high radial velocity, providing early clues that spiral nebulae were expanding away from us.",
       "bulletPoints": [
-        "Core mass measured at 1,000,000,000 solar masses.",
-        "Emits strong X-ray radiation detected by NASA's Chandra Observatory.",
-        "Surrounded by a giant sphere of globular clusters."
+        "Pierre Méchain documented M104 in May 1781.",
+        "Vesto Slipher measured its high blueshift/redshift velocity in 1912.",
+        "Proved to be a distant extragalactic system outside the Milky Way."
       ],
       "visualPlaceholder": {
-        "title": "Chandra X-Ray Overlay",
-        "caption": "X-ray emission from hot gas around the galactic core.",
+        "title": "Historical Spectrographic Measurements",
+        "caption": "Early 20th-century spectrographic plate recording radial velocity of Messier 104.",
+        "assetType": "FORMATION_DIAGRAM"
+      }
+    },
+    {
+      "id": "sombrero-card-3",
+      "title": "Cosmic Story: The 1 Billion Solar Mass Monster",
+      "subtitle": "Supermassive Core & Halo Clusters",
+      "category": "STRUCTURE",
+      "body": "At the center of M104's brilliant stellar bulge lies a giant supermassive black hole with a mass exceeding 1 billion Suns—one of the most massive black holes detected in any nearby galaxy. Orbiting in the galaxy's vast halo are nearly 2,000 globular star clusters, roughly ten times the number surrounding the Milky Way.",
+      "keyMetrics": [
+        { "label": "BLACK HOLE MASS", "value": "1 Billion Solar Masses" },
+        { "label": "GLOBULAR CLUSTERS", "value": "~2,000 Clusters" }
+      ],
+      "bulletPoints": [
+        "Central black hole mass measured at ~1,000,000,000 solar masses.",
+        "Halo contains ~2,000 ancient globular star clusters.",
+        "Chandra X-ray Observatory detects hot gas halo extending 60,000 light-years into space."
+      ],
+      "visualPlaceholder": {
+        "title": "Chandra X-Ray Emission Overlay",
+        "caption": "X-ray emission map showing hot diffuse gas extending far above M104's disk.",
         "assetType": "SPECTRAL_CHART"
       }
+    },
+    {
+      "id": "sombrero-card-4",
+      "title": "Deep Insight: Webb Mid-Infrared Clumpy Dust Ring",
+      "subtitle": "Multi-Spectrum Space Observations",
+      "category": "FORMATION",
+      "body": "NASA's James Webb Space Telescope imaged the Sombrero Galaxy in mid-infrared wavelengths using MIRI. Infrared light penetrates the dark dust lane, revealing an intricate clumpy ring structure containing cold gas and polycyclic aromatic hydrocarbons (PAHs) where active starbirth occurs.",
+      "bulletPoints": [
+        "JWST MIRI mid-infrared optics penetrate optical dust opacity.",
+        "Reveals detailed clumpy dust ring structure in place of a smooth band.",
+        "Traces hydrocarbon chemistry and raw cold gas reservoirs."
+      ],
+      "visualPlaceholder": {
+        "title": "JWST MIRI Infrared Portrait",
+        "caption": "James Webb Space Telescope mid-infrared image revealing glowing dust structure inside M104's ring.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "sombrero-card-5",
+      "title": "Cosmic Curiosity: Hybrid Galaxy Evolution",
+      "subtitle": "Spiral Disk Inside Elliptical Bulge",
+      "category": "FACTS",
+      "body": "The Sombrero Galaxy presents a fascinating evolutionary riddle: it possesses both a massive, giant elliptical-like stellar bulge and a thin, gas-rich spiral disk. Astronomers hypothesize that M104 represents a rare hybrid galaxy formed when a gas-rich spiral was absorbed by a giant elliptical galaxy billions of years ago.",
+      "bulletPoints": [
+        "Exhibits characteristics of both elliptical and spiral galaxy classes.",
+        "Enormous bulge component dominates total galaxy light and mass.",
+        "May represent a transitional evolutionary stage between spiral and elliptical forms."
+      ],
+      "visualPlaceholder": {
+        "title": "Hybrid Galactic Galaxy Evolution Model",
+        "caption": "Conceptual diagram depicting the merger of a gas spiral disk with a massive elliptical bulge.",
+        "assetType": "ARTIST_CONCEPT"
+      }
     }
-  ],
-  "quizReferences": ["sombrero"]
+  ]
 }

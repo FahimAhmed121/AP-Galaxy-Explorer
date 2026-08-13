@@ -2,56 +2,111 @@
   "galaxyId": "small-magellanic-cloud",
   "galaxyName": "Small Magellanic Cloud (SMC)",
   "auraIntro": "Explorer, Small Magellanic Cloud is a dwarf satellite galaxy linked to the LMC by a stream of neutral hydrogen gas.",
-  "overview": "The Small Magellanic Cloud (SMC or NGC 292) is a dwarf irregular galaxy orbiting the Milky Way at a distance of 200,000 light-years in Tucana.",
+  "overview": "The Small Magellanic Cloud (SMC or NGC 292) is a dwarf irregular galaxy orbiting the Milky Way at a distance of 200,000 light-years in the constellation Tucana.",
   "formation": "Formed roughly 6.5 billion years ago, frequent gravitational encounters with the Milky Way and LMC disrupted its original structure.",
   "structure": "A dwarf irregular galaxy containing several hundred million stars across a diameter of 7,000 light-years, with low heavy-element metal abundance.",
   "distance": "200,000 Light Years",
   "diameter": "7,000 Light Years",
   "age": "6.5 Billion Years",
   "constellation": "Tucana",
-  "discoveryHistory": "Observed by Southern Hemisphere inhabitants for millennia; recorded by Amerigo Vespucci in 1501 and cataloged by Magellan's crew.",
-  "observationTips": "Visible to the naked eye as a hazy cloud near 47 Tucanae globular cluster in Southern Hemisphere skies.",
+  "discoveryHistory": "Observed by Southern Hemisphere inhabitants for millennia; recorded by Amerigo Vespucci in 1501 and cataloged by Magellan's crew in 1519.",
+  "observationTips": "Visible to the naked eye as a faint hazy cloud near the prominent 47 Tucanae globular cluster in Southern Hemisphere skies.",
   "funFacts": [
     "Henrietta Swan Leavitt discovered the Cepheid variable Period-Luminosity relationship studying stars in the SMC in 1912, revolutionizing cosmic distance measurements.",
-    "Linked to the Large Magellanic Cloud by the 'Magellanic Bridge', a stream of neutral hydrogen gas and young stars.",
-    "Possesses low metallicity (heavy elements), providing a window into conditions in the early Universe."
+    "Linked to the Large Magellanic Cloud by the 'Magellanic Bridge', a stream of neutral hydrogen gas and young stars."
   ],
+  "quizReferences": ["smc-q1", "smc-q2", "smc-q3", "smc-q4", "smc-q5"],
   "cards": [
     {
       "id": "smc-card-1",
-      "title": "Cosmic Distance Key",
-      "subtitle": "Low-Metallicity Dwarf Irregular Galaxy",
+      "title": "Arrival: The Southern Sky Dwarf Companion",
+      "subtitle": "Small Magellanic Cloud Overview",
       "category": "OVERVIEW",
-      "body": "The Small Magellanic Cloud (SMC) holds a historical milestone in astrophysics: Henrietta Leavitt's discovery of Cepheid variables in SMC calibrated the cosmic distance scale.",
+      "body": "Welcome to the Small Magellanic Cloud (SMC), a dwarf irregular galaxy located 200,000 light-years from Earth in the constellation Tucana. Spanning 7,000 light-years across space and containing several hundred million stars, the SMC is one of the closest galactic neighbors to the Milky Way.",
       "keyMetrics": [
         { "label": "CLASSIFICATION", "value": "Dwarf Irregular (SB(s)m pec)" },
-        { "label": "CONSTELLATION", "value": "Tucana" },
-        { "label": "DISTANCE", "value": "200,000 Light-Years" },
-        { "label": "DIAMETER", "value": "7,000 Light-Years" }
+        { "label": "DISTANCE FROM EARTH", "value": "200,000 Light Years" },
+        { "label": "DIAMETER", "value": "7,000 Light Years" },
+        { "label": "CONSTELLATION", "value": "Tucana" }
       ],
       "visualPlaceholder": {
-        "title": "ESO Vista Infrared Sky Survey",
-        "caption": "Deep infrared portrait penetrating SMC interstellar dust clouds.",
-        "assetType": "TELESCOPE_IMAGE"
+        "title": "Small Magellanic Cloud Optical Portrait",
+        "caption": "ESO deep optical portrait of the Small Magellanic Cloud showing starburst region NGC 346.",
+        "assetType": "TELESCOPE_IMAGE",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/12/Small_Magellanic_Cloud_%28ESO%29.jpg"
       }
     },
     {
       "id": "smc-card-2",
-      "title": "Magellanic Bridge & NGC 346",
-      "subtitle": "Gas Streams & Active Starbirth Clusters",
-      "category": "STRUCTURE",
-      "body": "NGC 346 is SMC's brightest starbirth cluster, harboring dozens of massive O-type stars shedding energetic stellar winds.",
+      "title": "Discovery: Henrietta Leavitt & The Cosmic Yardstick",
+      "subtitle": "1912 Cepheid Variable Discovery",
+      "category": "HISTORY",
+      "body": "In 1912, Harvard astronomer Henrietta Swan Leavitt studied thousands of variable stars in the SMC. She discovered that brighter Cepheid variables have longer pulsation periods. Because all SMC stars are at roughly the same distance from Earth, this Period-Luminosity Relationship provided the first 'standard candle' to measure extragalactic distances.",
       "bulletPoints": [
-        "Henrietta Leavitt discovered Period-Luminosity law in SMC (1912).",
-        "Connected to LMC by neutral hydrogen Magellanic Bridge stream.",
-        "Low metallicity mimics high-redshift early cosmic conditions."
+        "Henrietta Leavitt discovered the Cepheid Period-Luminosity relationship in 1912.",
+        "Calibrated Cepheid variables as cosmic yardsticks to calculate true astronomical distances.",
+        "Enabled Edwin Hubble to later measure distances to Andromeda and prove the expanding universe."
       ],
       "visualPlaceholder": {
-        "title": "Hubble Detailed View of NGC 346",
-        "caption": "Optical view of arc-shaped gas filaments surrounding young hot stars in NGC 346.",
+        "title": "Henrietta Leavitt 1912 Cepheid Graph",
+        "caption": "Historical 1912 period-luminosity plot published by Henrietta Swan Leavitt.",
+        "assetType": "FORMATION_DIAGRAM"
+      }
+    },
+    {
+      "id": "smc-card-3",
+      "title": "Cosmic Story: Low Metallicity & NGC 346",
+      "subtitle": "Primal Gas & The Early Universe Window",
+      "category": "STRUCTURE",
+      "body": "The SMC contains significantly lower concentrations of heavy chemical elements ('metals') than the Milky Way. Its pristine, hydrogen-rich gas closely resembles the chemical conditions of the early universe. At its center lies NGC 346, a brilliant starbirth cluster harboring dozens of hot, massive O-type stars.",
+      "keyMetrics": [
+        { "label": "METALLICITY LEVEL", "value": "1/5th Milky Way Abundance" },
+        { "label": "BRIGHTEST NURSERY", "value": "NGC 346 Cluster" }
+      ],
+      "bulletPoints": [
+        "Has only 20% of the Milky Way's heavy element (metal) abundance.",
+        "NGC 346 contains over 33 massive O-type stars shedding stellar winds.",
+        "Serves as a local analogue for early cosmic star formation 10 billion years ago."
+      ],
+      "visualPlaceholder": {
+        "title": "Hubble View of NGC 346",
+        "caption": "Hubble Space Telescope optical scan of ionized hydrogen gas filaments in star nursery NGC 346.",
         "assetType": "SPECTRAL_CHART"
       }
+    },
+    {
+      "id": "smc-card-4",
+      "title": "Deep Insight: Webb NIRCam Scan of NGC 346",
+      "subtitle": "Dust Grain Dynamics in Low Metals",
+      "category": "FORMATION",
+      "body": "NASA's James Webb Space Telescope imaged NGC 346 using NIRCam. Webb revealed that despite low heavy-element levels, building blocks for rocky planets (silicates and carbon dust) accumulate inside accretion disks surrounding low-mass protostars, proving planet formation occurred early in cosmic history.",
+      "bulletPoints": [
+        "JWST NIRCam reveals protoplanetary accretion disks in low-metal gas.",
+        "Proves rocky dust grains form around young protostars even with low metallicity.",
+        "Maps sub-stellar mass brown dwarfs inside the NGC 346 cluster."
+      ],
+      "visualPlaceholder": {
+        "title": "JWST Infrared Portrait of NGC 346",
+        "caption": "James Webb Space Telescope near-infrared composite revealing protostars inside NGC 346.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "smc-card-5",
+      "title": "Cosmic Curiosity: A Split Galaxy in Line-of-Sight",
+      "subtitle": "Dual Component Discovery",
+      "category": "FACTS",
+      "body": "Recent 3D mapping by ESA's Gaia satellite and radio telescopes revealed a fascinating revelation: the SMC is actually composed of two distinct star-forming structures lined up directly along our line of sight, separated by roughly 20,000 light-years in depth, torn apart by past encounters with the LMC.",
+      "bulletPoints": [
+        "Gaia and APOGEE spectra prove SMC consists of two separate overlapping structures.",
+        "Torn into two distinct components by gravitational tides during close passes with the LMC.",
+        "Connected to the LMC by the gas-rich Magellanic Bridge."
+      ],
+      "visualPlaceholder": {
+        "title": "Dual-Component 3D Line-of-Sight Diagram",
+        "caption": "Astronomical 3D diagram illustrating the split dual-structure of the Small Magellanic Cloud.",
+        "assetType": "ARTIST_CONCEPT"
+      }
     }
-  ],
-  "quizReferences": ["small-magellanic-cloud"]
+  ]
 }

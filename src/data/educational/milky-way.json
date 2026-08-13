@@ -2,109 +2,109 @@
   "galaxyId": "milky-way",
   "galaxyName": "Milky Way Galaxy",
   "auraIntro": "Welcome home, Explorer. Review the classified briefing on our home galaxy, the Milky Way.",
-  "overview": "The Milky Way is a barred spiral galaxy containing our Solar System, along with an estimated 100 to 400 billion other stars.",
+  "overview": "The Milky Way is a barred spiral galaxy containing our Solar System, along with an estimated 100 to 400 billion stars.",
   "formation": "Formed approximately 13.6 billion years ago shortly after the Big Bang.",
-  "structure": "Barred spiral with two major spiral arms (Scutum-Centaurus and Perseus) and a central supermassive black hole, Sagittarius A*.",
+  "structure": "Barred spiral with two major spiral arms (Scutum-Centaurus and Perseus) and central supermassive black hole Sagittarius A*.",
   "distance": "0 Light Years",
   "diameter": "100,000 Light Years",
   "age": "13.6 Billion Years",
   "constellation": "Sagittarius (Galactic Center)",
-  "discoveryHistory": "Observed since antiquity as a band of light in the night sky. Democritus suggested it consisted of distant stars in 400 BCE.",
-  "observationTips": "Best viewed on clear, moonless summer or autumn nights far from urban light pollution.",
+  "discoveryHistory": "Observed since antiquity as a band of light across the night sky. Galileo resolved it into individual stars in 1610.",
+  "observationTips": "Best viewed on clear, moonless summer nights far from urban light pollution.",
   "funFacts": [
-    "Our Solar System orbits the galactic center at 828,000 km/h, taking 230 million years per cosmic orbit.",
+    "Our Solar System orbits the galactic center at 828,000 km/h, taking ~240 million years per cosmic orbit.",
     "The Milky Way and Andromeda are approaching each other at 110 km/s and will merge in ~4.5 billion years."
   ],
-  "quizReferences": ["milky-way-q1", "milky-way-q2"],
+  "quizReferences": ["milky-way-q1", "milky-way-q2", "milky-way-q3", "milky-way-q4", "milky-way-q5"],
   "cards": [
     {
       "id": "milky-way-card-1",
-      "title": "Galactic Overview & Home Base",
+      "title": "Arrival: Our Cosmic Island",
       "subtitle": "Barred Spiral Architecture",
       "category": "OVERVIEW",
-      "body": "The Milky Way is our cosmic home. Spanning 100,000 light-years across, it contains an estimated 100 to 400 billion stars, interstellar gas, and dark matter.",
+      "body": "Welcome to the Milky Way, a vast barred spiral galaxy spanning 100,000 light-years across deep space. Home to our Sun and between 100 and 400 billion other stars, its luminous disk is shaped by gravity into two primary spiral arms anchored by a central stellar bar.",
       "keyMetrics": [
         { "label": "CLASSIFICATION", "value": "Barred Spiral (SBbc)" },
-        { "label": "DISTANCE FROM EARTH", "value": "0 Light Years (We Live Here!)" },
+        { "label": "DISTANCE FROM EARTH", "value": "0 Light Years (Inside Disk)" },
         { "label": "ESTIMATED STARS", "value": "100 - 400 Billion" },
         { "label": "GALACTIC CORE", "value": "Sagittarius A*" }
       ],
       "visualPlaceholder": {
-        "title": "Milky Way Panoramic Composite",
-        "caption": "All-sky infrared survey of the Milky Way galaxy disk captured by NASA telescopes.",
+        "title": "Milky Way Panoramic View",
+        "caption": "Panoramic view of the Milky Way arching across the dark night sky.",
         "assetType": "TELESCOPE_IMAGE",
         "url": "https://upload.wikimedia.org/wikipedia/commons/4/43/ESO-VLT-Laser-phot-33a-07_composite.jpg"
       }
     },
     {
       "id": "milky-way-card-2",
-      "title": "Formation & Cosmic Timeline",
-      "subtitle": "13.6 Billion Years of Stellar Assembly",
-      "category": "FORMATION",
-      "body": "The Milky Way began assembling ~13.6 billion years ago. Primal hydrogen gas clouds collapsed into proto-galaxies that merged over cosmic time.",
+      "title": "Discovery: Mapping From Within",
+      "subtitle": "How Humanity Unlocked Our Home Galaxy",
+      "category": "HISTORY",
+      "body": "For millennia, humans viewed the Milky Way as a ghostly river of light. In 1610, Galileo Galilei aimed his telescope at the band and discovered it was composed of countless individual stars. In the 1920s, Harlow Shapley and Edwin Hubble proved that our Solar System sits in the disk far from the center, revealing our true cosmic address.",
       "bulletPoints": [
-        "First generation Population III stars formed within 200 million years of the Big Bang.",
-        "Accreted smaller satellite galaxies like Gaia-Enceladus during early major mergers.",
-        "Continuous star formation maintained by gas falling in from galactic filaments."
+        "Galileo first proved in 1610 that the milky band consists of faint star clusters.",
+        "Harlow Shapley mapped globular clusters to pinpoint the galactic center in Sagittarius.",
+        "Edwin Hubble proved spiral nebulae were external galaxies, establishing the scale of the universe."
       ],
       "visualPlaceholder": {
-        "title": "Early Assembly Simulation",
-        "caption": "Supercomputer model depicting gas condensation and galactic halo assembly.",
+        "title": "Galileo Historical Observation",
+        "caption": "Early telescopic mapping of star densities along the galactic plane.",
         "assetType": "FORMATION_DIAGRAM"
       }
     },
     {
       "id": "milky-way-card-3",
-      "title": "Spiral Morphology & Central Black Hole",
-      "subtitle": "Sagittarius A* and Galactic Disk Structure",
+      "title": "Cosmic Story: The Gravitational Core",
+      "subtitle": "Sagittarius A* and the Orion Spur",
       "category": "STRUCTURE",
-      "body": "At the exact center of our galaxy lies Sagittarius A*, a supermassive black hole with a mass of 4.1 million Suns. Surrounding it is a dense bar of stars feeding two major spiral arms.",
+      "body": "At the exact gravitational core of the Milky Way lies Sagittarius A*, a supermassive black hole containing 4.1 million solar masses. Our Solar System orbits this central engine from a distance of 27,000 light-years inside the Orion Spur, traveling at 828,000 km/h to complete one cosmic orbit every 240 million years.",
       "keyMetrics": [
         { "label": "BLACK HOLE MASS", "value": "4.1 Million Solar Masses" },
-        { "label": "GALACTIC YEAR", "value": "230 Million Earth Years" }
+        { "label": "COSMIC YEAR", "value": "240 Million Earth Years" }
       ],
       "bulletPoints": [
-        "Major Spiral Arms: Scutum-Centaurus Arm and Perseus Arm.",
-        "Our Sun resides in the Orion-Cygnus Spur, ~27,000 light-years from the core.",
-        "Surrounded by a halo containing over 150 ancient globular star clusters."
+        "Sagittarius A* exerts gravitational dominance over the inner stellar bulge.",
+        "Our Sun is located in the Orion Spur between the Sagittarius and Perseus arms.",
+        "Over 150 ancient globular star clusters orbit in the surrounding galactic halo."
       ],
       "visualPlaceholder": {
         "title": "Event Horizon Telescope Sgr A*",
-        "caption": "Radio interferometry image showing the shadow of Sagittarius A*.",
+        "caption": "Radio interferometry snapshot showing the supermassive black hole Sgr A*.",
         "assetType": "SPECTRAL_CHART"
       }
     },
     {
       "id": "milky-way-card-4",
-      "title": "Observation & Naked-Eye Astronomy",
-      "subtitle": "Viewing the Milky Way Band",
-      "category": "HISTORY",
-      "body": "Galileo Galilei first resolved the hazy band of the Milky Way into individual stars using his telescope in 1610.",
+      "title": "Deep Insight: Fermi Bubbles & Gaia Survey",
+      "subtitle": "High-Energy Mysteries Above the Disk",
+      "category": "FORMATION",
+      "body": "Space telescopes have unveiled structures invisible to optical light. NASA's Fermi Gamma-ray Space Telescope discovered two giant Fermi Bubbles extending 25,000 light-years above and below the galactic plane—remnants of a colossal energetic eruption from Sgr A* millions of years ago. ESA's Gaia mission has mapped 1.8 billion stars in precision 3D.",
       "bulletPoints": [
-        "Appears as a luminous band across the sky containing dark nebula lanes like the Great Rift.",
-        "Best observed during Summer when the bright galactic core in Sagittarius is visible.",
-        "Requires dark sky sites (Bortle Class 1-3) to see fine dust lane detail with the naked eye."
+        "Fermi Bubbles emit high-energy gamma rays perpendicular to the galactic disk.",
+        "Gaia satellite precise astrometry maps stellar motion and galactic cannibalism history.",
+        "Ancient mergers like Gaia-Enceladus helped build the thick disk of our galaxy."
       ],
       "visualPlaceholder": {
-        "title": "Ground-Based Panoramic Survey",
-        "caption": "Night sky view of the galactic arch over a mountain observatory.",
+        "title": "Fermi Gamma-Ray Bubbles Map",
+        "caption": "Space observatory gamma-ray map showing giant gas bubbles expanding from Sgr A*.",
         "assetType": "TELESCOPE_IMAGE"
       }
     },
     {
       "id": "milky-way-card-5",
-      "title": "Key Astrophysical Curiosities",
-      "subtitle": "Fermi Bubbles & Future Cosmic Collision",
+      "title": "Cosmic Curiosity: The Upcoming Collision",
+      "subtitle": "Milkomeda: Our Galactic Destiny",
       "category": "FACTS",
-      "body": "The Milky Way is surrounded by colossal Fermi Bubbles extending 25,000 light-years above and below the galactic plane, emitting high-energy gamma rays.",
+      "body": "The Milky Way is not stationary. It is traveling through the Local Group at high velocity, currently consuming small dwarf satellite galaxies like the Sagittarius Dwarf. In approximately 4.5 billion years, our galaxy will collide head-on with the giant Andromeda Galaxy, merging to form a giant elliptical galaxy dubbed 'Milkomeda'.",
       "bulletPoints": [
-        "Fermi Bubbles were created by an energetic eruption from Sgr A* millions of years ago.",
-        "The Milky Way is currently consuming the Sagittarius Dwarf Spheroidal Galaxy.",
-        "In ~4.5 billion years, the Milky Way and Andromeda will merge into 'Milkomeda'."
+        "Milky Way and Andromeda are approaching each other at 110 kilometers per second.",
+        "Stellar distances are so vast that individual stars will rarely collide during the merger.",
+        "Our Sun will be flung into a new orbit in the combined giant elliptical galaxy."
       ],
       "visualPlaceholder": {
-        "title": "Fermi Gamma-Ray Bubble Map",
-        "caption": "Space telescope gamma-ray emission map extending perpendicular to disk.",
+        "title": "Milky Way & Andromeda Collision Concept",
+        "caption": "Artist illustration of the future galactic merger between the Milky Way and Andromeda.",
         "assetType": "ARTIST_CONCEPT"
       }
     }

@@ -20,6 +20,7 @@ import { GALAXIES } from '../../data/galaxies';
 import { EducationalContent, LearningCard } from '../../data/educational/types';
 import { eventBus } from '../../core/events';
 import { quizController } from '../../phaser/systems/QuizController';
+import { GalaxyImage } from '../common/GalaxyImage';
 
 export const LearningBriefingModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -146,6 +147,8 @@ export const LearningBriefingModal: React.FC = () => {
   const currentCard: LearningCard = content.cards[activeCardIndex] || content.cards[0];
   const totalCards = content.cards.length;
   const progressPercentage = Math.round(((activeCardIndex + 1) / totalCards) * 100);
+  const galaxyInfo = GALAXIES.find((g) => g.id === content.galaxyId);
+  const cardImageUrl = currentCard.visualPlaceholder?.url || galaxyInfo?.realImageUrl;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-slate-950/90 backdrop-blur-2xl select-none font-sans overflow-y-auto">
@@ -257,36 +260,19 @@ export const LearningBriefingModal: React.FC = () => {
 
                 {/* Central Visual Image Display */}
                 <div className="relative z-10 my-auto flex flex-col items-center justify-center text-center p-2">
-                  {currentCard.visualPlaceholder?.url ? (
-                    <div className="relative w-full h-44 rounded-lg overflow-hidden border border-cyan-500/30 shadow-2xl">
-                      <img
-                        src={currentCard.visualPlaceholder.url}
-                        alt={currentCard.title}
-                        referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-                    </div>
-                  ) : (
-                    /* Stylized Deep-Space Graphic Viewport */
-                    <div className="relative w-full h-44 rounded-lg bg-gradient-to-br from-indigo-950 via-slate-900 to-cyan-950 border border-cyan-500/30 flex items-center justify-center overflow-hidden shadow-inner">
-                      {/* Rotating Optics Reticle */}
-                      <div className="absolute w-32 h-32 rounded-full border border-dashed border-cyan-400/40 animate-[spin_20s_linear_infinite]" />
-                      <div className="absolute w-20 h-20 rounded-full border border-cyan-500/60 animate-ping opacity-25" />
-                      
-                      <div className="relative z-10 flex flex-col items-center gap-2 p-3">
-                        <div className="p-3 rounded-full bg-cyan-950/80 border border-cyan-400 text-cyan-300 shadow-lg shadow-cyan-500/30">
-                          <ImageIcon size={28} />
-                        </div>
-                        <span className="text-xs font-mono font-bold text-white tracking-wider">
-                          {currentCard.visualPlaceholder?.title || `${content.galaxyName} Telescope Scan`}
-                        </span>
-                      </div>
-                    </div>
-                  )}
+                  <div className="relative w-full h-48 rounded-lg overflow-hidden border border-cyan-500/30 shadow-2xl bg-slate-950">
+                    <GalaxyImage
+                      src={cardImageUrl}
+                      alt={currentCard.title}
+                      visualColor={galaxyInfo?.visualColor || '#00d2ff'}
+                      type={currentCard.category}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+                  </div>
 
                   <p className="mt-2 text-[11px] font-sans italic text-slate-300 leading-snug">
-                    "{currentCard.visualPlaceholder?.caption || `Deep-space optical capture of ${content.galaxyName}.`}"
+                    "{currentCard.visualPlaceholder?.caption || `Deep-space astronomical optical capture of ${content.galaxyName}.`}"
                   </p>
                 </div>
 

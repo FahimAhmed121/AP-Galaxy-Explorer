@@ -2,7 +2,7 @@
   "galaxyId": "black-eye",
   "galaxyName": "Black Eye Galaxy (M64)",
   "auraIntro": "Explorer, Black Eye Galaxy features a dramatic dark dust band and counter-rotating gas disks from an ancient collision.",
-  "overview": "The Black Eye Galaxy (M64 or NGC 4826) is an isolated spiral galaxy in the constellation Coma Berenices, roughly 17 million light-years away.",
+  "overview": "The Black Eye Galaxy (M64) is an isolated spiral galaxy in the constellation Coma Berenices, located approximately 17 million light-years from Earth.",
   "formation": "Created by a merger approximately 1 billion years ago when M64 absorbed a gas-rich satellite galaxy rotating in the opposite direction.",
   "structure": "A spiral galaxy spanning 40,000 light-years. Remarkably, its outer interstellar gas rotates in the OPPOSITE direction relative to its inner stars and central core.",
   "distance": "17 Million Light Years",
@@ -12,46 +12,101 @@
   "discoveryHistory": "Discovered on March 23, 1779 by Edward Pigott and independently by Johann Elert Bode and Charles Messier.",
   "observationTips": "Famous in small telescopes; a 4-inch telescope easily reveals the dark dust patch obscuring the north side of its core.",
   "funFacts": [
-    "The dark 'eye' feature is a dense band of light-absorbing dust blocking stars behind the core.",
-    "Outer gas cloud rotates counter-clockwise while inner stars rotate clockwise due to a absorbed satellite galaxy.",
-    "Friction at the shear boundary between opposing gas flows triggers rapid starbirth along a 300 light-year wide ring."
+    "The dark 'eye' feature is a dense band of light-absorbing interstellar dust blocking stars behind the core.",
+    "Outer gas cloud rotates counter-clockwise while inner stars rotate clockwise due to an absorbed satellite galaxy."
   ],
+  "quizReferences": ["black-eye-q1", "black-eye-q2", "black-eye-q3", "black-eye-q4", "black-eye-q5"],
   "cards": [
     {
       "id": "black-eye-card-1",
-      "title": "Cosmic Collision Legacy",
-      "subtitle": "Dark Absorbing Dust & Counter-Rotating Disks",
+      "title": "Arrival: The Dark Banded Core",
+      "subtitle": "Messier 64 Overview",
       "category": "OVERVIEW",
-      "body": "The Black Eye Galaxy (M64) is named for the prominent dark band of dust obscuring light in front of its bright core.",
+      "body": "Welcome to the Black Eye Galaxy (M64), one of the most enigmatic spiral galaxies in our local universe. Located 17 million light-years away in Coma Berenices, M64 spans 40,000 light-years across. It earns its striking nickname from a dark, heavy band of light-absorbing dust sitting directly in front of its bright central core.",
       "keyMetrics": [
         { "label": "CLASSIFICATION", "value": "Spiral Galaxy (SA(rs)ab)" },
-        { "label": "CONSTELLATION", "value": "Coma Berenices" },
-        { "label": "DISTANCE", "value": "17 Million Light-Years" },
-        { "label": "DIAMETER", "value": "40,000 Light-Years" }
+        { "label": "DISTANCE FROM EARTH", "value": "17 Million Light Years" },
+        { "label": "DIAMETER", "value": "40,000 Light Years" },
+        { "label": "CONSTELLATION", "value": "Coma Berenices" }
       ],
       "visualPlaceholder": {
-        "title": "Hubble Space Telescope Core Image",
-        "caption": "High-contrast view of M64's equatorial dust lane and core.",
-        "assetType": "TELESCOPE_IMAGE"
+        "title": "Black Eye Galaxy Optical Portrait",
+        "caption": "Hubble Space Telescope high-resolution view of M64 showing its heavy equatorial dust lane.",
+        "assetType": "TELESCOPE_IMAGE",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/M64v2.jpg"
       }
     },
     {
       "id": "black-eye-card-2",
-      "title": "Counter-Rotating Dynamics",
-      "subtitle": "Shear Boundary Starburst Ignition",
-      "category": "STRUCTURE",
-      "body": "Spectroscopic Doppler shifts confirm that M64's outer gas disk rotates opposite to the inner star disk. The collision boundary creates intense localized star formation.",
+      "title": "Discovery: Pigott, Bode & Messier",
+      "subtitle": "18th-Century Observations",
+      "category": "HISTORY",
+      "body": "M64 was discovered independently three times in 1779: first by Edward Pigott on March 23, 1779, then by Johann Elert Bode 12 days later, and cataloged by Charles Messier in 1780. William Herschel noted its dark dust lane in 1785, comparing it to a dark eye staring through space.",
       "bulletPoints": [
-        "Gas beyond 3,000 light-years rotates opposite to inner core.",
-        "Collision occurred approximately 1 billion years ago.",
-        "Shear boundary compresses gas into hot blue starburst clusters."
+        "Edward Pigott first discovered M64 on March 23, 1779.",
+        "Charles Messier added it as M64 to his catalog in March 1780.",
+        "William Herschel mapped the dark obscuring dust cloud in 1785."
+      ],
+      "visualPlaceholder": {
+        "title": "Historical 18th-Century Drawing of M64",
+        "caption": "Historical sky map recording Messier 64's position in Coma Berenices.",
+        "assetType": "FORMATION_DIAGRAM"
+      }
+    },
+    {
+      "id": "black-eye-card-3",
+      "title": "Cosmic Story: Counter-Rotating Gas Disks",
+      "subtitle": "Opposing Motions Inside One Galaxy",
+      "category": "STRUCTURE",
+      "body": "Spectroscopic Doppler velocity measurements revealed an extraordinary kinematic anomaly inside M64: while its inner stellar disk and gas rotate in one direction, the outer gas disk rotates in the exact OPPOSITE direction. Where these opposing gas systems rub together at the boundary, friction compresses gas into a ring of intense star formation.",
+      "keyMetrics": [
+        { "label": "INNER DISK ROTATION", "value": "Clockwise Rotation" },
+        { "label": "OUTER GAS ROTATION", "value": "Counter-Clockwise Rotation" }
+      ],
+      "bulletPoints": [
+        "Outer gas disk extends from 3,000 to 40,000 light-years, rotating opposite to the core.",
+        "Shear boundary between opposing gas flows triggers rapid starbirth.",
+        "Young blue star clusters line the active friction boundary ring."
       ],
       "visualPlaceholder": {
         "title": "Doppler Kinematic Velocity Map",
-        "caption": "Redshift/blueshift diagram illustrating counter-rotating gas sheets.",
+        "caption": "Spectroscopic redshift/blueshift map illustrating counter-rotating gas disks in M64.",
         "assetType": "SPECTRAL_CHART"
       }
+    },
+    {
+      "id": "black-eye-card-4",
+      "title": "Deep Insight: NASA 2026 Multi-Spectrum Image",
+      "subtitle": "Hubble & Webb Joint Analysis",
+      "category": "FORMATION",
+      "body": "In 2026, NASA released a multi-spectrum image of M64 combining Hubble optical resolution with Webb infrared optics. The composite image penetrates the dark dust lane, revealing the detailed distribution of cold molecular gas and newborn protostars along the shear boundary.",
+      "bulletPoints": [
+        "Hubble optical resolution captures dark dust silhouetting bright core starlight.",
+        "Webb mid-infrared optics penetrate dust to reveal hidden embedded protostars.",
+        "Multi-spectrum mapping proves counter-rotation is driving active starbursts."
+      ],
+      "visualPlaceholder": {
+        "title": "NASA Multi-Spectrum View of M64",
+        "caption": "Hubble & Webb composite image illuminating hidden star formation along M64's dust lane.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "black-eye-card-5",
+      "title": "Cosmic Curiosity: Evidence of a Cannibalized Satellite",
+      "subtitle": "1 Billion Year Ancient Merger",
+      "category": "FACTS",
+      "body": "How did M64 acquire counter-rotating gas? Astrophysicists conclude that roughly 1 billion years ago, M64 collided with and absorbed a gas-rich satellite dwarf galaxy that was orbiting in the opposite direction. M64 devoured the satellite's stars, but its retrograde gas remains as a smoking gun of ancient galactic cannibalism.",
+      "bulletPoints": [
+        "Counter-rotating gas was donated by a retrogradely orbiting dwarf satellite galaxy.",
+        "The dwarf satellite's stars mixed into M64's main disk over 1 billion years.",
+        "In a few hundred million years, friction will eventually align all gas in one direction."
+      ],
+      "visualPlaceholder": {
+        "title": "Retrograde Satellite Merger Simulation",
+        "caption": "Hydrodynamic computer simulation of a gas-rich dwarf galaxy falling retrogradely into M64.",
+        "assetType": "ARTIST_CONCEPT"
+      }
     }
-  ],
-  "quizReferences": ["black-eye"]
+  ]
 }

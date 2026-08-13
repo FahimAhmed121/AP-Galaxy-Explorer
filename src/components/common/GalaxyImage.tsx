@@ -24,6 +24,10 @@ export const GalaxyImage: React.FC<GalaxyImageProps> = ({
 }) => {
   const [hasError, setHasError] = useState(!src);
 
+  React.useEffect(() => {
+    setHasError(!src);
+  }, [src]);
+
   if (src && !hasError) {
     return (
       <div className={containerClassName}>

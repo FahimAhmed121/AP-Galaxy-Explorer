@@ -46,6 +46,7 @@ export default function GalaxyInfo({
   // Translation States
   const [lang, setLang] = useState<'EN' | 'BN'>('EN');
   const [infoTab, setInfoTab] = useState<'FACTS' | 'VIDEO'>('FACTS');
+  const [isPlayingEmbed, setIsPlayingEmbed] = useState(false);
 
   const quizQuestions = galaxy?.quizzes || [];
   const currentQuestion = quizQuestions[currentQuestionIndex] || null;
@@ -365,38 +366,49 @@ export default function GalaxyInfo({
               {/* Interactive YouTube Video Link & Thumbnail */}
               {galaxy.youtubeVideoId ? (
                 <div className="space-y-3">
-                  <a
-                    href={`https://www.youtube.com/watch?v=${galaxy.youtubeVideoId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative block w-full aspect-video rounded-sm border border-white/15 bg-black overflow-hidden shadow-2xl group cursor-pointer pointer-events-auto"
-                    title={t('Click to watch directly on YouTube', 'ইউটিউবে সরাসরি দেখতে ক্লিক করুন')}
-                  >
-                    {/* YouTube High Quality Cover Image */}
-                    <img
-                      src={`https://img.youtube.com/vi/${galaxy.youtubeVideoId}/hqdefault.jpg`}
-                      alt={`${galaxy.name} Video Cover`}
-                      className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                    />
-                    
-                    {/* Dark gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/40 transition-opacity" />
+                  {isPlayingEmbed ? (
+                    <div className="relative w-full aspect-video rounded-sm border border-white/15 bg-black overflow-hidden shadow-2xl">
+                      <iframe
+                        src={`https://www.youtube.com/embed/${galaxy.youtubeVideoId}?autoplay=1`}
+                        title={`${galaxy.name} HD Video Tour`}
+                        className="w-full h-full border-0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setIsPlayingEmbed(true)}
+                      className="relative block w-full aspect-video rounded-sm border border-white/15 bg-black overflow-hidden shadow-2xl group cursor-pointer pointer-events-auto text-left"
+                      title={t('Click to play embedded video', 'এমবেডেড ভিডিও দেখতে ক্লিক করুন')}
+                    >
+                      {/* YouTube High Quality Cover Image */}
+                      <img
+                        src={`https://img.youtube.com/vi/${galaxy.youtubeVideoId}/hqdefault.jpg`}
+                        alt={`${galaxy.name} Video Cover`}
+                        className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                      />
+                      
+                      {/* Dark gradient overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/40 transition-opacity" />
 
-                    {/* Styled YouTube Brand Play Button */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-11 bg-red-600 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:bg-red-500 group-hover:scale-110 group-hover:shadow-red-600/30">
-                        <Play size={20} className="text-white fill-white ml-1" />
+                      {/* Styled YouTube Brand Play Button */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-16 h-11 bg-red-600 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:bg-red-500 group-hover:scale-110 group-hover:shadow-red-600/30">
+                          <Play size={20} className="text-white fill-white ml-1" />
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Watch on YouTube Label inside player */}
-                    <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/75 px-2.5 py-1.5 rounded-sm border border-white/10">
-                      <ExternalLink size={12} className="text-gold" />
-                      <span className="text-[10px] font-mono text-slate-200 uppercase tracking-wider font-semibold">
-                        {t('Watch on YouTube', 'ইউটিউবে দেখুন')}
-                      </span>
-                    </div>
-                  </a>
+                      {/* Watch on YouTube Label inside player */}
+                      <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/80 px-2.5 py-1.5 rounded-sm border border-white/10">
+                        <Play size={12} className="text-gold fill-gold" />
+                        <span className="text-[10px] font-mono text-slate-200 uppercase tracking-wider font-semibold">
+                          {t('Play HD Video', 'এইচডি ভিডিও প্লে করুন')}
+                        </span>
+                      </div>
+                    </button>
+                  )}
 
                   {/* Prominent Action Button to Open directly on YouTube */}
                   <a

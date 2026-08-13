@@ -9,49 +9,104 @@
   "diameter": "14,000 Light Years",
   "age": "11 Billion Years",
   "constellation": "Dorado / Mensa",
-  "discoveryHistory": "Observed since antiquity by Southern Hemisphere indigenous populations; cataloged by Persian astronomer Al Sufi in 964 AD and Ferdinand Magellan in 1519.",
+  "discoveryHistory": "Observed since antiquity by Southern Hemisphere indigenous populations; cataloged by Persian astronomer Al Sufi in 964 CE and Ferdinand Magellan in 1519.",
   "observationTips": "Prominently visible to the naked eye under dark Southern Hemisphere skies as a bright glowing cosmic cloud.",
   "funFacts": [
     "Houses the Tarantula Nebula (30 Doradus), the most energetic starburst region in the entire Local Group.",
-    "Hosted Supernova SN 1987A, the closest observed supernova explosion since Kepler's Supernova in 1604.",
-    "Gravitationally bound to the Milky Way and expected to merge with our galaxy in roughly 2.4 billion years."
+    "Hosted Supernova SN 1987A, the closest observed supernova explosion since Kepler's Supernova in 1604."
   ],
+  "quizReferences": ["lmc-q1", "lmc-q2", "lmc-q3", "lmc-q4", "lmc-q5"],
   "cards": [
     {
       "id": "lmc-card-1",
-      "title": "Milky Way's Premier Satellite",
-      "subtitle": "Magellanic Irregular & Tarantula Nebula",
+      "title": "Arrival: The Milky Way's Nearest Giant Satellite",
+      "subtitle": "Large Magellanic Cloud Overview",
       "category": "OVERVIEW",
-      "body": "The Large Magellanic Cloud (LMC) orbits 160,000 light-years from Earth, functioning as an invaluable laboratory for studying stellar evolution.",
+      "body": "Welcome to the Large Magellanic Cloud (LMC), the largest and brightest satellite dwarf galaxy orbiting our Milky Way. Located just 160,000 light-years away in the southern sky constellations Dorado and Mensa, the LMC spans 14,000 light-years across space and contains roughly 20 billion stars.",
       "keyMetrics": [
         { "label": "CLASSIFICATION", "value": "Magellanic Irregular (SB(s)m)" },
-        { "label": "CONSTELLATION", "value": "Dorado / Mensa" },
-        { "label": "DISTANCE", "value": "160,000 Light-Years" },
-        { "label": "DIAMETER", "value": "14,000 Light-Years" }
+        { "label": "DISTANCE FROM EARTH", "value": "160,000 Light Years" },
+        { "label": "DIAMETER", "value": "14,000 Light Years" },
+        { "label": "CONSTELLATION", "value": "Dorado / Mensa" }
       ],
       "visualPlaceholder": {
-        "title": "VLT Deep Space Wide Field View",
-        "caption": "Wide-angle portrait of LMC showing Tarantula Nebula and central stellar bar.",
-        "assetType": "TELESCOPE_IMAGE"
+        "title": "Large Magellanic Cloud Optical Portrait",
+        "caption": "Wide-field optical portrait of the LMC showcasing its central stellar bar and Tarantula Nebula.",
+        "assetType": "TELESCOPE_IMAGE",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/94/Large.magellanic.cloud.tarantula.jpg"
       }
     },
     {
       "id": "lmc-card-2",
-      "title": "30 Doradus & SN 1987A",
-      "subtitle": "Most Active Starbirth Engine in Local Group",
-      "category": "STRUCTURE",
-      "body": "The Tarantula Nebula in LMC spans 1,000 light-years across. Nearby lies remnant SN 1987A, providing key insights into supernova physics.",
+      "title": "Discovery: Al-Sufi to Magellan",
+      "subtitle": "Southern Sky Observational History",
+      "category": "HISTORY",
+      "body": "Visible to the naked eye in the Southern Hemisphere, indigenous Australian populations observed the LMC for millennia. Persian astronomer Abd al-Rahman al-Sufi cataloged it in 964 CE in his Book of Fixed Stars as 'Al-Bakr' (the White Ox). Ferdinand Magellan brought news of the cloud to Europe following his 1519 expedition.",
       "bulletPoints": [
-        "Tarantula Nebula is so bright it would cast shadows if placed at Orion Nebula's distance.",
-        "SN 1987A emitted a historical burst of neutrinos detected on Earth.",
-        "Connected to Small Magellanic Cloud via the Magellanic Bridge gas stream."
+        "Cataloged by Abd al-Rahman al-Sufi in 964 CE as 'Al-Bakr'.",
+        "Documented during Ferdinand Magellan's circumnavigation voyage in 1519.",
+        "Proved to be an independent satellite galaxy by Henrietta Swan Leavitt's Cepheid period-luminosity discovery."
       ],
       "visualPlaceholder": {
-        "title": "JWST NIRCam View of Tarantula Nebula",
-        "caption": "Infrared view of cosmic dust filaments and protostars in 30 Doradus.",
+        "title": "Historical 16th-Century Celestial Map",
+        "caption": "Historical maritime navigation star chart showing the Magellanic Clouds in the Southern Sky.",
+        "assetType": "FORMATION_DIAGRAM"
+      }
+    },
+    {
+      "id": "lmc-card-3",
+      "title": "Cosmic Story: The Monster Tarantula Nebula",
+      "subtitle": "30 Doradus & Supernova SN 1987A",
+      "category": "STRUCTURE",
+      "body": "Inside the LMC lies the Tarantula Nebula (30 Doradus), the most energetic and massive starburst region in the entire Local Group. Spanning nearly 1,000 light-years across, if placed at the distance of the Orion Nebula, it would cast visible shadows on Earth. On February 23, 1987, supernova SN 1987A exploded in its outskirts.",
+      "keyMetrics": [
+        { "label": "TARANTULA NEBULA SIZE", "value": "1,000 Light-Years" },
+        { "label": "SUPERNOVA EVENT", "value": "SN 1987A (Feb 23, 1987)" }
+      ],
+      "bulletPoints": [
+        "Tarantula Nebula is the largest starburst region in the Local Group.",
+        "Contains supermassive star cluster R136, holding stars over 100-200 solar masses.",
+        "SN 1987A was the closest observed supernova in modern astronomy, emitting a neutrino burst."
+      ],
+      "visualPlaceholder": {
+        "title": "Hubble Close-Up of Tarantula Nebula",
+        "caption": "Hubble Space Telescope optical close-up of ionized hydrogen gas pillars in 30 Doradus.",
         "assetType": "SPECTRAL_CHART"
       }
+    },
+    {
+      "id": "lmc-card-4",
+      "title": "Deep Insight: Webb NIRCam & MIRI Deep Scan",
+      "subtitle": "Resolving Thousands of Protostars",
+      "category": "FORMATION",
+      "body": "NASA's James Webb Space Telescope imaged 30 Doradus with NIRCam and MIRI instruments. Webb's high-resolution infrared sensors penetrated dense gas pillars, revealing thousands of previously unseen young protostars, distant background galaxies, and complex hydrocarbon dust filaments.",
+      "bulletPoints": [
+        "JWST infrared optics penetrate dense obscuring dust pillars in 30 Doradus.",
+        "Uncovers thousands of newly forming protostars embedded in gas clouds.",
+        "Maps fine silicate dust chemistry and radiation feedback from young massive stars."
+      ],
+      "visualPlaceholder": {
+        "title": "JWST MIRI Infrared Portrait of 30 Doradus",
+        "caption": "James Webb Space Telescope infrared composite revealing protostars inside the Tarantula Nebula.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "lmc-card-5",
+      "title": "Cosmic Curiosity: The Magellanic Bridge & Future Collision",
+      "subtitle": "Intergalactic Gas Stream & Merger Destiny",
+      "category": "FACTS",
+      "body": "The LMC is connected to its companion, the Small Magellanic Cloud (SMC), by a vast stream of gas called the Magellanic Bridge. Gravitationally bound to the Milky Way, calculations indicate that in roughly 2.4 billion years, the LMC will merge with our galaxy, driving a fresh wave of star formation across the Milky Way's disk.",
+      "bulletPoints": [
+        "Connected to SMC by the Magellanic Bridge gas stream.",
+        "Milky Way's tidal forces are pulling gas out of the LMC to form the Magellanic Stream.",
+        "Expected to collide and merge with the Milky Way in approximately 2.4 billion years."
+      ],
+      "visualPlaceholder": {
+        "title": "Magellanic Stream Radio Astronomy Map",
+        "caption": "All-sky radio map showing the neutral hydrogen Magellanic Stream trailing behind the LMC.",
+        "assetType": "ARTIST_CONCEPT"
+      }
     }
-  ],
-  "quizReferences": ["large-magellanic-cloud"]
+  ]
 }

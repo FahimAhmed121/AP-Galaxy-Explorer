@@ -179,6 +179,11 @@
 - **Autonomous Alien Survey Drones & FSM AI (`AlienSurveyDrone.ts`)**: 5-state AI FSM (`PATROL`, `SURVEY`, `INVESTIGATE`, `ATTACK`, `RETURN`) prioritizing galaxy spectrographic surveying, cautious approach at ~220px observation distance, defensive plasma laser combat, and Stardust/XP rewards upon destruction.
 - **Contextual Proximity AURA Alerts & Drone Spawning (`DroneManager.ts`)**: Off-screen sector spawning near distant unmapped galaxies with a 60-second start-of-game cooldown, distance-driven AURA warnings (< 600px relevance radius), and 15-second alert throttling.
 - **Arcade Physics Collision Identity Safeguards**: Strict object identity disambiguation (`objA` vs `objB`) in physics overlap callbacks preventing accidental player ship destruction during laser/drone collisions.
+- **Enriched Educational Content & 50-Question Quiz System**: 5-card structured learning briefings per galaxy across all 10 core galaxies with bilingual English/Bengali narrative support, plus 50 total questions (5 questions/galaxy) integrated into the adaptive mission quiz system.
+- **Real Astronomical Imagery & Media Fallback System**: Verified astronomical photo references (`realImageUrl`) across all 10 core galaxies, supported by `GalaxyImage.tsx` error fallback logic and automatic dossier fallback rendering.
+- **YouTube Astronomical Video Tours**: Integrated active YouTube video tour references (`youtubeVideoId`) featuring high-resolution thumbnail previews, in-app embedded playback, and direct YouTube watch navigation in `GalaxyInfo.tsx`.
+- **Learning Card Review & Replayability**: Discovered galaxy briefings can be reviewed anytime through the Galactic Archive without resetting player discovery metrics or progress.
+- **Refined Learning Briefing UI & Asteroid Visual Depth**: Streamlined card presentation in `LearningBriefingModal.tsx` and updated procedural asteroid crater rendering in `AsteroidManager.ts` to solid opaque depth.
 - **Bilingual Interface**: Seamless runtime toggle between English and Bengali (বাংলা) across all HUD elements and modals.
 
 ---
@@ -251,7 +256,7 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 ## 13. Known Limitations
 
 - **Single-System Canvas**: Exploration canvas operates within a 2D boundary grid (`8000x8000 px`).
-- **Mock Image Assets**: Educational card showcases currently utilize stylized WebGL/SVG deep-space reticles in lieu of live external NASA API image streaming.
+- **Verified Media Integration**: All 10 core galaxies feature verified real astronomical image references and YouTube video tour links with resilient client-side fallback handling.
 - **Offline Local Storage**: User progress is saved to browser `localStorage` without multi-device cloud sync.
 
 ---
@@ -277,6 +282,7 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 - **Documentation Synchronization & HUD Redesign**: ✅ **COMPLETE**
 - **Sprint 2.3 — Explorer Progression & Cosmetics**: ✅ **COMPLETE**
 - **Sprint 2.4 — Alien Survey Drones**: ✅ **COMPLETE**
+- **Sprint 2.4.5 — Educational Content, UI/UX & Media Polish**: ✅ **COMPLETE**
 
 ### Next Milestone
 - **Sprint 2.5 — Firebase Authentication & Cloud Save**: User login (Google OAuth / Anonymous), Firestore cloud save synchronization, and cross-device progress restoration.

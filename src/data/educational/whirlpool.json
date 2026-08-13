@@ -2,56 +2,111 @@
   "galaxyId": "whirlpool",
   "galaxyName": "Whirlpool Galaxy (M51)",
   "auraIntro": "Explorer, Whirlpool Galaxy is the textbook example of a grand design spiral galaxy, interacting with companion NGC 5195.",
-  "overview": "The Whirlpool Galaxy (M51a or NGC 5194) is an iconic grand design spiral galaxy located 23 million light-years away in the constellation Canes Venatici.",
+  "overview": "The Whirlpool Galaxy (M51) is an iconic grand design spiral galaxy located approximately 31 million light-years away in the constellation Canes Venatici.",
   "formation": "Its distinct double spiral structure is driven by gravitational tidal encounters with smaller dwarf companion NGC 5195.",
-  "structure": "A grand design spiral galaxy spanning 76,000 light-years, featuring sweeping spiral arms enriched with bright pink H II starbirth regions.",
-  "distance": "23 Million Light Years",
+  "structure": "A grand design spiral galaxy spanning 76,000 light-years, featuring sweeping spiral arms enriched with bright H II starbirth regions.",
+  "distance": "31 Million Light Years",
   "diameter": "76,000 Light Years",
   "age": "400 Million Years (Active Interaction Phase)",
   "constellation": "Canes Venatici",
   "discoveryHistory": "Discovered on October 13, 1773 by Charles Messier. Its spiral structure was first drawn in 1845 by Lord Rosse.",
-  "observationTips": "A favorite for amateur astronomers; 4-inch telescopes reveal its companion galaxy, while 8-inch instruments show sweeping spiral arms under dark skies.",
+  "observationTips": "A favorite for amateur astronomers; small telescopes reveal companion galaxy NGC 5195, while larger instruments show sweeping spiral arms.",
   "funFacts": [
-    "First celestial object ever identified as possessing a spiral structure (by Lord Rosse using the 'Leviathan of Parsonstown' in 1845).",
-    "Tidal compression from companion galaxy NGC 5195 triggers massive waves of newborn star formation along its arms.",
-    "Multiple supernovae have been observed in M51 over recent decades, including SN 1994I, SN 2005cs, and SN 2011dh."
+    "First celestial object ever identified as possessing a spiral structure (by Lord Rosse in 1845).",
+    "Tidal compression from companion galaxy NGC 5195 triggers massive waves of newborn star formation along its arms."
   ],
+  "quizReferences": ["whirlpool-q1", "whirlpool-q2", "whirlpool-q3", "whirlpool-q4", "whirlpool-q5"],
   "cards": [
     {
       "id": "whirlpool-card-1",
-      "title": "Grand Design Spiral",
-      "subtitle": "Classic Interacting Galaxy Pair",
+      "title": "Arrival: The Grand Design Archetype",
+      "subtitle": "Messier 51 Overview",
       "category": "OVERVIEW",
-      "body": "The Whirlpool Galaxy (M51) displays clean, well-defined spiral arms stretching outward, connected by a gravitational bridge to dwarf companion NGC 5195.",
+      "body": "Welcome to the Whirlpool Galaxy (M51), the textbook archetype of a Grand Design spiral galaxy. Located 31 million light-years away according to NASA's Hubble catalog, M51 features clean, symmetric spiral arms stretching across 76,000 light-years, anchored by dwarf companion NGC 5195.",
       "keyMetrics": [
         { "label": "CLASSIFICATION", "value": "Grand Design Spiral (SA(s)bc)" },
-        { "label": "CONSTELLATION", "value": "Canes Venatici" },
-        { "label": "DISTANCE", "value": "23 Million Light-Years" },
-        { "label": "DIAMETER", "value": "76,000 Light-Years" }
+        { "label": "DISTANCE FROM EARTH", "value": "31 Million Light Years" },
+        { "label": "DIAMETER", "value": "76,000 Light Years" },
+        { "label": "CONSTELLATION", "value": "Canes Venatici" }
       ],
       "visualPlaceholder": {
-        "title": "Hubble Space Telescope High-Res Image",
-        "caption": "Full optical mosaic of M51 highlighting starburst clusters in dust lanes.",
-        "assetType": "TELESCOPE_IMAGE"
+        "title": "Whirlpool Galaxy Optical Portrait",
+        "caption": "Hubble Space Telescope high-resolution portrait of Messier 51 and companion NGC 5195.",
+        "assetType": "TELESCOPE_IMAGE",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/00/M51a_hubble_photosphere.jpg"
       }
     },
     {
       "id": "whirlpool-card-2",
-      "title": "Gravitational Tidal Engine",
-      "subtitle": "NGC 5195 Interaction & Starburst Waves",
-      "category": "STRUCTURE",
-      "body": "Gravitational tides from dwarf galaxy NGC 5195 compress gas in M51's disk, igniting thousands of bright blue young star clusters.",
+      "title": "Discovery: Unlocking Spiral Nature",
+      "subtitle": "From Charles Messier to Lord Rosse",
+      "category": "HISTORY",
+      "body": "Discovered on October 13, 1773 by Charles Messier, M51 made history in 1845 when William Parsons (Lord Rosse) observed it using the 72-inch 'Leviathan of Parsonstown' telescope in Ireland. Lord Rosse's hand drawing of M51 was the first in history to capture a galaxy's spiral structure.",
       "bulletPoints": [
-        "First spiral structure drawn in astronomical history (1845).",
-        "Companion NGC 5195 passed through M51's disk ~500 million years ago.",
-        "JWST MIRI observations reveal intricate dust filament networks."
+        "Charles Messier cataloged M51 in 1773; Pierre Méchain found companion NGC 5195 in 1781.",
+        "Lord Rosse drew its spiral arms in 1845, coining the concept of 'spiral nebulae'.",
+        "Established spiral structures as a fundamental galactic morphology."
       ],
       "visualPlaceholder": {
-        "title": "JWST Infrared Infrared Structure Map",
-        "caption": "Mid-infrared scan revealing warm interstellar dust filaments in M51.",
+        "title": "Lord Rosse 1845 Historical Sketch",
+        "caption": "Historical 1845 drawing by Lord Rosse revealing the spiral structure of M51.",
+        "assetType": "FORMATION_DIAGRAM"
+      }
+    },
+    {
+      "id": "whirlpool-card-3",
+      "title": "Cosmic Story: Gravitational Tidal Engine",
+      "subtitle": "NGC 5195 Interaction & Starburst Waves",
+      "category": "STRUCTURE",
+      "body": "M51's prominent spiral arms are sculptured by gravitational tidal interactions with companion galaxy NGC 5195. As NGC 5195 dipped behind M51 over 500 million years ago, its gravitational pull created density waves that compress gas, igniting thousands of bright blue young star clusters.",
+      "keyMetrics": [
+        { "label": "COMPANION GALAXY", "value": "NGC 5195" },
+        { "label": "INTERACTION AGE", "value": "500 Million Years" }
+      ],
+      "bulletPoints": [
+        "Gravitational tides pump energy into M51's interstellar medium.",
+        "Density waves compress hydrogen gas to ignite widespread starbursts.",
+        "Bright pink H II regions trace active star nurseries along the arms."
+      ],
+      "visualPlaceholder": {
+        "title": "Hubble Close-Up of Interacting Arms",
+        "caption": "Hubble Space Telescope close-up of tidal dust bridge connecting M51 to NGC 5195.",
         "assetType": "SPECTRAL_CHART"
       }
+    },
+    {
+      "id": "whirlpool-card-4",
+      "title": "Deep Insight: Webb Infrared Dust Filaments",
+      "subtitle": "MIRI & NIRCam Infrared Revelations",
+      "category": "FORMATION",
+      "body": "NASA's James Webb Space Telescope imaged M51 with NIRCam and MIRI, revealing intricate networks of warm interstellar dust filaments that are totally dark in optical light. Webb traced organic molecules (PAHs) and warm dust lanes where new stars are forming inside dense dark clouds.",
+      "bulletPoints": [
+        "JWST mid-infrared vision penetrates dark optical dust lanes.",
+        "Reveals glowing filamentary structures of warm silicates and complex molecules.",
+        "Maps embedded protostars hidden from visible light telescopes."
+      ],
+      "visualPlaceholder": {
+        "title": "JWST Infrared Scan of M51",
+        "caption": "JWST MIRI mid-infrared composite image revealing skeletal dust filaments in M51.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "whirlpool-card-5",
+      "title": "Cosmic Curiosity: Supernova Proving Ground",
+      "subtitle": "Stellar Deaths in M51",
+      "category": "FACTS",
+      "body": "M51's intense starburst activity creates many short-lived massive stars that end in catastrophic supernova explosions. In recent decades, astronomers have observed three major supernovae in M51 (SN 1994I, SN 2005cs, and SN 2011dh), making M51 an active laboratory for stellar evolution.",
+      "bulletPoints": [
+        "Observed 3 major supernovae within a 17-year span (1994, 2005, 2011).",
+        "High star formation rate continuously yields massive stellar progenitor candidates.",
+        "SN 2011dh allowed direct pre-explosion identification of a yellow supergiant star."
+      ],
+      "visualPlaceholder": {
+        "title": "Supernova Location Map in M51",
+        "caption": "Composite survey indicating historical supernova explosion positions across M51's arms.",
+        "assetType": "ARTIST_CONCEPT"
+      }
     }
-  ],
-  "quizReferences": ["whirlpool"]
+  ]
 }

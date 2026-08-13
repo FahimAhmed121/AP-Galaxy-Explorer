@@ -2,56 +2,111 @@
   "galaxyId": "cartwheel",
   "galaxyName": "Cartwheel Galaxy (ESO 350-40)",
   "auraIntro": "Explorer, Cartwheel Galaxy was reshaped by a violent head-on galactic collision, creating expanding shockwaves of star formation.",
-  "overview": "The Cartwheel Galaxy (ESO 350-40) is a famous ring galaxy located 500 million light-years away in the constellation Sculptor.",
+  "overview": "The Cartwheel Galaxy (ESO 350-40) is a famous ring galaxy located approximately 500 million light-years away in the constellation Sculptor.",
   "formation": "Formed roughly 500 million years ago when a small companion galaxy punched directly through the center of a larger spiral galaxy.",
-  "structure": "A ring galaxy spanning 150,000 light-years across. It features an inner ring surrounding the core and a outer ring expanding at 217,000 mph.",
+  "structure": "A ring galaxy spanning 150,000 light-years across. It features an inner ring surrounding the core and an outer ring expanding at 217,000 mph.",
   "distance": "500 Million Light Years",
   "diameter": "150,000 Light Years",
   "age": "500 Million Years (Post-Collision Phase)",
   "constellation": "Sculptor",
   "discoveryHistory": "Discovered in 1941 by Fritz Zwicky, who described it as 'one of the most complicated structures waiting for an explanation.'",
-  "observationTips": "Extremely distant at 500 million light-years; imaged extensively by Hubble and JWST's NIRCam instruments.",
+  "observationTips": "Extremely distant at 500 million light-years; imaged extensively by Hubble and JWST's NIRCam and MIRI instruments.",
   "funFacts": [
-    "Created when a smaller companion galaxy pierced straight through the center of a spiral galaxy like a pebble in a pond.",
-    "The outer ring is expanding at over 217,000 mph (350,000 km/h), plowing into surrounding gas and sparking starbursts.",
-    "JWST images revealed faint optical 'spokes' connecting the inner hub to the outer rim."
+    "Created when a smaller companion galaxy pierced straight through the center of a spiral galaxy like a pebble dropped in a pond.",
+    "The outer ring is expanding at over 217,000 mph (350,000 km/h), plowing into surrounding gas and sparking starbursts."
   ],
+  "quizReferences": ["cartwheel-q1", "cartwheel-q2", "cartwheel-q3", "cartwheel-q4", "cartwheel-q5"],
   "cards": [
     {
       "id": "cartwheel-card-1",
-      "title": "Violent Collision Ring",
-      "subtitle": "Expanding Shockwaves & Outer Starburst Ring",
+      "title": "Arrival: The Wheel of Fire",
+      "subtitle": "ESO 350-40 Overview",
       "category": "OVERVIEW",
-      "body": "The Cartwheel Galaxy (ESO 350-40) is a classic ring galaxy produced by a direct high-speed collision with a smaller companion galaxy.",
+      "body": "Welcome to the Cartwheel Galaxy (ESO 350-40), one of the most remarkable collision ring galaxies in the observable universe. Located 500 million light-years away in the constellation Sculptor, Cartwheel spans 150,000 light-years across space. Its dramatic wagon-wheel shape was created by a violent, high-speed cosmic crash.",
       "keyMetrics": [
         { "label": "CLASSIFICATION", "value": "Ring Galaxy (SAD(r)0/a)" },
-        { "label": "CONSTELLATION", "value": "Sculptor" },
-        { "label": "DISTANCE", "value": "500 Million Light-Years" },
-        { "label": "DIAMETER", "value": "150,000 Light-Years" }
+        { "label": "DISTANCE FROM EARTH", "value": "500 Million Light Years" },
+        { "label": "DIAMETER", "value": "150,000 Light Years" },
+        { "label": "CONSTELLATION", "value": "Sculptor" }
       ],
       "visualPlaceholder": {
-        "title": "JWST NIRCam & MIRI Composite Image",
-        "caption": "Infrared view showing glowing dust spokes connecting inner core to outer ring.",
-        "assetType": "TELESCOPE_IMAGE"
+        "title": "Cartwheel Galaxy JWST Composite",
+        "caption": "James Webb Space Telescope NIRCam & MIRI composite portrait revealing glowing dust spokes and outer ring.",
+        "assetType": "TELESCOPE_IMAGE",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/da/Cartwheel_Galaxy_Webb_composite.jpg"
       }
     },
     {
       "id": "cartwheel-card-2",
-      "title": "Cosmic Ripple Dynamics",
-      "subtitle": "217,000 mph Expanding Ring & JWST Spokes",
-      "category": "STRUCTURE",
-      "body": "Like a stone dropped in water, the collision sent a gravitational shockwave outwards, sweeping up interstellar gas into an expanding ring of newborn stars.",
+      "title": "Discovery: Fritz Zwicky's Enigma",
+      "subtitle": "1941 Discovery to Space Telescopes",
+      "category": "HISTORY",
+      "body": "Discovered in 1941 by Swiss astrophysicist Fritz Zwicky at Palomar Observatory, Zwicky called Cartwheel 'one of the most complicated structures waiting for an explanation'. Decades later, supercomputer simulations confirmed Zwicky's hypothesis that Cartwheel was produced by a bullseye collision.",
       "bulletPoints": [
-        "Ring expanding at 217,000 mph into intergalactic medium.",
-        "Spokes contain silicate dust filaments and young star clusters.",
-        "Companion intruder galaxy visible trailing in space nearby."
+        "Fritz Zwicky first cataloged Cartwheel at Palomar Observatory in 1941.",
+        "Initial theories debated whether it was a single galaxy or colliding pair.",
+        "Confirmed as a head-on collision ring galaxy by computer hydrodynamic modeling."
       ],
       "visualPlaceholder": {
-        "title": "JWST Mid-Infrared Dust Distribution",
-        "caption": "MIRI spectral map highlighting organic hydrocarbon dust in the outer ring.",
+        "title": "Fritz Zwicky Historical Photographic Plate",
+        "caption": "Palomar Observatory photographic plate recording the initial discovery of Cartwheel.",
+        "assetType": "FORMATION_DIAGRAM"
+      }
+    },
+    {
+      "id": "cartwheel-card-3",
+      "title": "Cosmic Story: Shockwaves Like a Pebble in a Pond",
+      "subtitle": "217,000 mph Expanding Density Wave",
+      "category": "STRUCTURE",
+      "body": "Approximately 500 million years ago, a smaller companion galaxy plunged directly through the center of Cartwheel's parent spiral disk. Like a pebble dropped into a quiet pond, the impact sent a high-speed gravitational shockwave expanding outward at over 217,000 mph (350,000 km/h), sweeping up gas and igniting a ring of massive star formation.",
+      "keyMetrics": [
+        { "label": "RING EXPANSION SPEED", "value": "217,000 mph (350,000 km/h)" },
+        { "label": "COLLISION AGE", "value": "500 Million Years Ago" }
+      ],
+      "bulletPoints": [
+        "Gravitational shockwave expands outward at 217,000 mph.",
+        "Sweeps up interstellar gas, igniting intense starbursts in the outer ring.",
+        "Outer ring is rich in massive, short-lived supernova progenitor stars."
+      ],
+      "visualPlaceholder": {
+        "title": "Hydrodynamic Collision Simulation",
+        "caption": "Supercomputer model simulating a bullet galaxy plunging through a spiral disk.",
         "assetType": "SPECTRAL_CHART"
       }
+    },
+    {
+      "id": "cartwheel-card-4",
+      "title": "Deep Insight: Webb NIRCam & MIRI Composite",
+      "subtitle": "Unveiling Dusty Spokes in Mid-Infrared",
+      "category": "FORMATION",
+      "body": "NASA's James Webb Space Telescope imaged Cartwheel with NIRCam (Near-Infrared Camera) and MIRI (Mid-Infrared Instrument). Webb revealed faint optical 'spokes' connecting the inner bright core to the expanding outer ring, showing silicate dust filaments and young star clusters that optical telescopes could not see.",
+      "bulletPoints": [
+        "JWST NIRCam & MIRI combined view reveals glowing dust spokes.",
+        "Dust spokes consist mainly of silicate dust and complex hydrocarbon molecules.",
+        "Outer ring glows in mid-infrared wavelengths due to hot starburst dust."
+      ],
+      "visualPlaceholder": {
+        "title": "JWST MIRI Infrared Portrait",
+        "caption": "James Webb Space Telescope mid-infrared scan illuminating silicate dust spokes inside Cartwheel.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "cartwheel-card-5",
+      "title": "Cosmic Curiosity: Transient Evolutionary Phase",
+      "subtitle": "Reconstructing a Spiral Galaxy",
+      "category": "FACTS",
+      "body": "Cartwheel is caught in a transient, temporary stage of galaxy evolution. Over the next several hundred million years, as the outer expansion ring dissipates, gravity will pull material back together, and Cartwheel will gradually rebuild its traditional spiral arms.",
+      "bulletPoints": [
+        "Ring structure is temporary, lasting a few hundred million years.",
+        "Gravity will eventually reshape Cartwheel into a normal spiral galaxy.",
+        "Serves as a rare laboratory for studying galaxy resilience and shockwave physics."
+      ],
+      "visualPlaceholder": {
+        "title": "Future Spiral Reconstruction Model",
+        "caption": "Artist impression of Cartwheel's future evolution as gravity rebuilds its spiral arms.",
+        "assetType": "ARTIST_CONCEPT"
+      }
     }
-  ],
-  "quizReferences": ["cartwheel"]
+  ]
 }

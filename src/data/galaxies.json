@@ -34,8 +34,8 @@
       "coreRadius": 28,
       "rotationSpeed": 0.08
     },
-    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/43/ESO-VLT-Laser-phot-33a-07_composite.jpg",
-    "youtubeVideoId": "7u_Z2K6u1Y0",
+    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/ESO-VLT-Laser-phot-33a-07.jpg/1280px-ESO-VLT-Laser-phot-33a-07.jpg",
+    "youtubeVideoId": "daWmpo17PbU",
     "banglaTranslation": {
       "name": "মিল্কিওয়ে গ্যালাক্সি (Milky Way Galaxy)",
       "type": "দণ্ডযুক্ত সর্পিল গ্যালাক্সি (Barred Spiral Galaxy)",
@@ -98,8 +98,8 @@
       "coreRadius": 32,
       "rotationSpeed": 0.05
     },
-    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c2/M31_09-01-2011_%28cropped%29.jpg",
-    "youtubeVideoId": "4M8r_F6VMyU",
+    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Andromeda_Galaxy_2025.png/1280px-Andromeda_Galaxy_2025.png",
+    "youtubeVideoId": "udAL48P5NJU",
     "banglaTranslation": {
       "name": "অ্যান্ড্রোমিডা গ্যালাক্সি (Andromeda Galaxy - M31)",
       "type": "সর্পিল গ্যালাক্সি (Spiral Galaxy)",
@@ -161,8 +161,8 @@
       "coreRadius": 25,
       "rotationSpeed": 0.04
     },
-    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5e/M104_ngc4594_sombrero_galaxy_hubble_heritage_00-07a.jpg",
-    "youtubeVideoId": "UWeP9tM7XoM",
+    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Sombrero_Galaxy_%28heic2506a%29.jpg/1280px-Sombrero_Galaxy_%28heic2506a%29.jpg",
+    "youtubeVideoId": "J2NwqfJZ1qc",
     "quizzes": [
       {
         "question": "What gives the Sombrero Galaxy its hat appearance?",
@@ -211,8 +211,8 @@
       "coreRadius": 26,
       "rotationSpeed": 0.09
     },
-    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/db/Messier51a.jpg",
-    "youtubeVideoId": "D3v9bO6eYRE",
+    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Messier51_sRGB.jpg/1280px-Messier51_sRGB.jpg",
+    "youtubeVideoId": "LBz_ozWSCkM",
     "quizzes": [
       {
         "question": "What triggers the high star formation in Whirlpool Galaxy?",
@@ -261,8 +261,8 @@
       "coreRadius": 22,
       "rotationSpeed": 0.06
     },
-    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/98/Messier_33_by_HST.jpg",
-    "youtubeVideoId": "5aT9wZ6fJc0",
+    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/VST_snaps_a_very_detailed_view_of_the_Triangulum_Galaxy.jpg/1280px-VST_snaps_a_very_detailed_view_of_the_Triangulum_Galaxy.jpg",
+    "youtubeVideoId": "LUyacAKYTFM",
     "quizzes": [
       {
         "question": "What major feature is Triangulum missing at its core?",
@@ -311,8 +311,8 @@
       "coreRadius": 20,
       "rotationSpeed": -0.07
     },
-    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c4/M64_Hubble.jpg",
-    "youtubeVideoId": "fD3t93-H6g8",
+    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/NGC_4826_-_HST.png/1280px-NGC_4826_-_HST.png",
+    "youtubeVideoId": "DuRspvSWhRQ",
     "quizzes": [
       {
         "question": "What unique rotation feature does Black Eye Galaxy possess?",
@@ -361,8 +361,8 @@
       "coreRadius": 28,
       "rotationSpeed": 0.07
     },
-    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c5/m101_hst_big.jpg",
-    "youtubeVideoId": "f0X1X1P8PjE",
+    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/M101_hires_STScI-PRC2006-10a.jpg/1280px-M101_hires_STScI-PRC2006-10a.jpg",
+    "youtubeVideoId": "DGQA9Xdfnwk",
     "quizzes": [
       {
         "question": "Why is Pinwheel Galaxy so distinct?",
@@ -411,8 +411,8 @@
       "coreRadius": 24,
       "rotationSpeed": 0.03
     },
-    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/90/Cartwheel_Galaxy.jpg",
-    "youtubeVideoId": "k1_J0S2193M",
+    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Cartwheel_Galaxy.jpg/1280px-Cartwheel_Galaxy.jpg",
+    "youtubeVideoId": "bpa9C4S7lfw",
     "quizzes": [
       {
         "question": "What created Cartwheel's ring shape?",
@@ -461,7 +461,8 @@
       "coreRadius": 18,
       "rotationSpeed": 0.02
     },
-    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/18/Large_Magellanic_Cloud.jpg",
+    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Large_Magellanic_Cloud.jpg/1280px-Large_Magellanic_Cloud.jpg",
+    "youtubeVideoId": "CpDBZ-NaFi8",
     "quizzes": [
       {
         "question": "What famous nebula resides in the Large Magellanic Cloud?",
@@ -510,7 +511,8 @@
       "coreRadius": 15,
       "rotationSpeed": -0.03
     },
-    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/94/Small_Magellanic_Cloud_%28eso1033a%29.jpg",
+    "realImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/SMC_-_Noirlab2030b.jpg/1280px-SMC_-_Noirlab2030b.jpg",
+    "youtubeVideoId": "cMv2dCjcfvo",
     "quizzes": [
       {
         "question": "What stream of gas connects the Small and Large Magellanic Clouds?",

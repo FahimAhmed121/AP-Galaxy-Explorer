@@ -120,7 +120,7 @@ export class AsteroidManager {
         g.strokePath();
 
         // Add internal crater details
-        g.fillStyle(0x1e293b, 0.7);
+        g.fillStyle(0x1e293b, 1);
         g.fillCircle(radius * 0.7, radius * 0.7, radius * 0.28);
         if (type !== 'small') {
           g.fillCircle(radius * 1.3, radius * 1.2, radius * 0.22);

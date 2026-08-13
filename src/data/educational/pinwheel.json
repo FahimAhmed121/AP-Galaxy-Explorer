@@ -2,56 +2,111 @@
   "galaxyId": "pinwheel",
   "galaxyName": "Pinwheel Galaxy (M101)",
   "auraIntro": "Explorer, Pinwheel Galaxy is an immense face-on spiral galaxy containing over 1 trillion stars and 3,000 starbirth regions.",
-  "overview": "The Pinwheel Galaxy (M101 or NGC 5457) is a massive face-on spiral galaxy in the constellation Ursa Major, roughly 21 million light-years from Earth.",
+  "overview": "The Pinwheel Galaxy (M101) is a giant face-on spiral galaxy located approximately 25 million light-years away in the constellation Ursa Major.",
   "formation": "Formed approximately 13.1 billion years ago, tidal interactions with nearby companion galaxies asymmetricized its outer arms and accelerated starbirth.",
-  "structure": "A face-on grand spiral galaxy spanning 170,000 light-years—nearly double the size of the Milky Way—with a stellar mass of 1 trillion solar masses.",
-  "distance": "21 Million Light Years",
+  "structure": "A face-on grand spiral galaxy spanning 170,000 light-years—nearly double the size of the Milky Way—with a stellar population of 1 trillion stars.",
+  "distance": "25 Million Light Years",
   "diameter": "170,000 Light Years",
   "age": "13.1 Billion Years",
   "constellation": "Ursa Major",
   "discoveryHistory": "Discovered by Pierre Méchain on March 27, 1781, and cataloged by Charles Messier.",
-  "observationTips": "Due to its face-on orientation, surface brightness is low; requires dark skies and 8-inch or larger optics to resolve individual arm nodes.",
+  "observationTips": "Due to its face-on orientation, surface brightness is spread across a large area; requires dark skies to resolve individual spiral arm nodes.",
   "funFacts": [
     "Contains over 3,000 giant H II regions where active star formation creates massive newborn star clusters.",
-    "Nearly twice the diameter of our Milky Way Galaxy, holding an estimated 1 trillion stars.",
-    "Hosted supernova SN 2023ixf in May 2023, one of the brightest and closest Type Ia supernovae seen in two decades."
+    "Nearly twice the diameter of our Milky Way Galaxy, holding an estimated 1 trillion stars."
   ],
+  "quizReferences": ["pinwheel-q1", "pinwheel-q2", "pinwheel-q3", "pinwheel-q4", "pinwheel-q5"],
   "cards": [
     {
       "id": "pinwheel-card-1",
-      "title": "Face-On Giant Spiral",
-      "subtitle": "170,000 Light-Year Stellar Wheel",
+      "title": "Arrival: The Colossal Stellar Wheel",
+      "subtitle": "Messier 101 Overview",
       "category": "OVERVIEW",
-      "body": "The Pinwheel Galaxy (M101) presents a perfect face-on perspective from Earth, providing astronomers with an ideal top-down view of spiral mechanics.",
+      "body": "Welcome to the Pinwheel Galaxy (M101), an enormous face-on spiral galaxy spanning 170,000 light-years across space—nearly twice the diameter of our Milky Way. Located 25 million light-years away in Ursa Major according to NASA's Hubble catalog, M101 provides astronomers an unobstructed top-down view of spiral galaxy structure.",
       "keyMetrics": [
         { "label": "CLASSIFICATION", "value": "Pinwheel Spiral (SAB(rs)cd)" },
-        { "label": "CONSTELLATION", "value": "Ursa Major" },
-        { "label": "DISTANCE", "value": "21 Million Light-Years" },
-        { "label": "DIAMETER", "value": "170,000 Light-Years" }
+        { "label": "DISTANCE FROM EARTH", "value": "25 Million Light Years" },
+        { "label": "DIAMETER", "value": "170,000 Light Years" },
+        { "label": "CONSTELLATION", "value": "Ursa Major" }
       ],
       "visualPlaceholder": {
-        "title": "Hubble Ultra-High Resolution Mosaic",
-        "caption": "16,000 pixel wide composite capturing 3,000 starburst regions in M101.",
-        "assetType": "TELESCOPE_IMAGE"
+        "title": "Pinwheel Galaxy Optical Portrait",
+        "caption": "Hubble Space Telescope high-definition mosaic of Messier 101 showcasing sweeping spiral arms.",
+        "assetType": "TELESCOPE_IMAGE",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/c5/m101_hubble_photosphere.jpg"
       }
     },
     {
       "id": "pinwheel-card-2",
-      "title": "Supernova & H II Regions",
-      "subtitle": "SN 2023ixf & Extreme Stellar Nurseries",
-      "category": "STRUCTURE",
-      "body": "In May 2023, Japanese amateur astronomer Koichi Itagaki discovered supernova SN 2023ixf in M101's spiral arms, attracting worldwide observation.",
+      "title": "Discovery: Pierre Méchain & Messier 101",
+      "subtitle": "Cataloging the Pinwheel",
+      "category": "HISTORY",
+      "body": "Discovered on March 27, 1781 by French astronomer Pierre Méchain, M101 was among the final deep-sky objects added by Charles Messier to his famous catalog. In the 1850s, Lord Rosse used his 72-inch reflector telescope in Ireland to resolve M101's intricate spiral structure.",
       "bulletPoints": [
-        "SN 2023ixf occurred when a red supergiant star collapsed into a neutron star.",
-        "M101 holds 3,000+ ionized hydrogen H II regions.",
-        "Asymmetric arm structure caused by tidal drag from dwarf companions."
+        "Pierre Méchain discovered M101 in March 1781.",
+        "Charles Messier cataloged it as M101 in his original master list.",
+        "Lord Rosse recognized its spiral structure using the Leviathan of Parsonstown."
       ],
       "visualPlaceholder": {
-        "title": "Chandra X-Ray & Optical Overlay",
-        "caption": "X-ray glowing gas surrounds active supernova remnants in M101.",
+        "title": "18th-Century Deep Sky Chart",
+        "caption": "Historical star map depicting M101 in the constellation Ursa Major near the Big Dipper.",
+        "assetType": "FORMATION_DIAGRAM"
+      }
+    },
+    {
+      "id": "pinwheel-card-3",
+      "title": "Cosmic Story: Asymmetric Arms & 3,000 Nurseries",
+      "subtitle": "Tidal Disturbances & Extreme Starbirth",
+      "category": "STRUCTURE",
+      "body": "M101's spiral arms are noticeably off-center and asymmetric. Past gravitational encounters with companion galaxies (NGC 5470, NGC 5474, and NGC 5477) distorted its stellar disk. These tidal forces compressed gas, creating over 3,000 ionized H II starburst regions where massive stars are rapidly forming.",
+      "keyMetrics": [
+        { "label": "H II STAR NURSERIES", "value": "Over 3,000 Regions" },
+        { "label": "COMPANION GALAXIES", "value": "NGC 5474 & NGC 5477" }
+      ],
+      "bulletPoints": [
+        "Asymmetric arm structure caused by gravitational tugs from small companion galaxies.",
+        "Hosts over 3,000 giant H II regions where hydrogen gas glows bright pink.",
+        "Several H II regions (like NGC 5461 and NGC 5462) are so massive they have their own NGC designations."
+      ],
+      "visualPlaceholder": {
+        "title": "Hubble Close-Up of H II Nurseries",
+        "caption": "Hubble optical scan highlighting bright pink ionized hydrogen gas clouds in M101.",
         "assetType": "SPECTRAL_CHART"
       }
+    },
+    {
+      "id": "pinwheel-card-4",
+      "title": "Deep Insight: Webb Infrared & PAHs Chemistry",
+      "subtitle": "Infrared Mapping of Interstellar Dust",
+      "category": "FORMATION",
+      "body": "NASA's James Webb Space Telescope observed M101 in infrared light, penetrating interstellar dust clouds. Webb mapped organic molecules called polycyclic aromatic hydrocarbons (PAHs) and fine silicate dust grains, giving scientists unprecedented data on how organic chemistry evolves inside galaxy starbirth zones.",
+      "bulletPoints": [
+        "JWST infrared vision maps warm dust lanes obscured in optical light.",
+        "Detects polycyclic aromatic hydrocarbons (PAHs) associated with star formation.",
+        "Provides precise measurements of gas density and dust grain growth."
+      ],
+      "visualPlaceholder": {
+        "title": "JWST MIRI Infrared Map of M101",
+        "caption": "James Webb Space Telescope mid-infrared image mapping organic dust distribution across M101's arms.",
+        "assetType": "TELESCOPE_IMAGE"
+      }
+    },
+    {
+      "id": "pinwheel-card-5",
+      "title": "Cosmic Curiosity: Supernova SN 2023ixf",
+      "subtitle": "Stellar Cataclysm in May 2023",
+      "category": "FACTS",
+      "body": "On May 19, 2023, amateur astronomer Koichi Itagaki discovered supernova SN 2023ixf in one of M101's spiral arms. A Type II supernova caused by the collapse of a massive red supergiant star, SN 2023ixf became one of the brightest and closest supernovae observed in over a decade.",
+      "bulletPoints": [
+        "SN 2023ixf exploded in M101 in May 2023, visible with small telescopes.",
+        "Progenitor star was identified as a red supergiant ~15-20 times the mass of our Sun.",
+        "Allowed multi-observatory study from radio to X-ray wavelengths."
+      ],
+      "visualPlaceholder": {
+        "title": "Supernova SN 2023ixf Comparison View",
+        "caption": "Before-and-after telescope images showing the bright supernova SN 2023ixf in M101.",
+        "assetType": "ARTIST_CONCEPT"
+      }
     }
-  ],
-  "quizReferences": ["pinwheel"]
+  ]
 }
