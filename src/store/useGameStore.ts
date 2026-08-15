@@ -50,6 +50,9 @@ interface GameStoreState {
   toggleEquipPerk: (perkId: string) => void;
   getActivePerkBonus: (effectType: string) => number;
 
+  setStardustLastSynced: (amount: number) => void;
+  updateProfileFromCloud: (updatedProfile: ExplorerProfile) => void;
+
   saveShipState: (ship: Spaceship) => void;
   resetProgress: () => void;
 }
@@ -74,6 +77,7 @@ const DEFAULT_PROFILE: ExplorerProfile = {
   level: 1,
   totalScore: 0,
   stardustReserves: 0,
+  stardustLastSynced: 0,
   discoveredGalaxyIds: [],
   quizBestScores: {},
   unlockedBadges: [],
@@ -441,6 +445,16 @@ export const useGameStore = create<GameStoreState>()(
           profile: { ...state.profile, name: name.trim() || 'COSMIC EXPLORER' },
         })),
 
+      setStardustLastSynced: (amount) =>
+        set((state) => ({
+          profile: { ...state.profile, stardustLastSynced: amount },
+        })),
+
+      updateProfileFromCloud: (updatedProfile) =>
+        set({
+          profile: updatedProfile,
+        }),
+
       saveShipState: (ship) => set({ savedShipState: ship }),
 
       resetProgress: () => {
@@ -469,6 +483,7 @@ export const useGameStore = create<GameStoreState>()(
           level: p.level || 1,
           totalScore: p.totalScore || DEFAULT_PROFILE.totalScore,
           stardustReserves: p.stardustReserves ?? DEFAULT_PROFILE.stardustReserves,
+          stardustLastSynced: p.stardustLastSynced ?? p.stardustReserves ?? 0,
           discoveredGalaxyIds: p.discoveredGalaxyIds || DEFAULT_PROFILE.discoveredGalaxyIds,
           quizBestScores: p.quizBestScores || DEFAULT_PROFILE.quizBestScores,
           unlockedBadges: p.unlockedBadges || DEFAULT_PROFILE.unlockedBadges,

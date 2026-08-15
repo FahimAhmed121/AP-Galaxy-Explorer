@@ -2,7 +2,7 @@
 **Organization:** Astronomy Pathshala  
 **Role:** Lead Software Engineer & Game Architect  
 **Target Platform:** Windows Desktop (Electron) + Web Preview  
-**Tech Stack:** React 18, TypeScript, Phaser 3, Zustand, Tailwind CSS, Framer Motion, Web Audio API, Firebase  
+**Tech Stack:** React 18, TypeScript, Phaser (^4.2.1), Zustand, Tailwind CSS, Web Audio API, Firebase Auth & Firestore, Electron  
 
 ---
 
@@ -15,7 +15,7 @@
    React handles UI, Routing, Authentication, Mission Control, Galaxy Info, Quizzes, Certificates, and Persistent Player Profile.  
    Phaser handles 60FPS Render Loop, Camera, Entity Physics, Ship Movement, Particle Systems, Collision Detection, and Space Navigation.
 3. **Composition Over Inheritance**  
-   Prefer functional components, custom hooks, and modular entity systems over deep OOP class hierarchies (except where Phaser 3 scene subclassing strictly requires it).
+   Prefer functional components, custom hooks, and modular entity systems over deep OOP class hierarchies (except where Phaser scene subclassing strictly requires it).
 4. **Data-Driven Systems**  
    Galaxies, quizzes, ship upgrades, achievements, and dialogue are strictly decoupled from rendering code into validated JSON/TypeScript schema data registries.
 5. **Strict Type Safety & Zero Ambiguity**  
@@ -25,31 +25,27 @@
 
 ## 2. Folder Structure Standards
 
-### Production Architecture Layout (`/src`)
+### Production Architecture Layout
 ```
-/src
-├── /assets                 # Audio, sprites, icons, and static media
-│   ├── /audio
-│   ├── /images
-│   └── /sprites
-├── /components             # React UI Components
-│   ├── /common             # Reusable UI controls (Buttons, Modals, Badges)
-│   ├── /hud                # Heads-Up Display overlays (ShipStatus, Radar)
-│   ├── /views              # Main screen views (MainMenu, Archive, Settings)
-│   └── /educational        # Spec Cards, Quiz Modals, Certificates
-├── /engine                 # Core Game Engine & Services
-│   ├── /audio              # Synthesizer & Audio Engine
-│   └── /bridge             # Phaser <-> React EventBus & Bridge
-├── /phaser                 # Phaser 3 Game World Logic
-│   ├── /entities           # Ship, Asteroid, Laser, Stardust GameObjects
-│   ├── /managers           # Collision, Particle, Spawn, Camera Managers
-│   └── /scenes             # SpaceScene, WarpScene, LoadingScene
-├── /store                  # Zustand State Management
-│   ├── /slices             # Profile, Settings, Navigation Slices
-│   └── useGameStore.ts     # Unified Zustand Store Entry Point
-├── /data                   # Static Data Registries (Galaxies, Quizzes, Ships)
-├── /types                  # TypeScript Interfaces & Enums
-└── /utils                  # Helper Functions (Math, Formatters, Canvas Generators)
+/
+├── electron/               # Electron Main Process & Preload Bridge
+│   ├── main.ts
+│   └── preload.ts
+├── firestore.rules         # Security Rules for Firestore Cloud Saves
+└── src/
+    ├── components/         # React UI Components (HUD, Common, Views, Educational)
+    ├── core/               # Shared Constants, Config, Events, Logger, Types
+    ├── data/               # Static Data Registries (Galaxies, Quizzes, Progression)
+    ├── engine/             # Web Audio Procedural Synthesizer Engine
+    ├── phaser/             # Phaser Engine (Entities, Managers, Scenes, Systems)
+    ├── services/           # Decoupled Services (Firebase, Auth, CloudSave, SyncManager)
+    │   ├── auth/           # Firebase Authentication Wrapper
+    │   ├── cloudSave/      # Cloud Save Serializer, Resolver, Service, SyncManager
+    │   └── firebase.ts     # Firebase App & SDK Singleton
+    ├── store/              # Zustand Store with localStorage & Cloud Sync
+    ├── utils/              # Helper Utilities (Math, Formatters)
+    ├── App.tsx             # Main App Shell & State Switcher
+    └── main.tsx            # DOM Entry Point
 ```
 
 ### File Placement Rules

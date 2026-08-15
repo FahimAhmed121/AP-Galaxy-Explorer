@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   SlidersHorizontal,
@@ -16,10 +16,16 @@ import {
   Lock,
   Cpu,
   Heart,
+  Cloud,
+  CloudOff,
+  RefreshCw,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { Spaceship, Galaxy } from '../../types';
 import { GALAXIES } from '../../data/galaxies';
 import { useGameStore } from '../../store/useGameStore';
+import { syncManager, SyncState } from '../../services/cloudSave/SyncManager';
 import {
   EXPLORER_BADGES,
   SHIP_SKINS,
@@ -46,6 +52,14 @@ export default function PilotDashboardModal({
     useGameStore();
   const [activeTab, setActiveTab] = useState<'UPGRADES' | 'CUSTOMIZE' | 'DOSSIER' | 'ATLAS'>('UPGRADES');
   const [customCategory, setCustomCategory] = useState<'SKIN' | 'THRUSTER' | 'SCANNER' | 'PERKS'>('SKIN');
+  const [syncState, setSyncState] = useState<SyncState>(syncManager.getState());
+
+  useEffect(() => {
+    const unsubscribe = syncManager.subscribe((state) => {
+      setSyncState(state);
+    });
+    return unsubscribe;
+  }, []);
 
   const isBN = settings.language === 'BN';
   const t = (en: string, bn: string) => (isBN ? bn : en);
@@ -130,9 +144,50 @@ export default function PilotDashboardModal({
               <SlidersHorizontal size={20} />
             </div>
             <div>
-              <h2 className="text-xl font-serif italic text-white font-medium">
-                {t('Pilot Command Station', 'পাইলট কমান্ড স্টেশন')}
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-serif italic text-white font-medium">
+                  {t('Pilot Command Station', 'পাইলট কমান্ড স্টেশন')}
+                </h2>
+                {/* Cloud Sync Status Indicator */}
+                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-900 border border-slate-800 font-mono text-[10px]">
+                  {syncState.status === 'synced' && (
+                    <>
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                      <span className="text-emerald-300">Cloud Synced</span>
+                    </>
+                  )}
+                  {syncState.status === 'syncing' && (
+                    <>
+                      <RefreshCw className="w-3 h-3 text-cyan-400 animate-spin" />
+                      <span className="text-cyan-300">Syncing...</span>
+                    </>
+                  )}
+                  {syncState.status === 'pending' && (
+                    <>
+                      <Cloud className="w-3 h-3 text-amber-400" />
+                      <span className="text-amber-300">Sync Pending</span>
+                    </>
+                  )}
+                  {syncState.status === 'offline' && (
+                    <>
+                      <CloudOff className="w-3 h-3 text-slate-400" />
+                      <span className="text-slate-400">Offline</span>
+                    </>
+                  )}
+                  {syncState.status === 'error' && (
+                    <>
+                      <AlertCircle className="w-3 h-3 text-rose-400" />
+                      <span className="text-rose-300">Sync Error</span>
+                    </>
+                  )}
+                  {syncState.status === 'idle' && (
+                    <>
+                      <Cloud className="w-3 h-3 text-slate-500" />
+                      <span className="text-slate-500">Local</span>
+                    </>
+                  )}
+                </div>
+              </div>
               <p className="text-[10px] font-mono text-gold uppercase tracking-[0.2em]">
                 {t('AP Explorer Sub-systems & Dossier', 'এপি এক্সপ্লোরার সিস্টেম ও ডসিয়ার')}
               </p>

@@ -28,25 +28,40 @@
 - ✅ **Sprint 2.3 — Explorer Progression & Cosmetic Unlocks**: Centralized career progression system (`progressionData.ts`), 15 Explorer levels & rank titles (Space Cadet → Master Voyager of the Cosmos), Explorer XP reward pipeline (discoveries, quizzes, perfect score bonuses), 7 Merit Badges across 4 categories, 5 Passive Perks (scanner speed, magnet radius, max speed, shield regen, XP bonus), 12 customizable cosmetics (Ship Skins, Thruster Effects, Scanner Effects), interactive Pilot Dashboard customization tab, top HUD rank/level display, and comprehensive stabilization fixes.
 - ✅ **Sprint 2.4 — Alien Survey Drones**: Autonomous AI survey drones (`AlienSurveyDrone.ts`), 5-state AI FSM (PATROL, SURVEY, INVESTIGATE, ATTACK, RETURN), off-screen galaxy-centric sector spawning (`DroneManager.ts`), proximity/context-driven AURA alerts, defensive plasma laser combat, Arcade Physics overlap object identity collision safeguards, Stardust and XP rewards, and forensic audit cleanup.
 - ✅ **Sprint 2.4.5 — Educational Content, UI/UX & Media Polish**: Complete 5-card bilingual (EN/BN) educational content and narrative briefs for all 10 core galaxies, 50-question scientific quiz expansion (5 questions per galaxy), real astronomical image integration (`realImageUrl` and resilient fallback system in `GalaxyImage.tsx`), verified active YouTube video tour support with high-res thumbnails, in-app embedded player, and direct YouTube watch option, learning card replayability via Galactic Archive, streamlined learning briefing modal UI/UX, and opaque asteroid crater visual polish (`AsteroidManager.ts`).
+- ✅ **Sprint 2.5 — Firebase Authentication & Cloud Save**: Comprehensive user authentication and cloud persistence system:
+  - *Phase 1 (Auth Foundation)*: Firebase Web SDK integration, `AuthService` supporting Google OAuth (`signInWithGoogle`) and Email/Password (`signInWithEmail`, `signUpWithEmail`), session management, and `AuthModal` UI.
+  - *Phase 2 (Cloud Save & Serialization)*: Explicit DTOs (`CloudSaveProfileDTO`), `CloudSaveSerializer` with boundary validation, `CloudSaveResolver` deterministic field-by-field conflict resolution (Additive Set Union, Monotonic Max for XP/scores, Stardust Net-Delta Reconciliation), `CloudSaveService` Firestore operations under `users/{uid}/profile/main`, and `firestore.rules`.
+  - *Phase 3 (Sync Manager & UI)*: `SyncManager` 3-second debounced auto-sync, dirty state tracking, reentrancy guards, session generation tokens, offline/online recovery, Cloud Sync badges in HUD/Dashboard, and Main Menu / Settings user profile controls.
 - ✅ **Documentation Synchronization**: Comprehensive synchronization of project state, engineering standards, system architectures, drone system architecture, and Lean V1 roadmap.
 
 ---
 
-## Upcoming Milestones (Lean V1 Roadmap)
-
-### Sprint 2.5 — Firebase Authentication & Cloud Save
-**Goal**: Implement user account management and cross-device save state persistence.
-**Deliverables**:
-- User login (Google OAuth & Anonymous authentication).
-- Firestore cloud save synchronization for pilot profiles and mapped catalog.
-- Cross-device progress restoration.
+## Active & Upcoming Milestones (Lean V1 Roadmap)
 
 ### Sprint 2.6 — Electron Desktop Release
-**Goal**: Package the application into a standalone cross-platform desktop game.
-**Deliverables**:
-- Desktop packaging configuration using Electron.
-- Executable installers (Windows, macOS, Linux).
-- Production bundle verification and release candidate build.
+**Goal**: Package the application into a standalone cross-platform desktop game with local loopback server, robust window lifecycle, and offline/online save parity.
+
+- ✅ **Phase 1 — Electron Core & Build Integration (COMPLETED & AUDITED)**:
+  - Minimal, secure Electron main process (`electron/main.ts`) and preload bridge (`electron/preload.ts`).
+  * Strict security settings: `nodeIntegration: false`, `contextIsolation: true`, `sandbox: true`, `webSecurity: true`, `allowRunningInsecureContent: false`.
+  - Vite relative asset base configuration (`base: './'`) for static bundle resolution.
+  - Embedded local loopback HTTP server (`127.0.0.1:<port>`) serving `/dist` in production.
+  - External link interception routing to OS default browser via `shell.openExternal`.
+  - `esbuild` desktop build pipeline (`build:electron`, `electron:build`, `electron:dev`) in `package.json`.
+  - Sprint 2.5 regression audit verified 100% intact.
+  - Audit Verdict: **PASS WITH WARNINGS — READY FOR PHASE 2**.
+
+- ⏳ **Phase 2 — Desktop Window Management & Lifecycle Integration (NEXT / READY)**:
+  - Window sizing, centering, display bounds management, and launch show animations.
+  - Native window close interception and dirty-state flush before application termination.
+  - Web Audio Context auto-resume handling for desktop autoplay policies.
+  - Menu bar streamlining and desktop keyboard accelerator integration.
+
+- 📋 **Phase 3 — Desktop Packaging & Distribution (NOT STARTED)**:
+  - Cross-platform packaging configuration (`electron-builder` / packager).
+  - Cross-platform clean and build script stabilization.
+  - Executable installers (Windows `.exe`/NSIS, macOS `.dmg`, Linux `.AppImage`).
+  - Production release candidate verification.
 
 ---
 

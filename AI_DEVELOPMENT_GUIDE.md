@@ -51,10 +51,21 @@ The codebase is split into distinct architectural boundaries. Every developer an
 - **Global State Store (`src/store/useGameStore.ts`)**: Serves as the single source of truth for user profile state, discovered galaxy IDs (`profile.discoveredGalaxyIds`), quiz attempts (`profile.quizAttempts`), quiz high scores (`profile.quizHighScores`), stardust currency, and ship upgrade levels—automatically synced to browser `localStorage`.
   - *Ship Upgrade Synchronization*: React `PilotDashboardModal` updates Zustand `useGameStore` and emits `UPDATE_SHIP_STATS`. Phaser `PlayerShip` listens to `UPDATE_SHIP_STATS` and dynamically updates speed, shield capacity, weapon cooldown, and vacuum magnet pull radius in real-time.
   - *Progression Architecture Rule*: Ship Hardware Upgrades (Sprint 2.2 — Ion Engine, Deflector Shield, Plasma Cannon, Vacuum Dust Magnet purchased with Stardust) and Explorer Progression (Sprint 2.3 — Explorer XP, Levels, Rank Titles, Cosmetic Unlocks, Badges, Passive Perks) MUST remain strictly separate systems. Future AI development must never merge them into a single upgrade tree. Ship upgrades modify physical ship flight and combat performance, whereas Explorer Progression tracks player career identity, rank titles, cosmetic customizations, and lightweight passive bonuses.
+- **External Services & Cloud Save Layer (`src/services/`)**: Provides decoupled authentication and cloud synchronization:
+  - *AuthService (`src/services/auth/AuthService.ts`)*: Manages Google OAuth (`signInWithGoogle`) and Email/Password (`signInWithEmail`, `signUpWithEmail`) authentication, session state listeners (`onAuthStateChanged`), and human-readable error mapping.
+  - *CloudSaveService (`src/services/cloudSave/CloudSaveService.ts`)*: Isolated Firestore persistence strictly locked to document paths `users/{uid}/profile/main` and `users/{uid}/metadata/main` with UID session authorization validation.
+  - *CloudSaveSerializer (`src/services/cloudSave/CloudSaveSerializer.ts`)*: Handles bidirectional transformation, sanitization bounds, and schema validation between Zustand `ExplorerProfile` and Firestore DTOs (`CloudSaveProfileDTO`).
+  - *CloudSaveResolver (`src/services/cloudSave/CloudSaveResolver.ts`)*: Enforces deterministic conflict resolution: Additive Set Union ($A \cup B$) for unlocks/collections, Monotonic Max ($\max(A, B)$) for XP and quiz scores, Stardust Net-Delta Reconciliation for currency, and Timestamp-based precedence for callsigns and equipped cosmetics.
+  - *SyncManager (`src/services/cloudSave/SyncManager.ts`)*: Application-level orchestrator managing 3-second debounced auto-sync, dirty state tracking, reentrancy guards (`applyCloudUpdateToStore`), session generation tokens (`currentSessionId`), and network status listeners. Stardust baseline advancement (`stardustLastSynced`) is executed ONLY after confirmed cloud write.
+- **Electron Desktop Architecture Layer (`electron/`)**:
+  - *Main Process (`electron/main.ts`)*: Manages window lifecycle, strict Chromium sandboxing (`sandbox: true`, `contextIsolation: true`, `nodeIntegration: false`, `webSecurity: true`, `allowRunningInsecureContent: false`), embedded local loopback production server (`127.0.0.1:<port>`), and external link interception routing to OS default browser via `shell.openExternal`.
+  - *Preload Context Bridge (`electron/preload.ts`)*: Minimal context bridge exposing only read-only platform metadata (`window.electron = { isDesktop: true, platform: process.platform }`). Never expose Node.js runtime APIs or arbitrary execution handles.
+  - *Build Pipeline*: Dual-target build using `esbuild` (`build:electron`, `electron:build`, `electron:dev`) with `base: './'` relative bundle resolution in `vite.config.ts`.
 
 ### Strict Execution Rules:
 1. **Never Bypass Controllers**: React UI components must emit intent to the EventBus or trigger controller methods rather than attempting to mutate Phaser internal state directly.
 2. **Never Duplicate Logic**: Do not re-implement proximity detection, scoring, or state validation if an existing manager or controller already handles it.
+3. **Preserve Completed Systems**: Never refactor or alter working Sprint 2.5 Auth/Cloud Save services or Sprint 2.6 Phase 1 Electron infrastructure during subsequent UI or gameplay passes.
 
 ---
 
@@ -112,7 +123,7 @@ Before writing code or making edits, AI assistants and developers MUST inspect d
 4. `ARCHITECTURE_OVERVIEW.md` (High-level architecture and EventBus flows)
 5. `docs/ENGINEERING_STANDARDS.md` (Detailed coding standards)
 6. Relevant system architecture doc in `docs/` (`DISCOVERY_SYSTEM_ARCHITECTURE.md`, `LEARNING_SYSTEM_ARCHITECTURE.md`, `QUIZ_SYSTEM_ARCHITECTURE.md`, `DRONE_SYSTEM_ARCHITECTURE.md`, etc.)
-7. Latest sprint reports (`SPRINT_2_4_REPORT.md`, `SPRINT_2_3_REPORT.md`, `SPRINT_2_1_REPORT.md`, `STABILIZATION_SPRINT_1_REPORT.md`, `QUALITY_SPRINT_1_REPORT.md`)
+7. Latest sprint reports (`SPRINT_2_6_PHASE_1_REPORT.md`, `SPRINT_2_5_REPORT.md`, `SPRINT_2_4_5_REPORT.md`, `SPRINT_2_4_REPORT.md`, `SPRINT_2_3_REPORT.md`, `SPRINT_2_1_REPORT.md`, `STABILIZATION_SPRINT_1_REPORT.md`, `QUALITY_SPRINT_1_REPORT.md`)
 
 ---
 

@@ -1,5 +1,7 @@
-/**
- * Electron Preload Script Placeholder
- * Will expose secure IPC bridge APIs to window.electron API.
- */
-export {};
+import { contextBridge } from 'electron';
+
+// Minimal context bridge exposing only platform identification to renderer
+contextBridge.exposeInMainWorld('electron', {
+  isDesktop: true,
+  platform: process.platform,
+});

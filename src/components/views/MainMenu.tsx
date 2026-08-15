@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Play, BookOpen, Star, HelpCircle, Shield, Volume2, VolumeX, Settings, Compass } from 'lucide-react';
+import { User as FirebaseUser } from 'firebase/auth';
+import { Play, BookOpen, Star, HelpCircle, Shield, Volume2, VolumeX, Settings, Compass, User as UserIcon, ShieldCheck } from 'lucide-react';
 import AboutCredits from '../common/AboutCredits';
 import TelescopeLogo from '../common/TelescopeLogo';
 import { useGameStore } from '../../store/useGameStore';
@@ -8,9 +9,11 @@ interface MainMenuProps {
   onStartGame: () => void;
   onOpenArchive: () => void;
   onOpenSettings: () => void;
+  currentUser?: FirebaseUser | null;
+  onOpenAuth?: () => void;
 }
 
-export default function MainMenu({ onStartGame, onOpenArchive, onOpenSettings }: MainMenuProps) {
+export default function MainMenu({ onStartGame, onOpenArchive, onOpenSettings, currentUser, onOpenAuth }: MainMenuProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [modalType, setModalType] = useState<'ABOUT' | 'CREDITS' | null>(null);
   const { settings, toggleSound, profile } = useGameStore();
@@ -152,6 +155,31 @@ export default function MainMenu({ onStartGame, onOpenArchive, onOpenSettings }:
 
       {/* Top Bar Actions */}
       <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+        {/* User Auth Status Pill */}
+        {onOpenAuth && (
+          <button
+            id="mainmenu-auth-btn"
+            onClick={onOpenAuth}
+            className="flex items-center gap-2 py-2 px-3.5 rounded-full bg-slate-950/80 border border-cyan-500/40 hover:border-cyan-400 text-slate-200 hover:text-cyan-300 transition-all backdrop-blur-md shadow-lg cursor-pointer font-mono text-xs"
+          >
+            {currentUser ? (
+              <>
+                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="font-semibold text-[11px] truncate max-w-[120px]">
+                  {currentUser.displayName || currentUser.email?.split('@')[0] || 'Explorer'}
+                </span>
+              </>
+            ) : (
+              <>
+                <UserIcon className="w-4 h-4 text-cyan-400 shrink-0" />
+                <span className="font-semibold text-[11px] tracking-wider uppercase text-cyan-300">
+                  {t('Sign In', 'সাইন ইন')}
+                </span>
+              </>
+            )}
+          </button>
+        )}
+
         <button
           onClick={onOpenSettings}
           className="p-3 rounded-full bg-black/40 border border-white/10 hover:border-gold hover:text-gold text-slate-300 transition-all backdrop-blur-md shadow-lg cursor-pointer"

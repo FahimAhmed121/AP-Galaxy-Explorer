@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { User } from 'firebase/auth';
 import { GameState, Galaxy, Spaceship } from './types';
 import { GALAXIES } from './data/galaxies';
 import MainMenu from './components/views/MainMenu';
@@ -11,6 +12,9 @@ import SettingsModal from './components/views/SettingsModal';
 import LearningBriefingModal from './components/hud/LearningBriefingModal';
 import QuizAssessmentModal from './components/hud/QuizAssessmentModal';
 import ContextualAlertBanner from './components/hud/ContextualAlertBanner';
+import { AuthModal } from './components/auth/AuthModal';
+import { AuthService } from './services/auth/AuthService';
+import { syncManager } from './services/cloudSave/SyncManager';
 import { useGameStore } from './store/useGameStore';
 import { audioEngine } from './engine/audioEngine';
 import { eventBus } from './core/events';
@@ -19,6 +23,21 @@ import { Rocket, Sparkles } from 'lucide-react';
 export default function App() {
   const [returnState, setReturnState] = useState<GameState>('PLAYING');
   const [openedFromArchive, setOpenedFromArchive] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+
+  // Initialize SyncManager and central Auth state listener
+  useEffect(() => {
+    syncManager.initialize();
+
+    const unsubscribe = AuthService.onAuthStateChanged((user) => {
+      setCurrentUser(user);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const {
     gameState,
@@ -143,6 +162,8 @@ export default function App() {
             setReturnState('MENU');
             setGameState('SETTINGS');
           }}
+          currentUser={currentUser}
+          onOpenAuth={() => setIsAuthModalOpen(true)}
         />
       )}
 
@@ -289,8 +310,17 @@ export default function App() {
               eventBus.emit('RESUME_GAMEPLAY');
             }
           }}
+          currentUser={currentUser}
+          onOpenAuth={() => setIsAuthModalOpen(true)}
         />
       )}
+
+      {/* 8. MODAL: AUTHENTICATION & CLOUD SAVE */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        currentUser={currentUser}
+      />
     </main>
   );
 }

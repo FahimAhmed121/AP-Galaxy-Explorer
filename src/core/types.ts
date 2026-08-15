@@ -154,6 +154,7 @@ export interface ExplorerProfile {
   level: number;
   totalScore: number;
   stardustReserves: number;
+  stardustLastSynced?: number;
   discoveredGalaxyIds: string[];
   quizBestScores: Record<string, number>; // galaxyId -> score
   unlockedBadges: string[]; // Badge IDs

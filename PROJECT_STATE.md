@@ -12,13 +12,14 @@
 
 ## 2. Technology Stack
 
-- **React 18 & Vite**: Modular HUD overlays, responsive modals, state management, and localized UI components.
-- **Phaser 3.80+**: 2D WebGL/Canvas rendering engine managing physics bodies, camera tracking, particle systems, procedural starfields, and space objects.
+- **React 18 & Vite**: Modular HUD overlays, responsive modals, state management, and localized UI components with `base: './'` relative bundle resolution.
+- **Phaser (^4.2.1)**: 2D WebGL/Canvas rendering engine managing physics bodies, camera tracking, particle systems, procedural starfields, and space objects.
 - **TypeScript (Strict Mode)**: Type safety across game engines, event buses, telemetry interfaces, educational schemas, and quiz pipelines.
-- **EventBus Architecture**: Decoupled Pub/Sub event pipeline (`EventEmitter`) bridging Phaser 3 canvas updates with React UI state without direct DOM coupling.
+- **EventBus Architecture**: Decoupled Pub/Sub event pipeline (`EventEmitter`) bridging Phaser canvas updates with React UI state without direct DOM coupling.
 - **Web Audio API Engine**: Custom procedural synthesizer and audio engine handling multi-channel sound FX, thruster rumbles, scanner sweeps, warp jump hums, and ambient music crossfades.
-- **Zustand State Store**: Global reactive state management for user profiles, discovered galaxies, stardust currency, scores, and application settings.
-- **Electron Preparation**: Clean modular separation enabling standalone desktop compilation with native IPC bindings.
+- **Zustand State Store**: Global reactive state management for user profiles, discovered galaxies, stardust currency, scores, and application settings with `localStorage` fallback persistence.
+- **Firebase Authentication & Firestore**: Client SDK integration (`AuthService`, `CloudSaveService`, `SyncManager`) for Google OAuth, Email/Password auth, and debounced cloud save synchronization with deterministic conflict resolution.
+- **Electron Desktop Foundation**: Secure, sandboxed Electron main process (`electron/main.ts`) and minimal preload context bridge (`electron/preload.ts`) with embedded production loopback server (`127.0.0.1:<port>`).
 
 ---
 
@@ -26,26 +27,30 @@
 
 ```
 /
+├── electron/                   # Electron Desktop Foundation
+│   ├── main.ts                 # Main process (window lifecycle, sandboxing, loopback server)
+│   └── preload.ts              # Minimal context bridge (isDesktop, platform)
 ├── public/                     # Static public assets (sounds, icons)
 ├── src/
 │   ├── components/             # React UI components
-│   │   ├── common/             # Reusable UI containers & buttons
+│   │   ├── common/             # Reusable UI containers, buttons, AuthModal
+│   │   │   ├── AuthModal.tsx              # Google OAuth & Email/Password login modal
+│   │   │   └── Certificate.tsx            # Explorer Completion Certificate
 │   │   ├── educational/        # Interactive educational widgets & dossiers
-│   │   │   ├── Certificate.tsx            # Explorer Completion Certificate
 │   │   │   └── GalaxyInfo.tsx             # Galaxy deep-dive inspection dossier
 │   │   ├── hud/                # Modernized Gameplay HUD overlays
 │   │   │   ├── DiscoveryOverlay.tsx       # AURA AI narrative dialogue
 │   │   │   ├── GameOverModal.tsx          # Game over state UI
 │   │   │   ├── LearningBriefingModal.tsx # 2-Column NASA/JWST educational dossiers
-│   │   │   ├── PilotDashboardModal.tsx    # Pilot profile, stats & dossier
+│   │   │   ├── PilotDashboardModal.tsx    # Pilot profile, stats, upgrades & sync badge
 │   │   │   ├── QuizAssessmentModal.tsx    # Adaptive NASA Mission Console quiz
 │   │   │   ├── RadarHUD.tsx               # 2D Minimap radar with spatial coordinates
-│   │   │   ├── ShipStatusHUD.tsx          # Top HUD bar (Vitals, Mission, Controls)
+│   │   │   ├── ShipStatusHUD.tsx          # Top HUD bar (Vitals, Mission, Cloud Sync)
 │   │   │   └── WarpJumpOverlay.tsx        # Multi-phase hyperdrive canvas particle FX
 │   │   └── views/              # Full-screen views (MainMenu, ArchiveModal, SettingsModal)
 │   │       ├── ArchiveModal.tsx           # Persistent Galactic Archive & Codex
-│   │       ├── MainMenu.tsx               # Main Menu view
-│   │       └── SettingsModal.tsx          # Settings & Audio controls
+│   │       ├── MainMenu.tsx               # Main Menu view with user identity
+│   │       └── SettingsModal.tsx          # Settings, Audio controls & Auth status
 │   ├── core/                   # Shared types, event bus, and global configuration
 │   │   ├── config.ts           # Game physics, energy, and world bounds configuration
 │   │   ├── events.ts           # EventBus typed interfaces & event names
@@ -60,16 +65,30 @@
 │   ├── engine/                 # Custom sound engine & audio management
 │   │   └── audioEngine.ts      # Web Audio procedural oscillator & SFX synthesis
 │   ├── phaser/                 # Phaser game engine architecture
-│   │   ├── entities/           # PlayerShip, GalaxyObject, SpaceStation, AlienSurveyDrone entities
+│   │   ├── entities/           # PlayerShip, GalaxyObject, SpaceStation, AlienSurveyDrone
 │   │   ├── managers/           # GalaxyManager, AsteroidManager, DroneManager, SaveManager, ParticleManager
 │   │   ├── scenes/             # MainGameplayScene & LoadingScene
 │   │   └── systems/            # ScannerSystem, DiscoveryController, QuizController, LearningController, InputSystem, AudioSystem, DebugOverlaySystem
+│   ├── services/               # Isolated external services (Firebase, Auth, Cloud Save)
+│   │   ├── auth/
+│   │   │   └── AuthService.ts             # Firebase Authentication wrapper
+│   │   ├── cloudSave/
+│   │   │   ├── cloudSaveTypes.ts          # DTO schemas & payloads
+│   │   │   ├── CloudSaveSerializer.ts     # DTO serialization & sanitization
+│   │   │   ├── CloudSaveResolver.ts       # Deterministic conflict resolution
+│   │   │   ├── CloudSaveService.ts        # Firestore persistence (users/{uid}/profile/main)
+│   │   │   └── SyncManager.ts             # 3s debounced auto-sync & session manager
+│   │   └── firebase.ts         # Firebase SDK initialization singleton
 │   ├── store/                  # Zustand global state (game options, user profile, language)
 │   └── App.tsx / main.tsx      # Main application entry point & canvas integration
-├── docs/                       # Architecture & engineering documentation (including DRONE_SYSTEM_ARCHITECTURE.md)
+├── docs/                       # Architecture & engineering documentation
+├── firestore.rules             # Locked Firestore security rules (owner-only access)
 ├── PROJECT_STATE.md            # Master project state documentation
 ├── DEVELOPMENT_ROADMAP.md      # Development milestone roadmap
 ├── ARCHITECTURE_OVERVIEW.md    # High-level architecture map
+├── SPRINT_2_5_REPORT.md        # Sprint 2.5 Completion report (Auth & Cloud Save)
+├── SPRINT_2_6_PHASE_1_REPORT.md# Sprint 2.6 Phase 1 Completion & Audit report
+├── SPRINT_2_4_5_REPORT.md      # Sprint 2.4.5 Completion report
 ├── SPRINT_2_4_REPORT.md        # Sprint 2.4 Completion & Verification report
 ├── SPRINT_2_3_REPORT.md        # Sprint 2.3 Completion & Verification report
 ├── QUALITY_SPRINT_1_REPORT.md  # Quality Sprint execution report
@@ -253,11 +272,12 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 
 ---
 
-## 13. Known Limitations
+## 13. Known Limitations & Operating Characteristics
 
 - **Single-System Canvas**: Exploration canvas operates within a 2D boundary grid (`8000x8000 px`).
 - **Verified Media Integration**: All 10 core galaxies feature verified real astronomical image references and YouTube video tour links with resilient client-side fallback handling.
-- **Offline Local Storage**: User progress is saved to browser `localStorage` without multi-device cloud sync.
+- **Hybrid Storage Model**: Local offline persistence via Zustand `localStorage` synchronization seamlessly operates alongside optional authenticated Firebase cloud save and conflict resolution.
+- **Desktop Production Loopback Server**: Electron production builds utilize an embedded loopback server on `127.0.0.1:<ephemeral-port>` ensuring standard web security and Web API compatibility.
 
 ---
 
@@ -283,9 +303,11 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 - **Sprint 2.3 — Explorer Progression & Cosmetics**: ✅ **COMPLETE**
 - **Sprint 2.4 — Alien Survey Drones**: ✅ **COMPLETE**
 - **Sprint 2.4.5 — Educational Content, UI/UX & Media Polish**: ✅ **COMPLETE**
+- **Sprint 2.5 — Firebase Authentication & Cloud Save**: ✅ **COMPLETE** (Google OAuth & Email/Password `AuthService`, DTOs, `CloudSaveSerializer`, `CloudSaveResolver` with Stardust Net-Delta reconciliation, `CloudSaveService`, `SyncManager` debounced auto-sync, `AuthModal`, and `firestore.rules`).
+- **Sprint 2.6 Phase 1 — Electron Core & Build Integration**: ✅ **COMPLETE & AUDITED** (Minimal Electron main process, secure preload context bridge, sandboxing, Vite relative base, embedded local loopback server, `esbuild` packaging scripts, and regression verification).
 
-### Next Milestone
-- **Sprint 2.5 — Firebase Authentication & Cloud Save**: User login (Google OAuth / Anonymous), Firestore cloud save synchronization, and cross-device progress restoration.
-- **Sprint 2.6 — Electron Desktop Release**: Desktop packaging configuration, installer creation (Windows, macOS, Linux), and production build.
+### Active & Upcoming Milestones
+- **Sprint 2.6 Phase 2 — Desktop Window Management & Lifecycle Integration**: ⏳ **NEXT / READY TO BEGIN** (Window centering, show animations, graceful close dirty-state flush, menu streamlining).
+- **Sprint 2.6 Phase 3 — Desktop Packaging & Distribution**: 📋 **NOT STARTED** (electron-builder packaging, cross-platform clean script, installer generation).
 - **Beta Phase**: Full playtesting, bug fixing, performance optimization, UI/UX polish, and audio polish.
 - **Version 1.0 Release**: Educational desktop game ready for Astronomy Pathshala students.

@@ -2,11 +2,23 @@
 
 ## 1. Directory Responsibilities
 
+- `/electron/`:
+  - `main.ts`: Electron main process lifecycle manager, Chromium sandboxing configuration, embedded local loopback HTTP production server (`127.0.0.1:<port>`), and external navigation interceptor (`shell.openExternal`).
+  - `preload.ts`: Minimal, secure context bridge exposing only read-only platform metadata (`isDesktop`, `platform`).
 - `/src/components/`:
   - `hud/`: React HUD overlays and modals (`ShipStatusHUD`, `RadarHUD`, `DiscoveryOverlay`, `LearningBriefingModal`, `QuizAssessmentModal`, `WarpJumpOverlay`, `PilotDashboardModal`, `GameOverModal`).
-  - `common/`: Reusable UI containers, buttons, and theme wrappers.
-  - `educational/`: Educational visualization components.
-  - `views/`: Full-screen views (Options, Archive).
+  - `common/`: Reusable UI containers, buttons, theme wrappers, and `AuthModal` (Google OAuth & Email/Password login dialog).
+  - `educational/`: Educational visualization components and certificates.
+  - `views/`: Full-screen views (Options, Archive, MainMenu).
+- `/src/services/`:
+  - `firebase.ts`: Singleton instance initialization for Firebase Auth and Firestore.
+  - `auth/`: `AuthService.ts` managing user sessions, OAuth popups, email auth, and error translations.
+  - `cloudSave/`:
+    - `cloudSaveTypes.ts`: DTO schemas (`CloudSaveProfileDTO`, `CloudSavePayload`).
+    - `CloudSaveSerializer.ts`: Bidirectional state/DTO serialization and sanitization.
+    - `CloudSaveResolver.ts`: Field-by-field deterministic conflict resolution (Additive Set Union, Monotonic Max, Stardust Net-Delta).
+    - `CloudSaveService.ts`: Firestore persistence under locked paths (`users/{uid}/profile/main`).
+    - `SyncManager.ts`: 3-second debounced auto-sync orchestrator with dirty tracking, session generation tokens, and network listeners.
 - `/src/core/`:
   - `types.ts`: Shared TypeScript interfaces and enums (`Ship`, `Galaxy`, `Profile`, `Quiz`, `EducationalContent`).
   - `config.ts`: Physics constants, world bounds (`8000x8000 px`), and default game settings.
@@ -22,12 +34,14 @@
 - `/src/engine/`:
   - `audioEngine.ts`: Custom Web Audio procedural oscillator sound synthesizer and multi-channel mixer.
 - `/src/phaser/`:
-  - `entities/`: Game entities (`PlayerShip`, `GalaxyObject`, `SpaceStation`).
-  - `managers/`: Persistent state and entity managers (`GalaxyManager`, `AsteroidManager`, `SaveManager`, `ParticleManager`).
+  - `entities/`: Game entities (`PlayerShip`, `GalaxyObject`, `SpaceStation`, `AlienSurveyDrone`).
+  - `managers/`: Persistent state and entity managers (`GalaxyManager`, `AsteroidManager`, `DroneManager`, `SaveManager`, `ParticleManager`).
   - `systems/`: Controllers and low-level processing systems (`DiscoveryController`, `LearningController`, `QuizController`, `ScannerSystem`, `ScannerVisualSystem`, `InputSystem`, `AudioSystem`, `DebugOverlaySystem`).
   - `scenes/`: Phaser scenes (`MainGameplayScene`, `LoadingScene`).
 - `/src/store/`:
   - `useGameStore.ts`: Zustand reactive store for pilot profile, option settings, language, stardust currency, and 4-tier ship upgrade levels.
+- `/firestore.rules`:
+  - Production security rules enforcing owner-only read/write access (`request.auth.uid == userId`) and payload schema validation.
 
 ---
 

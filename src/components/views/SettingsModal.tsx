@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { X, Volume2, VolumeX, Globe, RotateCcw, User, ShieldCheck, Gamepad2 } from 'lucide-react';
+import { User as FirebaseUser } from 'firebase/auth';
+import { X, Volume2, VolumeX, Globe, RotateCcw, User, ShieldCheck, Gamepad2, Sparkles, LogOut, KeyRound } from 'lucide-react';
 import { useGameStore } from '../../store/useGameStore';
 import { audioEngine } from '../../engine/audioEngine';
 
 interface SettingsModalProps {
   onClose: () => void;
+  currentUser?: FirebaseUser | null;
+  onOpenAuth?: () => void;
 }
 
-export default function SettingsModal({ onClose }: SettingsModalProps) {
+export default function SettingsModal({ onClose, currentUser, onOpenAuth }: SettingsModalProps) {
   const { settings, profile, updateSettings, setExplorerName, resetProgress } = useGameStore();
   const [nameInput, setNameInput] = useState(profile.name);
   const [showConfirmReset, setShowConfirmReset] = useState(false);
@@ -61,6 +64,53 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
 
         {/* Content */}
         <div className="p-6 space-y-6 overflow-y-auto max-h-[70vh]">
+          {/* Account & Cloud Sync Status */}
+          {onOpenAuth && (
+            <div className="p-4 rounded-sm border border-cyan-500/30 bg-cyan-950/20 space-y-3 font-mono text-xs">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-cyan-300 font-bold uppercase tracking-wider">
+                  <Sparkles size={14} className="text-cyan-400" />
+                  <span>{t('Cloud Account & Auth', 'ক্লাউড অ্যাকাউন্ট ও সাইন-ইন')}</span>
+                </div>
+                {currentUser && (
+                  <span className="flex items-center gap-1 text-[10px] text-emerald-400">
+                    <ShieldCheck size={12} />
+                    <span>{t('CONNECTED', 'সংযুক্ত')}</span>
+                  </span>
+                )}
+              </div>
+
+              {currentUser ? (
+                <div className="flex items-center justify-between gap-2 pt-1">
+                  <div className="overflow-hidden">
+                    <p className="text-white font-semibold truncate">
+                      {currentUser.displayName || 'Cosmic Explorer'}
+                    </p>
+                    <p className="text-[11px] text-slate-400 truncate">{currentUser.email}</p>
+                  </div>
+                  <button
+                    onClick={onOpenAuth}
+                    className="px-3 py-1.5 bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 rounded text-[10px] font-bold uppercase shrink-0"
+                  >
+                    {t('Manage', 'ম্যানেজ')}
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between gap-2 pt-1">
+                  <p className="text-[11px] text-slate-400">
+                    {t('Sign in to sync progression across systems.', 'ক্লাউডে সেভ করতে সাইন ইন করুন।')}
+                  </p>
+                  <button
+                    onClick={onOpenAuth}
+                    className="px-3 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded text-[10px] font-bold uppercase shrink-0"
+                  >
+                    {t('Sign In', 'সাইন ইন')}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Explorer Profile Call Sign */}
           <div className="p-4 rounded-sm border border-white/10 bg-white/[0.02] space-y-3">
             <div className="flex items-center gap-2 text-gold text-xs font-mono font-bold uppercase tracking-wider">

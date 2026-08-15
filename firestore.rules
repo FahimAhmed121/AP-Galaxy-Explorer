@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidProfileData() {
+      let data = request.resource.data;
+      return data.schemaVersion is number
+        && data.schemaVersion >= 1
+        && data.name is string
+        && data.name.size() <= 50
+        && data.xp is number
+        && data.xp >= 0
+        && data.level is number
+        && data.level >= 1
+        && data.level <= 100
+        && data.stardustReserves is number
+        && data.stardustReserves >= 0
+        && data.totalScore is number
+        && data.totalScore >= 0
+        && data.discoveredGalaxyIds is list
+        && data.discoveredGalaxyIds.size() <= 200
+        && data.unlockedBadges is list
+        && data.unlockedBadges.size() <= 100
+        && data.unlockedCosmetics is list
+        && data.unlockedCosmetics.size() <= 100
+        && data.unlockedPerks is list
+        && data.unlockedPerks.size() <= 50;
+    }
+
+    // User Profile & Metadata Subcollections
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /profile/main {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidProfileData();
+        allow delete: if isOwner(userId);
+      }
+
+      match /metadata/main {
+        allow read, write: if isOwner(userId);
+      }
+    }
+  }
+}
