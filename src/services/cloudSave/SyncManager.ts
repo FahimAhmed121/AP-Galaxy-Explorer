@@ -35,7 +35,7 @@ export class SyncManager {
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly DEBOUNCE_MS = 3000;
 
-  private isSyncing = false;
+  private activeSyncSessionId: number | null = null;
   private syncPending = false;
   private isApplyingCloudUpdate = false;
   private currentSessionId = 0;
@@ -81,6 +81,8 @@ export class SyncManager {
    */
   public destroy(): void {
     this.currentSessionId++;
+    this.activeSyncSessionId = null;
+    this.syncPending = false;
     if (this.unsubscribeAuth) {
       this.unsubscribeAuth();
       this.unsubscribeAuth = null;
@@ -129,6 +131,7 @@ export class SyncManager {
     // Invalidate previous user session generation and cancel pending timers
     this.currentSessionId++;
     const sessionId = this.currentSessionId;
+    this.activeSyncSessionId = null; // Clear any active sync lock from previous session
 
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
@@ -176,8 +179,8 @@ export class SyncManager {
    * 5. Advance Stardust baseline ONLY after successful persistence
    */
   private async performInitialAuthSync(user: User, sessionId: number): Promise<void> {
-    if (this.isSyncing) return;
-    this.isSyncing = true;
+    if (this.activeSyncSessionId === sessionId) return;
+    this.activeSyncSessionId = sessionId;
 
     try {
       const localProfile = useGameStore.getState().profile;
@@ -189,7 +192,8 @@ export class SyncManager {
         // Cloud save exists -> resolve conflicts
         const { mergedProfile, stardustLastSynced } = CloudSaveResolver.merge(
           localProfile,
-          cloudPayload.profile
+          cloudPayload.profile,
+          localProfile.updatedAt
         );
 
         // Keep previous baseline on local store until cloud write succeeds
@@ -246,8 +250,8 @@ export class SyncManager {
       });
       throw error;
     } finally {
-      if (this.currentSessionId === sessionId) {
-        this.isSyncing = false;
+      if (this.activeSyncSessionId === sessionId) {
+        this.activeSyncSessionId = null;
       }
     }
   }
@@ -282,13 +286,13 @@ export class SyncManager {
       return;
     }
 
-    if (this.isSyncing) {
+    const sessionId = this.currentSessionId;
+    if (this.activeSyncSessionId === sessionId) {
       this.syncPending = true;
       return;
     }
 
-    this.isSyncing = true;
-    const sessionId = this.currentSessionId;
+    this.activeSyncSessionId = sessionId;
     const user = this.activeUser;
     this.updateState({ status: 'syncing', errorMessage: null });
 
@@ -306,7 +310,8 @@ export class SyncManager {
       if (remotePayload) {
         const { mergedProfile, stardustLastSynced } = CloudSaveResolver.merge(
           localProfile,
-          remotePayload.profile
+          remotePayload.profile,
+          localProfile.updatedAt
         );
         finalProfile = mergedProfile;
         targetStardustLastSynced = stardustLastSynced;
@@ -350,11 +355,11 @@ export class SyncManager {
         errorMessage: error.message || 'Failed to save progress to cloud.',
       });
     } finally {
-      if (this.currentSessionId === sessionId) {
-        this.isSyncing = false;
+      if (this.activeSyncSessionId === sessionId) {
+        this.activeSyncSessionId = null;
 
         // Execute queued sync if additional local mutations occurred during sync execution
-        if (this.syncPending) {
+        if (this.syncPending && this.currentSessionId === sessionId) {
           this.syncPending = false;
           this.triggerSync();
         }

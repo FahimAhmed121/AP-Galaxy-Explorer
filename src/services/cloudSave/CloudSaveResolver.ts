@@ -15,32 +15,37 @@ export class CloudSaveResolver {
   /**
    * Merge local ExplorerProfile state with cloud CloudSaveProfileDTO.
    * Ensures additive set union for unlocks, monotonic max for XP/Counters/Quiz scores,
-   * and net-delta reconciliation for Stardust currency.
+   * net-delta reconciliation for Stardust currency, and timestamp precedence for customization.
    */
   static merge(
     localProfile: ExplorerProfile,
     cloudProfileDTO: CloudSaveProfileDTO,
-    localUpdatedAt: number = Date.now()
+    localUpdatedAt?: number
   ): ConflictResolutionResult {
+    const toSafeNum = (n: any, fallback = 0) => (typeof n === 'number' && Number.isFinite(n) ? n : fallback);
+
     // 1. Sets & Collections (Additive Union A ∪ B)
     const discoveredGalaxyIds = Array.from(
       new Set([...(localProfile.discoveredGalaxyIds || []), ...(cloudProfileDTO.discoveredGalaxyIds || [])])
-    );
+    ).filter((id): id is string => typeof id === 'string' && id.length <= 50);
 
     const unlockedBadges = Array.from(
       new Set([...(localProfile.unlockedBadges || []), ...(cloudProfileDTO.unlockedBadges || [])])
-    );
+    ).filter((id): id is string => typeof id === 'string' && id.length <= 50);
 
     const unlockedCosmetics = Array.from(
       new Set([...(localProfile.unlockedCosmetics || []), ...(cloudProfileDTO.unlockedCosmetics || [])])
-    );
+    ).filter((id): id is string => typeof id === 'string' && id.length <= 50);
 
     const unlockedPerks = Array.from(
       new Set([...(localProfile.unlockedPerks || []), ...(cloudProfileDTO.unlockedPerks || [])])
-    );
+    ).filter((id): id is string => typeof id === 'string' && id.length <= 50);
 
     // 2. Monotonic XP & Level Progression
-    const reconciledXp = Math.max(localProfile.xp || 0, cloudProfileDTO.xp || 0);
+    const localXp = toSafeNum(localProfile.xp, 0);
+    const cloudXp = toSafeNum(cloudProfileDTO.xp, 0);
+    const reconciledXp = Math.max(0, Math.max(localXp, cloudXp));
+
     let reconciledLevel = 1;
     let reconciledRankTitle = PROGRESSION_LEVELS[0].rankTitle;
 
@@ -53,24 +58,42 @@ export class CloudSaveResolver {
     }
 
     // 3. Per-Item Quiz Best Scores (Key-by-Key Max)
-    const quizBestScores: Record<string, number> = { ...(cloudProfileDTO.quizBestScores || {}) };
-    Object.entries(localProfile.quizBestScores || {}).forEach(([galaxyId, score]) => {
-      quizBestScores[galaxyId] = Math.max(quizBestScores[galaxyId] || 0, score || 0);
-    });
+    const quizBestScores: Record<string, number> = {};
+    if (cloudProfileDTO.quizBestScores && typeof cloudProfileDTO.quizBestScores === 'object') {
+      Object.entries(cloudProfileDTO.quizBestScores).forEach(([galaxyId, score]) => {
+        if (typeof galaxyId === 'string') {
+          quizBestScores[galaxyId] = toSafeNum(score, 0);
+        }
+      });
+    }
+    if (localProfile.quizBestScores && typeof localProfile.quizBestScores === 'object') {
+      Object.entries(localProfile.quizBestScores).forEach(([galaxyId, score]) => {
+        if (typeof galaxyId === 'string') {
+          quizBestScores[galaxyId] = Math.max(quizBestScores[galaxyId] || 0, toSafeNum(score, 0));
+        }
+      });
+    }
 
     // 4. Lifetime Cumulative Counters (Conservative Max)
-    const dronesDefeated = Math.max(localProfile.dronesDefeated || 0, cloudProfileDTO.dronesDefeated || 0);
-    const droneEncountersCount = Math.max(localProfile.droneEncountersCount || 0, cloudProfileDTO.droneEncountersCount || 0);
-    const totalScore = Math.max(localProfile.totalScore || 0, cloudProfileDTO.totalScore || 0);
+    const dronesDefeated = Math.max(0, Math.max(toSafeNum(localProfile.dronesDefeated, 0), toSafeNum(cloudProfileDTO.dronesDefeated, 0)));
+    const droneEncountersCount = Math.max(0, Math.max(toSafeNum(localProfile.droneEncountersCount, 0), toSafeNum(cloudProfileDTO.droneEncountersCount, 0)));
+    const totalScore = Math.max(0, Math.max(toSafeNum(localProfile.totalScore, 0), toSafeNum(cloudProfileDTO.totalScore, 0)));
 
     // 5. Stardust Currency Net-Delta Reconciliation
-    const stardustLastSynced = localProfile.stardustLastSynced ?? localProfile.stardustReserves ?? 0;
-    const localDelta = (localProfile.stardustReserves || 0) - stardustLastSynced;
-    const reconciledStardust = Math.max(0, (cloudProfileDTO.stardustReserves || 0) + localDelta);
+    const localReserves = toSafeNum(localProfile.stardustReserves, 0);
+    const stardustLastSynced = toSafeNum(localProfile.stardustLastSynced ?? localProfile.stardustReserves, 0);
+    const localDelta = localReserves - stardustLastSynced;
+    const cloudReserves = toSafeNum(cloudProfileDTO.stardustReserves, 0);
+    const reconciledStardust = Math.max(0, cloudReserves + localDelta);
     const newStardustLastSynced = reconciledStardust;
 
     // 6. Timestamp Preference for Customization & Callsign
-    const isCloudNewer = cloudProfileDTO.updatedAt > localUpdatedAt;
+    const effectiveLocalUpdatedAt = typeof localUpdatedAt === 'number' && Number.isFinite(localUpdatedAt)
+      ? localUpdatedAt
+      : toSafeNum(localProfile.updatedAt, 0);
+    const effectiveCloudUpdatedAt = toSafeNum(cloudProfileDTO.updatedAt, 0);
+
+    const isCloudNewer = effectiveCloudUpdatedAt > effectiveLocalUpdatedAt;
 
     const name = isCloudNewer ? (cloudProfileDTO.name || localProfile.name) : localProfile.name;
     const equippedCosmetics = isCloudNewer
@@ -82,8 +105,10 @@ export class CloudSaveResolver {
       : localProfile.equippedCosmetics;
 
     const equippedPerks = isCloudNewer
-      ? cloudProfileDTO.equippedPerks || localProfile.equippedPerks || []
-      : localProfile.equippedPerks;
+      ? (Array.isArray(cloudProfileDTO.equippedPerks) ? cloudProfileDTO.equippedPerks : localProfile.equippedPerks || [])
+      : (localProfile.equippedPerks || []);
+
+    const mergedUpdatedAt = Math.max(effectiveLocalUpdatedAt, effectiveCloudUpdatedAt, Date.now());
 
     const mergedProfile: ExplorerProfile = {
       name,
@@ -102,6 +127,7 @@ export class CloudSaveResolver {
       unlockedCosmetics,
       equippedPerks,
       unlockedPerks,
+      updatedAt: mergedUpdatedAt,
     };
 
     return {

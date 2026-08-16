@@ -15,17 +15,30 @@ service cloud.firestore {
       let data = request.resource.data;
       return data.schemaVersion is number
         && data.schemaVersion >= 1
+        && data.schemaVersion <= 100
         && data.name is string
+        && data.name.size() >= 1
         && data.name.size() <= 50
+        && data.rankTitle is string
+        && data.rankTitle.size() <= 100
         && data.xp is number
         && data.xp >= 0
+        && data.xp <= 10000000
         && data.level is number
         && data.level >= 1
         && data.level <= 100
         && data.stardustReserves is number
         && data.stardustReserves >= 0
+        && data.stardustReserves <= 10000000
         && data.totalScore is number
         && data.totalScore >= 0
+        && data.totalScore <= 100000000
+        && data.dronesDefeated is number
+        && data.dronesDefeated >= 0
+        && data.dronesDefeated <= 100000
+        && data.droneEncountersCount is number
+        && data.droneEncountersCount >= 0
+        && data.droneEncountersCount <= 100000
         && data.discoveredGalaxyIds is list
         && data.discoveredGalaxyIds.size() <= 200
         && data.unlockedBadges is list
@@ -33,7 +46,25 @@ service cloud.firestore {
         && data.unlockedCosmetics is list
         && data.unlockedCosmetics.size() <= 100
         && data.unlockedPerks is list
-        && data.unlockedPerks.size() <= 50;
+        && data.unlockedPerks.size() <= 50
+        && data.equippedPerks is list
+        && data.equippedPerks.size() <= 2
+        && data.equippedCosmetics is map
+        && data.quizBestScores is map
+        && data.updatedAt is number
+        && data.updatedAt >= 0
+        && data.appVersion is string
+        && data.appVersion.size() <= 20;
+    }
+
+    function isValidMetadataData() {
+      let data = request.resource.data;
+      return data.createdAt is number
+        && data.createdAt >= 0
+        && data.lastLoginAt is number
+        && data.lastLoginAt >= 0
+        && data.platform in ['web', 'electron']
+        && (data.email == null || (data.email is string && data.email.size() <= 200));
     }
 
     // User Profile & Metadata Subcollections
@@ -47,7 +78,9 @@ service cloud.firestore {
       }
 
       match /metadata/main {
-        allow read, write: if isOwner(userId);
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidMetadataData();
+        allow delete: if isOwner(userId);
       }
     }
   }

@@ -60,6 +60,18 @@
   - Strict security sandboxing and external URL navigation containment via `shell.openExternal`.
   - Audit Verdict: **PASS**.
 
+- ✅ **Sprint 2.6.5 — QA Remediation & Stability Hardening (COMPLETED & VERIFIED)**:
+  - SYNC-001: Refactored `SyncManager` with `activeSyncSessionId` session generation tracking to prevent auth session race conditions.
+  - SYNC-002: Added `updatedAt` to `ExplorerProfile` and deterministic timestamp precedence in `CloudSaveResolver` for callsign and equipped cosmetics/perks.
+  - SEC-001: Hardened `electron/main.ts` with strict internal loopback origin validation, blocking unauthorized protocol schemes, and unconditionally delegating external links to OS browser.
+  - SEC-002 / SEC-003: Added numeric boundary limits and metadata schema validation in `firestore.rules`.
+  - ELEC-001: Structured single-instance startup with early exit and duplicate process prevention.
+  - LEAK-001: Implemented clean deregistration of `SCANNER_INTERFERENCE_CHANGED` event listener in `ScannerVisualSystem.destroy()`.
+  - BUILD-001: Replaced blocking Google Font imports in `src/index.css` with offline system font fallbacks and non-blocking HTML preconnects.
+  - DATA-001: Guarded XP, Stardust, and score arithmetic against `NaN`/`Infinity` across store, serializer, and resolver layers using `Number.isFinite()`.
+  - Unified Build Verification: Verified `npm run lint`, `npm run build`, `npm run build:electron`, and `npm run electron:build` pass with exit code 0.
+  - Audit Verdict: **PASS — READY TO CLOSE SPRINT 2.6.5**.
+
 - 📋 **Phase 3 — Desktop Packaging & Distribution (NOT STARTED)**:
   - Cross-platform packaging configuration (`electron-builder` / packager).
   - Cross-platform clean and build script stabilization.

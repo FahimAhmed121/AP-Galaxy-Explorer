@@ -3,9 +3,11 @@
 ## 1. Executive Architecture Summary
 
 **AP Galaxy Explorer V2** is built on a hybrid dual-engine architecture designed for maximum modularity, type safety, and visual performance:
-- **Phaser 3.80+ (WebGL / HTML5 Canvas 2D Engine)**: Executes high-frequency (60 FPS) space flight physics, camera tracking, parallax starfields, procedural asteroid fields, plasma laser collisions, particle emissions, and spectrographic scanning visuals.
+- **Phaser (^4.2.1) (WebGL / HTML5 Canvas 2D Engine)**: Executes high-frequency (60 FPS) space flight physics, camera tracking, parallax starfields, procedural asteroid fields, plasma laser collisions, particle emissions, and spectrographic scanning visuals.
 - **React 18 & Tailwind CSS (UI & Educational Layer)**: Controls non-gameplay overlay HUDs, paginated AURA AI dialogue overlays, 2-column NASA/JWST educational briefing dossiers, adaptive scientific quiz consoles, persistent archive logbooks, and pilot station hangar modals.
-- **Zustand Reactive Store**: Acts as the single source of truth for pilot progression, inventory, discovered galaxy IDs, hardware upgrades, unlocked badges, equipped cosmetics, and user options.
+- **Zustand Reactive Store**: Acts as the single source of truth for pilot progression, inventory, discovered galaxy IDs, hardware upgrades, unlocked badges, equipped cosmetics, and user options with localStorage fallback.
+- **Firebase Authentication & Firestore Cloud Save**: Provides multi-session authentication (Google OAuth & Email/Password) with debounced auto-sync, session generation tracking, schema validation, numeric bounds, and deterministic conflict resolution (Additive Set Union, Monotonic Max, Stardust Net-Delta).
+- **Electron Desktop Architecture**: Secure desktop container with Chromium sandboxing, loopback production server, origin-hardened navigation, single-instance startup locking, and OS browser delegation.
 - **Decoupled Pub/Sub EventBus**: Bridges high-frequency Phaser WebGL canvas signals with React DOM components cleanly without direct DOM manipulation or tight component coupling.
 
 ---
@@ -49,7 +51,7 @@
                │                          │                         │
                ▼                          ▼                         ▼
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│                               PHASER 3 ENGINE LAYER                             │
+│                          PHASER ENGINE LAYER (Phaser ^4.2.1)                    │
 │                                                                                 │
 │   ┌─────────────────────┐    ┌──────────────────────┐    ┌──────────────────┐   │
 │   │   GalaxyManager     │    │   AsteroidManager    │    │   PlayerShip     │   │
@@ -131,11 +133,23 @@ $$\text{Approach Galaxy} \longrightarrow \text{Press E} \longrightarrow \text{Ac
 
 ---
 
-## 4. Stabilization & Reliability History (Sprint 2.3)
+## 4. Stabilization & Reliability History
 
+### 4.1. Sprint 2.3 Stabilization
 During Sprint 2.3, the core architecture underwent comprehensive stabilization:
 1. **Discovery & Input Lock Resolution**: Fixed edge cases where rapidly closing dialogue overlays could leave flight controls locked in discovery mode.
 2. **State Synchronization Fix**: Ensured `profile.discoveredGalaxyIds` immediately updates Phaser `GalaxyManager` sprites and top HUD counters without requiring a scene reload.
 3. **Modal State Restoration**: Refined `returnState` logic in `App.tsx` and `SettingsModal.tsx` so exiting options or reset screens from either the Main Menu or Active Gameplay returns the player to the exact expected view.
 4. **Perfect Scholar Badge Evaluation**: Corrected quiz evaluation formula in `progressionData.ts` to dynamically inspect target galaxy quiz length (`score >= maxScore`) rather than relying on a hardcoded threshold.
 5. **Save Compatibility**: Ensured legacy saved states missing Sprint 2.3 progression properties (`xp`, `level`, `unlockedBadges`, `equippedCosmetics`) automatically default safely without data corruption.
+
+### 4.2. Sprint 2.6.5 QA Remediation & Stability Hardening
+During Sprint 2.6.5, security, cloud synchronization, and desktop packaging boundaries were hardened:
+1. **Cloud Sync Session Concurrency (SYNC-001)**: Implemented generation-based session tracking (`activeSyncSessionId`) in `SyncManager` preventing race conditions during rapid login/logout auth transitions.
+2. **Timestamp Conflict Resolution (SYNC-002)**: Added `updatedAt` tracking in `useGameStore` and deterministic timestamp precedence in `CloudSaveResolver` for callsigns and equipped cosmetics/perks.
+3. **Electron Navigation Hardening (SEC-001)**: Enforced strict loopback origin matching and prevented unauthorized protocol navigation in `electron/main.ts`.
+4. **Firestore Rules Hardening (SEC-002 / SEC-003)**: Added upper/lower numeric bounds validation on progression fields and strict metadata subcollection schema rules.
+5. **Single-Instance Startup (ELEC-001)**: Structured single-instance locking in `electron/main.ts` with early exit and duplicate window prevention.
+6. **Listener Memory Cleanup (LEAK-001)**: Bound and properly unregistered `SCANNER_INTERFERENCE_CHANGED` event listeners on system destruction in `ScannerVisualSystem`.
+7. **Offline Font Reliability (BUILD-001)**: Replaced external CSS font imports with local system fallback stacks in `src/index.css`.
+8. **Finite Numeric Validation (DATA-001)**: Guarded XP, Stardust, and score arithmetic against `NaN` and `Infinity` across store, serializer, and resolver layers.

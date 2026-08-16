@@ -82,12 +82,14 @@
 │   ├── store/                  # Zustand global state (game options, user profile, language)
 │   └── App.tsx / main.tsx      # Main application entry point & canvas integration
 ├── docs/                       # Architecture & engineering documentation
-├── firestore.rules             # Locked Firestore security rules (owner-only access)
+├── firestore.rules             # Locked Firestore security rules (owner-only access, schema & numeric bounds)
 ├── PROJECT_STATE.md            # Master project state documentation
 ├── DEVELOPMENT_ROADMAP.md      # Development milestone roadmap
 ├── ARCHITECTURE_OVERVIEW.md    # High-level architecture map
-├── SPRINT_2_5_REPORT.md        # Sprint 2.5 Completion report (Auth & Cloud Save)
+├── SPRINT_2_6_5_REPORT.md      # Sprint 2.6.5 QA Remediation & Stability Hardening report
+├── SPRINT_2_6_PHASE_2_REPORT.md# Sprint 2.6 Phase 2 Window Lifecycle & Integration report
 ├── SPRINT_2_6_PHASE_1_REPORT.md# Sprint 2.6 Phase 1 Completion & Audit report
+├── SPRINT_2_5_REPORT.md        # Sprint 2.5 Completion report (Auth & Cloud Save)
 ├── SPRINT_2_4_5_REPORT.md      # Sprint 2.4.5 Completion report
 ├── SPRINT_2_4_REPORT.md        # Sprint 2.4 Completion & Verification report
 ├── SPRINT_2_3_REPORT.md        # Sprint 2.3 Completion & Verification report
@@ -308,6 +310,7 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 - **Sprint 2.5 — Firebase Authentication & Cloud Save**: ✅ **COMPLETE** (Google OAuth & Email/Password `AuthService`, DTOs, `CloudSaveSerializer`, `CloudSaveResolver` with Stardust Net-Delta reconciliation, `CloudSaveService`, `SyncManager` debounced auto-sync, `AuthModal`, and `firestore.rules`).
 - **Sprint 2.6 Phase 1 — Electron Core & Build Integration**: ✅ **COMPLETE & AUDITED** (Minimal Electron main process, secure preload context bridge, sandboxing, Vite relative base, embedded local loopback server, `esbuild` packaging scripts, and regression verification).
 - **Sprint 2.6 Phase 2 — Desktop Window Management & Lifecycle Integration**: ✅ **COMPLETE & AUDITED** (Single-instance locking, duplicate-window prevention, window sizing & centering, ready-to-show visual gating, macOS dock activation, clean loopback server teardown, and lifecycle event orchestration).
+- **Sprint 2.6.5 — QA Remediation & Stability Hardening**: ✅ **COMPLETE & VERIFIED** (Resolved SYNC-001 session generation synchronization, SYNC-002 timestamp conflict resolution with updatedAt, SEC-001 Electron navigation hardening, SEC-002/SEC-003 Firestore schema and numeric boundary enforcement, ELEC-001 single-instance startup hardening, LEAK-001 ScannerVisualSystem listener cleanup, BUILD-001 offline system font fallbacks, and DATA-001 finite numeric validation across store, serializer, and resolver layers).
 
 ### Active & Upcoming Milestones
 - **Sprint 2.6 Phase 3 — Desktop Packaging & Distribution**: 📋 **NOT STARTED** (electron-builder packaging, cross-platform clean script, installer generation).

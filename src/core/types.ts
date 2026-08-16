@@ -166,6 +166,7 @@ export interface ExplorerProfile {
   unlockedPerks: string[]; // Perk IDs
   maxActivePerks?: number;
   quizAttempts?: Array<{ galaxyId: string; score: number; total: number; timestamp: string }>;
+  updatedAt?: number;
 }
 
 export interface GameSettings {

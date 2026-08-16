@@ -52,7 +52,7 @@
 * **Max Folder Depth:** 4 levels from `src`.
 * **Phaser Code Isolation:** All Phaser scenes, game objects, physics bodies, and scene managers strictly reside inside `/src/phaser`.
 * **React Code Isolation:** All UI components, overlays, and screens reside inside `/src/components`.
-* **Shared Types:** All shared data contracts reside strictly in `/src/types`.
+* **Shared Types:** All shared data contracts reside strictly in `/src/core/types.ts`.
 
 ---
 

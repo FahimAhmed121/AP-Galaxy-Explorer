@@ -123,7 +123,7 @@ Before writing code or making edits, AI assistants and developers MUST inspect d
 4. `ARCHITECTURE_OVERVIEW.md` (High-level architecture and EventBus flows)
 5. `docs/ENGINEERING_STANDARDS.md` (Detailed coding standards)
 6. Relevant system architecture doc in `docs/` (`DISCOVERY_SYSTEM_ARCHITECTURE.md`, `LEARNING_SYSTEM_ARCHITECTURE.md`, `QUIZ_SYSTEM_ARCHITECTURE.md`, `DRONE_SYSTEM_ARCHITECTURE.md`, etc.)
-7. Latest sprint reports (`SPRINT_2_6_PHASE_2_REPORT.md`, `SPRINT_2_6_PHASE_1_REPORT.md`, `SPRINT_2_5_REPORT.md`, `SPRINT_2_4_5_REPORT.md`, `SPRINT_2_4_REPORT.md`, `SPRINT_2_3_REPORT.md`, `SPRINT_2_1_REPORT.md`, `STABILIZATION_SPRINT_1_REPORT.md`, `QUALITY_SPRINT_1_REPORT.md`)
+7. Latest sprint reports (`SPRINT_2_6_5_REPORT.md`, `SPRINT_2_6_PHASE_2_REPORT.md`, `SPRINT_2_6_PHASE_1_REPORT.md`, `SPRINT_2_5_REPORT.md`, `SPRINT_2_4_5_REPORT.md`, `SPRINT_2_4_REPORT.md`, `SPRINT_2_3_REPORT.md`, `SPRINT_2_1_REPORT.md`, `STABILIZATION_SPRINT_1_REPORT.md`, `QUALITY_SPRINT_1_REPORT.md`)
 
 ---
 

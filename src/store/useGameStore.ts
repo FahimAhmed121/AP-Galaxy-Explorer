@@ -93,11 +93,13 @@ const DEFAULT_PROFILE: ExplorerProfile = {
 function evaluateProfileProgression(currentProfile: ExplorerProfile, additionalXp: number, source?: string): ExplorerProfile {
   // 1. Calculate XP bonus from active perks (e.g., Curiosity Matrix)
   let perkXpMultiplier = 1.0;
-  if (currentProfile.equippedPerks.includes('perk_xp_1')) {
+  if (currentProfile.equippedPerks?.includes('perk_xp_1')) {
     perkXpMultiplier += 0.25;
   }
-  const xpGained = Math.round(additionalXp * perkXpMultiplier);
-  const newXp = currentProfile.xp + xpGained;
+  const safeAdditionalXp = Number.isFinite(additionalXp) ? Math.max(0, Math.floor(additionalXp)) : 0;
+  const xpGained = Math.round(safeAdditionalXp * perkXpMultiplier);
+  const currentXp = Number.isFinite(currentProfile.xp) ? Math.max(0, Math.floor(currentProfile.xp)) : 0;
+  const newXp = currentXp + xpGained;
 
   // 2. Evaluate current Level from XP
   let newLevel = 1;
@@ -145,7 +147,8 @@ function evaluateProfileProgression(currentProfile: ExplorerProfile, additionalX
     });
   }
 
-  const updatedStardust = (currentProfile.stardustReserves || 0) + levelStardustReward;
+  const currentStardust = Number.isFinite(currentProfile.stardustReserves) ? Math.max(0, currentProfile.stardustReserves) : 0;
+  const updatedStardust = currentStardust + levelStardustReward;
 
   // 3. Evaluate Badges
   const tempProfileState = {
@@ -202,6 +205,7 @@ function evaluateProfileProgression(currentProfile: ExplorerProfile, additionalX
     unlockedBadges: allBadges,
     unlockedCosmetics: newlyUnlockedCosmetics,
     unlockedPerks: newlyUnlockedPerks,
+    updatedAt: Date.now(),
   };
 }
 
@@ -328,14 +332,16 @@ export const useGameStore = create<GameStoreState>()(
           profile: {
             ...state.profile,
             droneEncountersCount: (state.profile.droneEncountersCount || 0) + 1,
+            updatedAt: Date.now(),
           },
         }));
       },
 
       addStardust: (amount) => {
-        if (amount <= 0) return;
+        if (amount <= 0 || !Number.isFinite(amount)) return;
         set((state) => {
-          const newTotal = (state.profile.stardustReserves || 0) + amount;
+          const currentReserves = Number.isFinite(state.profile.stardustReserves) ? state.profile.stardustReserves : 0;
+          const newTotal = currentReserves + Math.floor(amount);
           // Grant 2 XP per stardust collected
           const updatedProfile = evaluateProfileProgression(
             { ...state.profile, stardustReserves: newTotal },
@@ -346,20 +352,21 @@ export const useGameStore = create<GameStoreState>()(
           return {
             profile: updatedProfile,
             savedShipState: state.savedShipState
-              ? { ...state.savedShipState, stardust: (state.savedShipState.stardust || 0) + amount }
+              ? { ...state.savedShipState, stardust: (state.savedShipState.stardust || 0) + Math.floor(amount) }
               : null,
           };
         });
       },
 
       spendStardust: (amount) => {
-        if (amount <= 0) return;
+        if (amount <= 0 || !Number.isFinite(amount)) return;
         set((state) => {
-          const newTotal = Math.max(0, (state.profile.stardustReserves || 0) - amount);
+          const currentReserves = Number.isFinite(state.profile.stardustReserves) ? state.profile.stardustReserves : 0;
+          const newTotal = Math.max(0, currentReserves - Math.floor(amount));
           return {
-            profile: { ...state.profile, stardustReserves: newTotal },
+            profile: { ...state.profile, stardustReserves: newTotal, updatedAt: Date.now() },
             savedShipState: state.savedShipState
-              ? { ...state.savedShipState, stardust: Math.max(0, (state.savedShipState.stardust || 0) - amount) }
+              ? { ...state.savedShipState, stardust: Math.max(0, (state.savedShipState.stardust || 0) - Math.floor(amount)) }
               : null,
           };
         });
@@ -380,6 +387,7 @@ export const useGameStore = create<GameStoreState>()(
             profile: {
               ...state.profile,
               equippedCosmetics: newEquipped,
+              updatedAt: Date.now(),
             },
           };
         });
@@ -394,6 +402,7 @@ export const useGameStore = create<GameStoreState>()(
             profile: {
               ...state.profile,
               unlockedCosmetics: [...unlocked, cosmeticId],
+              updatedAt: Date.now(),
             },
           };
         });
@@ -420,6 +429,7 @@ export const useGameStore = create<GameStoreState>()(
             profile: {
               ...state.profile,
               equippedPerks: newEquipped,
+              updatedAt: Date.now(),
             },
           };
         });
@@ -442,12 +452,20 @@ export const useGameStore = create<GameStoreState>()(
 
       setExplorerName: (name) =>
         set((state) => ({
-          profile: { ...state.profile, name: name.trim() || 'COSMIC EXPLORER' },
+          profile: {
+            ...state.profile,
+            name: name.trim() || 'COSMIC EXPLORER',
+            updatedAt: Date.now(),
+          },
         })),
 
       setStardustLastSynced: (amount) =>
         set((state) => ({
-          profile: { ...state.profile, stardustLastSynced: amount },
+          profile: {
+            ...state.profile,
+            stardustLastSynced: Number.isFinite(amount) ? Math.max(0, amount) : 0,
+            updatedAt: Date.now(),
+          },
         })),
 
       updateProfileFromCloud: (updatedProfile) =>
@@ -459,7 +477,7 @@ export const useGameStore = create<GameStoreState>()(
 
       resetProgress: () => {
         set({
-          profile: DEFAULT_PROFILE,
+          profile: { ...DEFAULT_PROFILE, updatedAt: Date.now() },
           savedShipState: null,
           gameState: 'MENU',
         });
@@ -476,27 +494,30 @@ export const useGameStore = create<GameStoreState>()(
       // Migration & Fallback for existing save state in localStorage
       merge: (persistedState: any, currentState) => {
         const p = persistedState?.profile || {};
+        const safeNum = (n: any, fallback: number) => (typeof n === 'number' && Number.isFinite(n) ? n : fallback);
+
         const mergedProfile: ExplorerProfile = {
           name: p.name || DEFAULT_PROFILE.name,
           rankTitle: p.rankTitle || DEFAULT_PROFILE.rankTitle,
-          xp: p.xp || DEFAULT_PROFILE.xp,
-          level: p.level || 1,
-          totalScore: p.totalScore || DEFAULT_PROFILE.totalScore,
-          stardustReserves: p.stardustReserves ?? DEFAULT_PROFILE.stardustReserves,
-          stardustLastSynced: p.stardustLastSynced ?? p.stardustReserves ?? 0,
-          discoveredGalaxyIds: p.discoveredGalaxyIds || DEFAULT_PROFILE.discoveredGalaxyIds,
-          quizBestScores: p.quizBestScores || DEFAULT_PROFILE.quizBestScores,
-          unlockedBadges: p.unlockedBadges || DEFAULT_PROFILE.unlockedBadges,
-          dronesDefeated: p.dronesDefeated ?? 0,
-          droneEncountersCount: p.droneEncountersCount ?? 0,
+          xp: safeNum(p.xp, DEFAULT_PROFILE.xp),
+          level: safeNum(p.level, 1),
+          totalScore: safeNum(p.totalScore, DEFAULT_PROFILE.totalScore),
+          stardustReserves: safeNum(p.stardustReserves, DEFAULT_PROFILE.stardustReserves),
+          stardustLastSynced: safeNum(p.stardustLastSynced, safeNum(p.stardustReserves, 0)),
+          discoveredGalaxyIds: Array.isArray(p.discoveredGalaxyIds) ? p.discoveredGalaxyIds : DEFAULT_PROFILE.discoveredGalaxyIds,
+          quizBestScores: p.quizBestScores && typeof p.quizBestScores === 'object' ? p.quizBestScores : DEFAULT_PROFILE.quizBestScores,
+          unlockedBadges: Array.isArray(p.unlockedBadges) ? p.unlockedBadges : DEFAULT_PROFILE.unlockedBadges,
+          dronesDefeated: safeNum(p.dronesDefeated, 0),
+          droneEncountersCount: safeNum(p.droneEncountersCount, 0),
           equippedCosmetics: {
             shipSkin: p.equippedCosmetics?.shipSkin || DEFAULT_COSMETICS.shipSkin,
             thrusterFx: p.equippedCosmetics?.thrusterFx || DEFAULT_COSMETICS.thrusterFx,
             scannerFx: p.equippedCosmetics?.scannerFx || DEFAULT_COSMETICS.scannerFx,
           },
-          unlockedCosmetics: p.unlockedCosmetics || DEFAULT_PROFILE.unlockedCosmetics,
-          equippedPerks: p.equippedPerks || DEFAULT_PROFILE.equippedPerks,
-          unlockedPerks: p.unlockedPerks || DEFAULT_PROFILE.unlockedPerks,
+          unlockedCosmetics: Array.isArray(p.unlockedCosmetics) ? p.unlockedCosmetics : DEFAULT_PROFILE.unlockedCosmetics,
+          equippedPerks: Array.isArray(p.equippedPerks) ? p.equippedPerks : DEFAULT_PROFILE.equippedPerks,
+          unlockedPerks: Array.isArray(p.unlockedPerks) ? p.unlockedPerks : DEFAULT_PROFILE.unlockedPerks,
+          updatedAt: safeNum(p.updatedAt, Date.now()),
         };
 
         const evaluatedProfile = evaluateProfileProgression(mergedProfile, 0, 'STORAGE_REHYDRATION');

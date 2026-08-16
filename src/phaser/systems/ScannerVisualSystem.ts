@@ -11,14 +11,16 @@ export class ScannerVisualSystem {
   private animTimer: number = 0;
   private isInterferenceActive: boolean = false;
 
+  private handleInterferenceChanged = (payload: { active: boolean }) => {
+    this.isInterferenceActive = payload.active;
+  };
+
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.graphics = this.scene.add.graphics();
     this.graphics.setDepth(20); // Above ship and galaxies
 
-    eventBus.on('SCANNER_INTERFERENCE_CHANGED', (payload) => {
-      this.isInterferenceActive = payload.active;
-    });
+    eventBus.on('SCANNER_INTERFERENCE_CHANGED', this.handleInterferenceChanged);
   }
 
   public update(delta: number, scannerSystem: ScannerSystem, ship: PlayerShip): void {
@@ -166,6 +168,7 @@ export class ScannerVisualSystem {
   }
 
   public destroy(): void {
+    eventBus.off('SCANNER_INTERFERENCE_CHANGED', this.handleInterferenceChanged);
     this.graphics.destroy();
   }
 }

@@ -4,6 +4,14 @@ import { CloudSavePayload, CloudSaveProfileDTO, CloudSaveMetadataDTO } from './c
 export const CURRENT_SCHEMA_VERSION = 1;
 export const CURRENT_APP_VERSION = '2.5.0';
 
+function toSafeInt(val: any, defaultVal = 0, min = 0, max = Number.MAX_SAFE_INTEGER): number {
+  if (typeof val !== 'number' || !Number.isFinite(val)) {
+    return defaultVal;
+  }
+  const intVal = Math.floor(val);
+  return Math.min(Math.max(intVal, min), max);
+}
+
 /**
  * CloudSaveSerializer
  * Handles deterministic serialization, deserialization, and schema validation
@@ -19,35 +27,55 @@ export class CloudSaveSerializer {
     appVersion: string = CURRENT_APP_VERSION
   ): CloudSavePayload {
     const now = Date.now();
+    const updatedAt = toSafeInt(profile.updatedAt, now, 0);
+
+    const sanitizedQuizScores: Record<string, number> = {};
+    if (profile.quizBestScores && typeof profile.quizBestScores === 'object') {
+      Object.entries(profile.quizBestScores).forEach(([k, v]) => {
+        if (typeof k === 'string' && k.length <= 50) {
+          sanitizedQuizScores[k] = toSafeInt(v, 0, 0, 100);
+        }
+      });
+    }
 
     const profileDTO: CloudSaveProfileDTO = {
       schemaVersion: CURRENT_SCHEMA_VERSION,
       appVersion,
-      updatedAt: now,
+      updatedAt,
 
       name: (profile.name || 'COSMIC EXPLORER').trim().substring(0, 50),
-      rankTitle: profile.rankTitle || 'Space Cadet',
+      rankTitle: (profile.rankTitle || 'Space Cadet').trim().substring(0, 100),
 
-      xp: Math.max(0, Math.floor(profile.xp || 0)),
-      level: Math.max(1, Math.floor(profile.level || 1)),
-      stardustReserves: Math.max(0, Math.floor(profile.stardustReserves || 0)),
-      totalScore: Math.max(0, Math.floor(profile.totalScore || 0)),
+      xp: toSafeInt(profile.xp, 0, 0, 10000000),
+      level: toSafeInt(profile.level, 1, 1, 100),
+      stardustReserves: toSafeInt(profile.stardustReserves, 0, 0, 10000000),
+      totalScore: toSafeInt(profile.totalScore, 0, 0, 100000000),
 
-      discoveredGalaxyIds: Array.from(new Set(profile.discoveredGalaxyIds || [])).slice(0, 200),
-      unlockedBadges: Array.from(new Set(profile.unlockedBadges || [])).slice(0, 100),
-      unlockedCosmetics: Array.from(new Set(profile.unlockedCosmetics || [])).slice(0, 100),
+      discoveredGalaxyIds: Array.from(new Set(profile.discoveredGalaxyIds || []))
+        .filter((id): id is string => typeof id === 'string' && id.length <= 50)
+        .slice(0, 200),
+      unlockedBadges: Array.from(new Set(profile.unlockedBadges || []))
+        .filter((id): id is string => typeof id === 'string' && id.length <= 50)
+        .slice(0, 100),
+      unlockedCosmetics: Array.from(new Set(profile.unlockedCosmetics || []))
+        .filter((id): id is string => typeof id === 'string' && id.length <= 50)
+        .slice(0, 100),
       equippedCosmetics: {
-        shipSkin: profile.equippedCosmetics?.shipSkin || 'skin_standard_cobalt',
-        thrusterFx: profile.equippedCosmetics?.thrusterFx || 'thruster_plasma_blue',
-        scannerFx: profile.equippedCosmetics?.scannerFx || 'scanner_cyan_pulse',
+        shipSkin: typeof profile.equippedCosmetics?.shipSkin === 'string' ? profile.equippedCosmetics.shipSkin : 'skin_standard_cobalt',
+        thrusterFx: typeof profile.equippedCosmetics?.thrusterFx === 'string' ? profile.equippedCosmetics.thrusterFx : 'thruster_plasma_blue',
+        scannerFx: typeof profile.equippedCosmetics?.scannerFx === 'string' ? profile.equippedCosmetics.scannerFx : 'scanner_cyan_pulse',
       },
-      unlockedPerks: Array.from(new Set(profile.unlockedPerks || [])).slice(0, 50),
-      equippedPerks: Array.from(new Set(profile.equippedPerks || [])).slice(0, 2),
+      unlockedPerks: Array.from(new Set(profile.unlockedPerks || []))
+        .filter((id): id is string => typeof id === 'string' && id.length <= 50)
+        .slice(0, 50),
+      equippedPerks: Array.from(new Set(profile.equippedPerks || []))
+        .filter((id): id is string => typeof id === 'string' && id.length <= 50)
+        .slice(0, 2),
 
-      quizBestScores: { ...(profile.quizBestScores || {}) },
+      quizBestScores: sanitizedQuizScores,
 
-      dronesDefeated: Math.max(0, Math.floor(profile.dronesDefeated || 0)),
-      droneEncountersCount: Math.max(0, Math.floor(profile.droneEncountersCount || 0)),
+      dronesDefeated: toSafeInt(profile.dronesDefeated, 0, 0, 100000),
+      droneEncountersCount: toSafeInt(profile.droneEncountersCount, 0, 0, 100000),
     };
 
     const metadataDTO: CloudSaveMetadataDTO = {
@@ -69,27 +97,37 @@ export class CloudSaveSerializer {
   static deserializeCloudSave(payload: CloudSavePayload): ExplorerProfile {
     const dto = payload.profile;
 
+    const sanitizedQuizScores: Record<string, number> = {};
+    if (dto.quizBestScores && typeof dto.quizBestScores === 'object') {
+      Object.entries(dto.quizBestScores).forEach(([k, v]) => {
+        if (typeof k === 'string') {
+          sanitizedQuizScores[k] = toSafeInt(v, 0, 0, 100);
+        }
+      });
+    }
+
     return {
       name: dto.name || 'COSMIC EXPLORER',
       rankTitle: dto.rankTitle || 'Space Cadet',
-      xp: dto.xp || 0,
-      level: dto.level || 1,
-      stardustReserves: dto.stardustReserves || 0,
-      stardustLastSynced: dto.stardustReserves || 0,
-      totalScore: dto.totalScore || 0,
-      discoveredGalaxyIds: dto.discoveredGalaxyIds || [],
-      quizBestScores: dto.quizBestScores || {},
-      unlockedBadges: dto.unlockedBadges || [],
-      dronesDefeated: dto.dronesDefeated || 0,
-      droneEncountersCount: dto.droneEncountersCount || 0,
+      xp: toSafeInt(dto.xp, 0, 0, 10000000),
+      level: toSafeInt(dto.level, 1, 1, 100),
+      stardustReserves: toSafeInt(dto.stardustReserves, 0, 0, 10000000),
+      stardustLastSynced: toSafeInt(dto.stardustReserves, 0, 0, 10000000),
+      totalScore: toSafeInt(dto.totalScore, 0, 0, 100000000),
+      discoveredGalaxyIds: Array.isArray(dto.discoveredGalaxyIds) ? dto.discoveredGalaxyIds : [],
+      quizBestScores: sanitizedQuizScores,
+      unlockedBadges: Array.isArray(dto.unlockedBadges) ? dto.unlockedBadges : [],
+      dronesDefeated: toSafeInt(dto.dronesDefeated, 0, 0, 100000),
+      droneEncountersCount: toSafeInt(dto.droneEncountersCount, 0, 0, 100000),
       equippedCosmetics: {
         shipSkin: dto.equippedCosmetics?.shipSkin || 'skin_standard_cobalt',
         thrusterFx: dto.equippedCosmetics?.thrusterFx || 'thruster_plasma_blue',
         scannerFx: dto.equippedCosmetics?.scannerFx || 'scanner_cyan_pulse',
       },
-      unlockedCosmetics: dto.unlockedCosmetics || ['skin_standard_cobalt', 'thruster_plasma_blue', 'scanner_cyan_pulse'],
-      equippedPerks: dto.equippedPerks || [],
-      unlockedPerks: dto.unlockedPerks || [],
+      unlockedCosmetics: Array.isArray(dto.unlockedCosmetics) ? dto.unlockedCosmetics : ['skin_standard_cobalt', 'thruster_plasma_blue', 'scanner_cyan_pulse'],
+      equippedPerks: Array.isArray(dto.equippedPerks) ? dto.equippedPerks : [],
+      unlockedPerks: Array.isArray(dto.unlockedPerks) ? dto.unlockedPerks : [],
+      updatedAt: toSafeInt(dto.updatedAt, Date.now(), 0),
     };
   }
 
@@ -101,11 +139,11 @@ export class CloudSaveSerializer {
     const p = data.profile;
     if (!p || typeof p !== 'object') return false;
 
-    if (typeof p.schemaVersion !== 'number' || p.schemaVersion < 1) return false;
+    if (typeof p.schemaVersion !== 'number' || !Number.isFinite(p.schemaVersion) || p.schemaVersion < 1) return false;
     if (typeof p.name !== 'string') return false;
-    if (typeof p.xp !== 'number' || p.xp < 0) return false;
-    if (typeof p.level !== 'number' || p.level < 1) return false;
-    if (typeof p.stardustReserves !== 'number' || p.stardustReserves < 0) return false;
+    if (typeof p.xp !== 'number' || !Number.isFinite(p.xp) || p.xp < 0) return false;
+    if (typeof p.level !== 'number' || !Number.isFinite(p.level) || p.level < 1) return false;
+    if (typeof p.stardustReserves !== 'number' || !Number.isFinite(p.stardustReserves) || p.stardustReserves < 0) return false;
     if (!Array.isArray(p.discoveredGalaxyIds)) return false;
 
     return true;
