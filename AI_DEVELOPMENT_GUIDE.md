@@ -58,14 +58,14 @@ The codebase is split into distinct architectural boundaries. Every developer an
   - *CloudSaveResolver (`src/services/cloudSave/CloudSaveResolver.ts`)*: Enforces deterministic conflict resolution: Additive Set Union ($A \cup B$) for unlocks/collections, Monotonic Max ($\max(A, B)$) for XP and quiz scores, Stardust Net-Delta Reconciliation for currency, and Timestamp-based precedence for callsigns and equipped cosmetics.
   - *SyncManager (`src/services/cloudSave/SyncManager.ts`)*: Application-level orchestrator managing 3-second debounced auto-sync, dirty state tracking, reentrancy guards (`applyCloudUpdateToStore`), session generation tokens (`currentSessionId`), and network status listeners. Stardust baseline advancement (`stardustLastSynced`) is executed ONLY after confirmed cloud write.
 - **Electron Desktop Architecture Layer (`electron/`)**:
-  - *Main Process (`electron/main.ts`)*: Manages window lifecycle, strict Chromium sandboxing (`sandbox: true`, `contextIsolation: true`, `nodeIntegration: false`, `webSecurity: true`, `allowRunningInsecureContent: false`), embedded local loopback production server (`127.0.0.1:<port>`), and external link interception routing to OS default browser via `shell.openExternal`.
+  - *Main Process (`electron/main.ts`)*: Manages single-instance application locking (`app.requestSingleInstanceLock()`), window lifecycle ($1280 \times 720$ initial, $1024 \times 600$ min, centered, dark background `#030712`, `ready-to-show` visual gating), strict Chromium sandboxing (`sandbox: true`, `contextIsolation: true`, `nodeIntegration: false`, `webSecurity: true`, `allowRunningInsecureContent: false`), embedded local loopback production server (`127.0.0.1:<port>`) with path traversal guards and graceful teardown (`stopLocalProductionServer`), cross-platform lifecycle orchestration (`whenReady`, `activate`, `window-all-closed`, `will-quit`), and external link interception routing to OS default browser via `shell.openExternal`.
   - *Preload Context Bridge (`electron/preload.ts`)*: Minimal context bridge exposing only read-only platform metadata (`window.electron = { isDesktop: true, platform: process.platform }`). Never expose Node.js runtime APIs or arbitrary execution handles.
   - *Build Pipeline*: Dual-target build using `esbuild` (`build:electron`, `electron:build`, `electron:dev`) with `base: './'` relative bundle resolution in `vite.config.ts`.
 
 ### Strict Execution Rules:
 1. **Never Bypass Controllers**: React UI components must emit intent to the EventBus or trigger controller methods rather than attempting to mutate Phaser internal state directly.
 2. **Never Duplicate Logic**: Do not re-implement proximity detection, scoring, or state validation if an existing manager or controller already handles it.
-3. **Preserve Completed Systems**: Never refactor or alter working Sprint 2.5 Auth/Cloud Save services or Sprint 2.6 Phase 1 Electron infrastructure during subsequent UI or gameplay passes.
+3. **Preserve Completed Systems**: Never refactor or alter working Sprint 2.5 Auth/Cloud Save services or Sprint 2.6 Phase 1 & 2 Electron infrastructure during subsequent UI or gameplay passes.
 
 ---
 
@@ -123,7 +123,7 @@ Before writing code or making edits, AI assistants and developers MUST inspect d
 4. `ARCHITECTURE_OVERVIEW.md` (High-level architecture and EventBus flows)
 5. `docs/ENGINEERING_STANDARDS.md` (Detailed coding standards)
 6. Relevant system architecture doc in `docs/` (`DISCOVERY_SYSTEM_ARCHITECTURE.md`, `LEARNING_SYSTEM_ARCHITECTURE.md`, `QUIZ_SYSTEM_ARCHITECTURE.md`, `DRONE_SYSTEM_ARCHITECTURE.md`, etc.)
-7. Latest sprint reports (`SPRINT_2_6_PHASE_1_REPORT.md`, `SPRINT_2_5_REPORT.md`, `SPRINT_2_4_5_REPORT.md`, `SPRINT_2_4_REPORT.md`, `SPRINT_2_3_REPORT.md`, `SPRINT_2_1_REPORT.md`, `STABILIZATION_SPRINT_1_REPORT.md`, `QUALITY_SPRINT_1_REPORT.md`)
+7. Latest sprint reports (`SPRINT_2_6_PHASE_2_REPORT.md`, `SPRINT_2_6_PHASE_1_REPORT.md`, `SPRINT_2_5_REPORT.md`, `SPRINT_2_4_5_REPORT.md`, `SPRINT_2_4_REPORT.md`, `SPRINT_2_3_REPORT.md`, `SPRINT_2_1_REPORT.md`, `STABILIZATION_SPRINT_1_REPORT.md`, `QUALITY_SPRINT_1_REPORT.md`)
 
 ---
 

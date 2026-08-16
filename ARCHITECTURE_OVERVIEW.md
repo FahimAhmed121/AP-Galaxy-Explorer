@@ -3,7 +3,7 @@
 ## 1. Directory Responsibilities
 
 - `/electron/`:
-  - `main.ts`: Electron main process lifecycle manager, Chromium sandboxing configuration, embedded local loopback HTTP production server (`127.0.0.1:<port>`), and external navigation interceptor (`shell.openExternal`).
+  - `main.ts`: Electron main process single-instance lock (`app.requestSingleInstanceLock()`), window lifecycle manager ($1280 \times 720$, min $1024 \times 600$, `ready-to-show` visual gating), Chromium sandboxing configuration, embedded local loopback HTTP production server (`127.0.0.1:<port>`) with path traversal guards and graceful teardown (`stopLocalProductionServer`), and external navigation interceptor (`shell.openExternal`).
   - `preload.ts`: Minimal, secure context bridge exposing only read-only platform metadata (`isDesktop`, `platform`).
 - `/src/components/`:
   - `hud/`: React HUD overlays and modals (`ShipStatusHUD`, `RadarHUD`, `DiscoveryOverlay`, `LearningBriefingModal`, `QuizAssessmentModal`, `WarpJumpOverlay`, `PilotDashboardModal`, `GameOverModal`).

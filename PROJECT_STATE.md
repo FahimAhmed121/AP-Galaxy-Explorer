@@ -19,7 +19,7 @@
 - **Web Audio API Engine**: Custom procedural synthesizer and audio engine handling multi-channel sound FX, thruster rumbles, scanner sweeps, warp jump hums, and ambient music crossfades.
 - **Zustand State Store**: Global reactive state management for user profiles, discovered galaxies, stardust currency, scores, and application settings with `localStorage` fallback persistence.
 - **Firebase Authentication & Firestore**: Client SDK integration (`AuthService`, `CloudSaveService`, `SyncManager`) for Google OAuth, Email/Password auth, and debounced cloud save synchronization with deterministic conflict resolution.
-- **Electron Desktop Foundation**: Secure, sandboxed Electron main process (`electron/main.ts`) and minimal preload context bridge (`electron/preload.ts`) with embedded production loopback server (`127.0.0.1:<port>`).
+- **Electron Desktop Architecture**: Secure, sandboxed Electron main process (`electron/main.ts`) and minimal preload context bridge (`electron/preload.ts`) with single-instance locking (`app.requestSingleInstanceLock()`), window lifecycle management ($1280 \times 720$, min $1024 \times 600$), gated `ready-to-show` rendering, and an embedded production loopback server (`127.0.0.1:<port>`) with safe shutdown hooks.
 
 ---
 
@@ -277,7 +277,9 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 - **Single-System Canvas**: Exploration canvas operates within a 2D boundary grid (`8000x8000 px`).
 - **Verified Media Integration**: All 10 core galaxies feature verified real astronomical image references and YouTube video tour links with resilient client-side fallback handling.
 - **Hybrid Storage Model**: Local offline persistence via Zustand `localStorage` synchronization seamlessly operates alongside optional authenticated Firebase cloud save and conflict resolution.
-- **Desktop Production Loopback Server**: Electron production builds utilize an embedded loopback server on `127.0.0.1:<ephemeral-port>` ensuring standard web security and Web API compatibility.
+- **Desktop Production Loopback Server**: Electron production builds utilize an embedded loopback server on `127.0.0.1:<ephemeral-port>` ensuring standard web security and Web API compatibility with safe shutdown lifecycle hooks.
+- **Authentication Environment Verification**: Email/Password authentication is verified; Google OAuth popup interaction remains a runtime verification item on desktop environments with Firebase Authorized Domains configured.
+- **Cross-Platform Clean Script Notice**: The package clean script currently uses Unix `rm -rf` and is scheduled for cross-platform harmonization in Sprint 2.6 Phase 3 packaging.
 
 ---
 
@@ -305,9 +307,9 @@ The following 10 handcrafted galaxies are fully integrated with coordinate data,
 - **Sprint 2.4.5 — Educational Content, UI/UX & Media Polish**: ✅ **COMPLETE**
 - **Sprint 2.5 — Firebase Authentication & Cloud Save**: ✅ **COMPLETE** (Google OAuth & Email/Password `AuthService`, DTOs, `CloudSaveSerializer`, `CloudSaveResolver` with Stardust Net-Delta reconciliation, `CloudSaveService`, `SyncManager` debounced auto-sync, `AuthModal`, and `firestore.rules`).
 - **Sprint 2.6 Phase 1 — Electron Core & Build Integration**: ✅ **COMPLETE & AUDITED** (Minimal Electron main process, secure preload context bridge, sandboxing, Vite relative base, embedded local loopback server, `esbuild` packaging scripts, and regression verification).
+- **Sprint 2.6 Phase 2 — Desktop Window Management & Lifecycle Integration**: ✅ **COMPLETE & AUDITED** (Single-instance locking, duplicate-window prevention, window sizing & centering, ready-to-show visual gating, macOS dock activation, clean loopback server teardown, and lifecycle event orchestration).
 
 ### Active & Upcoming Milestones
-- **Sprint 2.6 Phase 2 — Desktop Window Management & Lifecycle Integration**: ⏳ **NEXT / READY TO BEGIN** (Window centering, show animations, graceful close dirty-state flush, menu streamlining).
 - **Sprint 2.6 Phase 3 — Desktop Packaging & Distribution**: 📋 **NOT STARTED** (electron-builder packaging, cross-platform clean script, installer generation).
 - **Beta Phase**: Full playtesting, bug fixing, performance optimization, UI/UX polish, and audio polish.
 - **Version 1.0 Release**: Educational desktop game ready for Astronomy Pathshala students.

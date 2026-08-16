@@ -51,11 +51,14 @@
   - Sprint 2.5 regression audit verified 100% intact.
   - Audit Verdict: **PASS WITH WARNINGS — READY FOR PHASE 2**.
 
-- ⏳ **Phase 2 — Desktop Window Management & Lifecycle Integration (NEXT / READY)**:
-  - Window sizing, centering, display bounds management, and launch show animations.
-  - Native window close interception and dirty-state flush before application termination.
-  - Web Audio Context auto-resume handling for desktop autoplay policies.
-  - Menu bar streamlining and desktop keyboard accelerator integration.
+- ✅ **Phase 2 — Desktop Window Management & Lifecycle Integration (COMPLETED & AUDITED)**:
+  - Single-instance locking (`app.requestSingleInstanceLock()`) and duplicate process prevention.
+  - Window sizing ($1280 \times 720$, min $1024 \times 600$), centering (`center: true`), resizability, and dark background (`#030712`).
+  - Gated visual presentation (`ready-to-show`) to prevent white startup flashes.
+  - Robust embedded production server lifecycle (`startLocalProductionServer`, `stopLocalProductionServer`) with path traversal safeguards and SPA routing fallback.
+  - Cross-platform application lifecycle event orchestration (`whenReady`, `activate`, `window-all-closed`, `will-quit`).
+  - Strict security sandboxing and external URL navigation containment via `shell.openExternal`.
+  - Audit Verdict: **PASS**.
 
 - 📋 **Phase 3 — Desktop Packaging & Distribution (NOT STARTED)**:
   - Cross-platform packaging configuration (`electron-builder` / packager).

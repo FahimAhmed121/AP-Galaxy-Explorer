@@ -67,7 +67,7 @@ An interactive 2D astronomy exploration game and educational platform built with
 - **Sprint 2.5 (Completed)**: Firebase Authentication & Cloud Save (Google OAuth, Email/Password, Firestore sync, conflict resolution, Stardust Net-Delta reconciliation, SyncManager).
 - **Sprint 2.6 (Active)**: Electron Desktop Release
   - *Phase 1 (Completed & Audited)*: Electron Core & Build Integration (Sandboxed main process, preload bridge, relative assets, embedded loopback server, dual build pipeline).
-  - *Phase 2 (Ready to Begin)*: Desktop Window Management & Lifecycle Integration.
+  - *Phase 2 (Completed & Audited)*: Desktop Window Management & Lifecycle Integration (Single-instance locking, window sizing/centering, ready-to-show visual gating, loopback server shutdown hooks, lifecycle orchestration).
   - *Phase 3 (Not Started)*: Desktop Packaging & Distribution.
 - **Beta & V1.0 Release**: Final playtesting, polish, and Version 1.0 release for Astronomy Pathshala students.
 
