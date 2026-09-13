@@ -44,6 +44,50 @@ if (!hasSingleInstanceLock) {
     } catch {
       return false;
     }
+  }, getPersistedPort = function() {
+    try {
+      const portFilePath = import_node_path.default.join(import_electron.app.getPath("userData"), "app_port.json");
+      if (import_node_fs.default.existsSync(portFilePath)) {
+        const content = import_node_fs.default.readFileSync(portFilePath, "utf-8");
+        const parsed = JSON.parse(content);
+        if (typeof parsed.port === "number" && parsed.port >= 1024 && parsed.port <= 65535) {
+          return parsed.port;
+        }
+      }
+    } catch (err) {
+      console.warn("[Electron Main] Could not read persisted port file:", err);
+    }
+    return DEFAULT_PRODUCTION_PORT;
+  }, persistPort = function(port) {
+    try {
+      const portFilePath = import_node_path.default.join(import_electron.app.getPath("userData"), "app_port.json");
+      import_node_fs.default.writeFileSync(portFilePath, JSON.stringify({ port, updatedAt: Date.now() }), "utf-8");
+    } catch (err) {
+      console.warn("[Electron Main] Could not write persisted port file:", err);
+    }
+  }, tryListen = function(server, port) {
+    return new Promise((resolve, reject) => {
+      const onListening = () => {
+        cleanup();
+        const address = server.address();
+        if (address && typeof address === "object") {
+          resolve(address.port);
+        } else {
+          resolve(port);
+        }
+      };
+      const onError = (err) => {
+        cleanup();
+        reject(err);
+      };
+      const cleanup = () => {
+        server.removeListener("listening", onListening);
+        server.removeListener("error", onError);
+      };
+      server.once("listening", onListening);
+      server.once("error", onError);
+      server.listen(port, "127.0.0.1");
+    });
   }, startLocalProductionServer = function(distPath) {
     return new Promise((resolve, reject) => {
       if (staticServer && serverPort !== null) {
@@ -51,6 +95,7 @@ if (!hasSingleInstanceLock) {
         return;
       }
       const resolvedDistPath = import_node_path.default.resolve(distPath);
+      const distRootPrefix = resolvedDistPath.endsWith(import_node_path.default.sep) ? resolvedDistPath : resolvedDistPath + import_node_path.default.sep;
       staticServer = import_node_http.default.createServer((req, res) => {
         const parsedUrl = new URL(req.url || "/", "http://127.0.0.1");
         let reqPath = decodeURIComponent(parsedUrl.pathname);
@@ -58,7 +103,7 @@ if (!hasSingleInstanceLock) {
           reqPath = "/index.html";
         }
         const filePath = import_node_path.default.normalize(import_node_path.default.join(resolvedDistPath, reqPath));
-        if (!filePath.startsWith(resolvedDistPath)) {
+        if (filePath !== resolvedDistPath && !filePath.startsWith(distRootPrefix)) {
           res.writeHead(403);
           res.end("Access Denied");
           return;
@@ -82,19 +127,29 @@ if (!hasSingleInstanceLock) {
           res.end(data);
         });
       });
-      staticServer.listen(0, "127.0.0.1", () => {
-        const address = staticServer?.address();
-        if (address && typeof address === "object") {
-          serverPort = address.port;
-          resolve(serverPort);
-        } else {
-          reject(new Error("Failed to bind embedded production server"));
+      const preferredPort = getPersistedPort();
+      const candidatePorts = [preferredPort, preferredPort + 1, preferredPort + 2, preferredPort + 3, 0];
+      (async () => {
+        for (const port of candidatePorts) {
+          try {
+            const boundPort = await tryListen(staticServer, port);
+            serverPort = boundPort;
+            persistPort(boundPort);
+            console.log(`[Electron Main] Embedded production server bound to http://127.0.0.1:${boundPort}`);
+            resolve(boundPort);
+            return;
+          } catch (err) {
+            if (err?.code === "EADDRINUSE") {
+              console.warn(`[Electron Main] Port ${port} in use, trying next candidate...`);
+              continue;
+            }
+            console.error("[Electron Main] Error starting loopback server:", err);
+            reject(err);
+            return;
+          }
         }
-      });
-      staticServer.on("error", (err) => {
-        console.error("[Electron Main] Local server error:", err);
-        reject(err);
-      });
+        reject(new Error("Failed to bind embedded production server to any candidate port"));
+      })().catch(reject);
     });
   }, stopLocalProductionServer = function() {
     return new Promise((resolve) => {
@@ -134,6 +189,7 @@ if (!hasSingleInstanceLock) {
     ".woff2": "font/woff2",
     ".ttf": "font/ttf"
   };
+  const DEFAULT_PRODUCTION_PORT = 39228;
   async function createWindow() {
     if (isCreatingWindow) return;
     if (mainWindow && !mainWindow.isDestroyed()) {

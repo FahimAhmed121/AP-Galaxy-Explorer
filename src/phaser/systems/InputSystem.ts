@@ -42,23 +42,66 @@ export class InputSystem {
     }
 
     this.cursors = this.scene.input.keyboard.createCursorKeys();
-    this.keyW = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-    this.keyA = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-    this.keyS = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-    this.keyD = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    this.keyE = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
-    this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
-    this.keyK = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
-    this.keyEsc = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-    this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    this.keyShift = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
-    this.keyTilde = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.BACKTICK);
-    this.keyF2 = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F2);
 
-    logger.info('InputSystem: Keyboard keys mapped successfully (W, A, S, D, E, F, K, Esc, Space, Shift).');
+    // Disable default key captures so typing into input elements (Auth, Settings) is not blocked
+    this.scene.input.keyboard.clearCaptures();
+    (this.scene.input.keyboard as any).preventDefault = false;
+
+    // Map keys without capture (enableCapture = false) so native DOM events pass through to input fields
+    this.keyW = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W, false);
+    this.keyA = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A, false);
+    this.keyS = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S, false);
+    this.keyD = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D, false);
+    this.keyE = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E, false);
+    this.keyF = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F, false);
+    this.keyK = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K, false);
+    this.keyEsc = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC, false);
+    this.keySpace = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE, false);
+    this.keyShift = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT, false);
+    this.keyTilde = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.BACKTICK, false);
+    this.keyF2 = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F2, false);
+
+    // Re-clear captures to override any default cursor key captures
+    this.scene.input.keyboard.clearCaptures();
+
+    logger.info('InputSystem: Keyboard keys mapped with non-capturing mode (W, A, S, D, E, F, K, Esc, Space, Shift).');
+  }
+
+  /**
+   * Checks if an interactive text input element currently has active DOM focus.
+   * If focused, game controls should remain neutral to avoid interfering with typing.
+   */
+  private isInputFocused(): boolean {
+    if (typeof document === 'undefined') return false;
+    const active = document.activeElement;
+    if (!active) return false;
+    const tag = active.tagName ? active.tagName.toUpperCase() : '';
+    return (
+      tag === 'INPUT' ||
+      tag === 'TEXTAREA' ||
+      tag === 'SELECT' ||
+      (active as HTMLElement).isContentEditable
+    );
   }
 
   public getInputState(): InputState {
+    // If the user is currently typing in an input element (e.g. AuthModal, SettingsModal),
+    // return neutral input state so the ship does not move, turn, or fire.
+    if (this.isInputFocused()) {
+      return {
+        forward: false,
+        backward: false,
+        left: false,
+        right: false,
+        boost: false,
+        fireRequested: false,
+        scanRequested: false,
+        scanJustPressed: false,
+        skipJustPressed: false,
+        debugToggle: false,
+      };
+    }
+
     const forward = Boolean(
       (this.keyW && this.keyW.isDown) || (this.cursors && this.cursors.up.isDown)
     );

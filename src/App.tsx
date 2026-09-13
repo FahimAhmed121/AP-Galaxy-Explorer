@@ -151,7 +151,12 @@ export default function App() {
         <MainMenu
           onStartGame={() => {
             setReturnState('PLAYING');
-            setGameState('INTRO_CUTSCENE');
+            // If the player already has an active flight session or discovered galaxies, jump straight to gameplay
+            if (savedShipState || (profile && profile.discoveredGalaxyIds.length > 0)) {
+              setGameState('PLAYING');
+            } else {
+              setGameState('INTRO_CUTSCENE');
+            }
           }}
           onOpenArchive={() => {
             setReturnState('MENU');
@@ -189,7 +194,10 @@ export default function App() {
           }}
           discoveredIds={profile.discoveredGalaxyIds}
           soundEnabled={settings.soundEnabled}
-          onExitToMenu={() => setGameState('MENU')}
+          onExitToMenu={() => {
+            setReturnState('MENU');
+            setGameState('MENU');
+          }}
           savedShipState={savedShipState}
           onSaveShipState={handleSaveShipState}
           onOpenArchive={() => {
@@ -312,6 +320,14 @@ export default function App() {
           }}
           currentUser={currentUser}
           onOpenAuth={() => setIsAuthModalOpen(true)}
+          onReturnToMenu={
+            returnState === 'PLAYING'
+              ? () => {
+                  setReturnState('MENU');
+                  setGameState('MENU');
+                }
+              : undefined
+          }
         />
       )}
 

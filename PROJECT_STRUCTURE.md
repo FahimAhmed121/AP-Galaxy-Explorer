@@ -2,24 +2,35 @@
 
 ## 📁 Repository Directory Structure
 
-Below is the authoritative directory layout of **AP Galaxy Explorer V2** as of Sprint 2.3 completion:
+Below is the authoritative directory layout of **AP Galaxy Explorer**:
 
-```
+```text
 /
-├── .env.example                # Template for environment variables
+├── .env.example                # Template for environment variables (Vite & Electron)
+├── firestore.rules             # Security rules for Firestore Cloud Save & profile data
 ├── index.html                  # Main DOM entry HTML
 ├── metadata.json               # Application identity, frame permissions, major capabilities
-├── package.json                # Project dependencies and build scripts
+├── package.json                # Project dependencies, build, and packaging scripts
 ├── tsconfig.json               # Strict TypeScript configuration
-├── vite.config.ts              # Vite bundler configuration
+├── vite.config.ts              # Vite bundler configuration (base: './')
+├── CHANGELOG.md                # Project version, sprint, and architecture history
+├── PROJECT_STATE.md            # Master project state & technical inventory
+├── DEVELOPMENT_ROADMAP.md      # Development milestone roadmap & progress
+├── SYSTEM_ARCHITECTURE.md      # Deep-dive system architecture specification
+├── ARCHITECTURE_OVERVIEW.md    # High-level architecture map
+├── AI_DEVELOPMENT_GUIDE.md     # AI development constitution & engineering handbook
 │
-├── electron/                   # Electron Desktop Main & Preload Scripts
-│   ├── main.ts
-│   └── preload.ts
+├── electron/                   # Electron Desktop Foundation
+│   ├── main.ts                 # Main process (single-instance lock, loopback server)
+│   └── preload.ts              # Secure context bridge (window.electron)
 │
 ├── docs/                       # Architectural & Engineering Specifications
+│   ├── ARCHITECTURE.md         # Consolidated master architecture specification
+│   ├── AUTHENTICATION.md       # Firebase Email & Password authentication guide
+│   ├── ENGINEERING_STANDARDS.md# Engineering rules, patterns, and conventions
+│   ├── TESTING_GUIDE.md        # Step-by-step test & verification protocols
 │   ├── DISCOVERY_SYSTEM_ARCHITECTURE.md
-│   ├── ENGINEERING_STANDARDS.md
+│   ├── DRONE_SYSTEM_ARCHITECTURE.md
 │   ├── GALAXY_SYSTEM_ARCHITECTURE.md
 │   ├── LEARNING_SYSTEM_ARCHITECTURE.md
 │   ├── QUIZ_SYSTEM_ARCHITECTURE.md
@@ -32,11 +43,12 @@ Below is the authoritative directory layout of **AP Galaxy Explorer V2** as of S
 └── src/
     ├── main.tsx                # Application Entry Point
     ├── App.tsx                 # Main Application Shell & GameState Switcher
-    ├── index.css               # Global CSS & Tailwind Directives
+    ├── index.css               # Global CSS, Tailwind Directives & Offline Fonts
     │
     ├── components/             # React UI Component Hierarchy
     │   ├── common/             # Reusable UI Containers & Buttons
     │   │   ├── AboutCredits.tsx     # Credits Modal & Team Roster
+    │   │   ├── AuthModal.tsx        # Firebase Authentication Modal (Email & Password)
     │   │   ├── GalaxyImage.tsx      # SVG/WebGL Procedural Deep-Space Galaxy Visual
     │   │   └── GameContainer.tsx    # Phaser HTML Canvas Mounting Wrapper
     │   │
@@ -80,9 +92,10 @@ Below is the authoritative directory layout of **AP Galaxy Explorer V2** as of S
     ├── engine/                 # Custom Audio Synthesis Engine
     │   └── audioEngine.ts      # Web Audio Procedural Sound Synthesizer & Multi-Channel Mixer
     │
-    ├── phaser/                 # Phaser 3 2D Game Engine Engine Architecture
+    ├── phaser/                 # Phaser 3 2D Game Engine Architecture
     │   ├── Game.ts             # Phaser Game Instance Lifecycle & Container Binding
     │   ├── entities/           # Phaser Game Object Entities
+    │   │   ├── AlienSurveyDrone.ts# Autonomous Survey Drone Entity & AI FSM
     │   │   ├── Asteroid.ts        # Procedural Asteroid Entity & Fragmentation Physics
     │   │   ├── GalaxyEntity.ts    # Deep-space Galaxy Visual & Pulse Ring
     │   │   ├── PlayerShip.ts      # Player Spacecraft, Thrusters, Shield, Weapons, Magnet
@@ -90,6 +103,7 @@ Below is the authoritative directory layout of **AP Galaxy Explorer V2** as of S
     │   │
     │   ├── managers/           # Gameplay Engine Managers
     │   │   ├── AsteroidManager.ts # Asteroid Cluster Generation, Collision & Stardust Drops
+    │   │   ├── DroneManager.ts    # Drone Spawner, Target Tracking & Combat Management
     │   │   ├── GalaxyManager.ts   # Spatial Indexing, Proximity Reticles & Discovery Tracking
     │   │   ├── SaveManager.ts     # Persistent Browser LocalStorage Synchronization
     │   │   └── WorldManager.ts    # Camera Bounds, Tracking & Spatial Constraints
@@ -107,25 +121,20 @@ Below is the authoritative directory layout of **AP Galaxy Explorer V2** as of S
     │       ├── ScannerSystem.ts         # Spectrographic Range & Energy Consumption Engine
     │       └── ScannerVisualSystem.ts   # Dynamic WebGL Reticle & Scan Ray Renderer
     │
+    ├── services/               # Decoupled External Services & Cloud Save
+    │   ├── auth/
+    │   │   └── AuthService.ts         # Firebase Authentication wrapper (Email/Password)
+    │   ├── cloudSave/
+    │   │   ├── cloudSaveTypes.ts      # Cloud Save DTOs & Schemas
+    │   │   ├── CloudSaveSerializer.ts # Bidirectional State/DTO Serializer
+    │   │   ├── CloudSaveResolver.ts   # Deterministic Conflict Resolution Engine
+    │   │   ├── CloudSaveService.ts    # Firestore Persistence Service (users/{uid}/profile/main)
+    │   │   └── SyncManager.ts         # 3s Debounced Auto-Sync Orchestrator
+    │   └── firebase.ts                # Firebase SDK Initialization Singleton
+    │
     ├── store/                  # Zustand Reactive State Store
     │   └── useGameStore.ts     # Single Source of Truth for Profile, Inventory, Upgrades & Options
     │
     └── utils/                  # Pure Utility Functions
         └── mathUtils.ts        # Trigonometry, Vector Math & Spatial Calculations
 ```
-
----
-
-## 🏗️ Architectural Overview by Module
-
-### 1. Presentation Layer (`src/components/`)
-Contains all React 18 user interface elements, HUD overlays, modals, and screen views. Styled exclusively with Tailwind CSS. Interacts with the Phaser game engine solely via Zustand store hooks and the central EventBus (`eventBus`).
-
-### 2. Game Engine Layer (`src/phaser/`)
-Built on Phaser 3 WebGL/Canvas 2D renderer. Manages physics simulation, spatial entity tracking, procedural starfield backdrop, particle emitters, asteroid mining, and spectrographic scanning visuals. Completely decoupled from React DOM nodes.
-
-### 3. Core & Data Layer (`src/core/` & `src/data/`)
-Defines strictly typed contracts (`types.ts`), game constants (`config.ts`), centralized EventBus contracts (`events.ts`), and static content registries (`galaxies.json`, `progressionData.ts`, `contentPipeline.ts`, `quizPipeline.ts`).
-
-### 4. State Management Layer (`src/store/`)
-Uses Zustand (`useGameStore.ts`) to maintain pilot profile metrics, stardust currency, discovered galaxy IDs, quiz attempt histories, hardware upgrade levels, equipped cosmetics, unlocked merit badges, active perks, and application options with automated browser `localStorage` persistence.

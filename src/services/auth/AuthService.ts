@@ -1,6 +1,5 @@
 import {
   User,
-  signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
@@ -10,7 +9,7 @@ import {
   Unsubscribe,
   updateProfile
 } from 'firebase/auth';
-import { auth, googleProvider } from '../firebase';
+import { auth } from '../firebase';
 
 export interface AuthState {
   user: User | null;
@@ -47,19 +46,6 @@ export class AuthService {
    */
   static getCurrentUser(): User | null {
     return auth.currentUser;
-  }
-
-  /**
-   * Sign in using Google OAuth Popup
-   */
-  static async signInWithGoogle(): Promise<User> {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      return result.user;
-    } catch (error: any) {
-      console.error('[AuthService] Google sign-in failed:', error);
-      throw new Error(error.message || 'Failed to sign in with Google.');
-    }
   }
 
   /**

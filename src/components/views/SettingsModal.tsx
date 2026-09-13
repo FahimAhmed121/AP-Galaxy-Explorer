@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User as FirebaseUser } from 'firebase/auth';
-import { X, Volume2, VolumeX, Globe, RotateCcw, User, ShieldCheck, Gamepad2, Sparkles, LogOut, KeyRound } from 'lucide-react';
+import { X, Volume2, VolumeX, Globe, RotateCcw, User, ShieldCheck, Gamepad2, Sparkles, LogOut, KeyRound, Home } from 'lucide-react';
 import { useGameStore } from '../../store/useGameStore';
 import { audioEngine } from '../../engine/audioEngine';
 
@@ -8,9 +8,10 @@ interface SettingsModalProps {
   onClose: () => void;
   currentUser?: FirebaseUser | null;
   onOpenAuth?: () => void;
+  onReturnToMenu?: () => void;
 }
 
-export default function SettingsModal({ onClose, currentUser, onOpenAuth }: SettingsModalProps) {
+export default function SettingsModal({ onClose, currentUser, onOpenAuth, onReturnToMenu }: SettingsModalProps) {
   const { settings, profile, updateSettings, setExplorerName, resetProgress } = useGameStore();
   const [nameInput, setNameInput] = useState(profile.name);
   const [showConfirmReset, setShowConfirmReset] = useState(false);
@@ -278,7 +279,22 @@ export default function SettingsModal({ onClose, currentUser, onOpenAuth }: Sett
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-white/10 bg-black/40 flex items-center justify-end">
+        <div className="p-4 border-t border-white/10 bg-black/40 flex items-center justify-between">
+          {onReturnToMenu ? (
+            <button
+              id="settings-return-home-btn"
+              onClick={() => {
+                onReturnToMenu();
+                onClose();
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-red-950/40 hover:bg-red-900/60 border border-red-500/40 text-red-300 uppercase tracking-wider text-[11px] font-mono font-bold cursor-pointer transition-all active:scale-95"
+            >
+              <Home size={14} />
+              <span>{t('Return to Main Menu', 'মূল মেনুতে ফিরে যান')}</span>
+            </button>
+          ) : (
+            <div />
+          )}
           <button
             onClick={onClose}
             className="px-5 py-2.5 rounded-sm bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 uppercase tracking-wider text-[10px] font-mono font-bold cursor-pointer"

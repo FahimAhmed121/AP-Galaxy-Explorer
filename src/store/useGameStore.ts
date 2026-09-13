@@ -12,6 +12,7 @@ import {
   CosmeticType,
 } from '../data/progressionData';
 import { eventBus } from '../core/events';
+import { logger } from '../core/logger';
 
 interface GameStoreState {
   // Navigation
@@ -493,7 +494,11 @@ export const useGameStore = create<GameStoreState>()(
       }),
       // Migration & Fallback for existing save state in localStorage
       merge: (persistedState: any, currentState) => {
-        const p = persistedState?.profile || {};
+        if (!persistedState || typeof persistedState !== 'object') {
+          return currentState;
+        }
+
+        const p = persistedState.profile || {};
         const safeNum = (n: any, fallback: number) => (typeof n === 'number' && Number.isFinite(n) ? n : fallback);
 
         const mergedProfile: ExplorerProfile = {
@@ -524,9 +529,25 @@ export const useGameStore = create<GameStoreState>()(
 
         return {
           ...currentState,
-          ...persistedState,
+          settings: {
+            ...DEFAULT_SETTINGS,
+            ...(persistedState.settings || {}),
+          },
+          savedShipState: persistedState.savedShipState !== undefined ? persistedState.savedShipState : currentState.savedShipState,
           profile: evaluatedProfile,
         };
+      },
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          logger.error('Zustand store rehydration error from localStorage:', error);
+        } else {
+          logger.info('Zustand store rehydrated successfully from localStorage.', {
+            profileName: state?.profile?.name,
+            level: state?.profile?.level,
+            xp: state?.profile?.xp,
+            discoveredGalaxies: state?.profile?.discoveredGalaxyIds?.length,
+          });
+        }
       },
     }
   )

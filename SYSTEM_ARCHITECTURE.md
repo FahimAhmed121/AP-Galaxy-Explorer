@@ -6,15 +6,15 @@
 - **Phaser (^4.2.1) (WebGL / HTML5 Canvas 2D Engine)**: Executes high-frequency (60 FPS) space flight physics, camera tracking, parallax starfields, procedural asteroid fields, plasma laser collisions, particle emissions, and spectrographic scanning visuals.
 - **React 18 & Tailwind CSS (UI & Educational Layer)**: Controls non-gameplay overlay HUDs, paginated AURA AI dialogue overlays, 2-column NASA/JWST educational briefing dossiers, adaptive scientific quiz consoles, persistent archive logbooks, and pilot station hangar modals.
 - **Zustand Reactive Store**: Acts as the single source of truth for pilot progression, inventory, discovered galaxy IDs, hardware upgrades, unlocked badges, equipped cosmetics, and user options with localStorage fallback.
-- **Firebase Authentication & Firestore Cloud Save**: Provides multi-session authentication (Google OAuth & Email/Password) with debounced auto-sync, session generation tracking, schema validation, numeric bounds, and deterministic conflict resolution (Additive Set Union, Monotonic Max, Stardust Net-Delta).
-- **Electron Desktop Architecture**: Secure desktop container with Chromium sandboxing, loopback production server, origin-hardened navigation, single-instance startup locking, and OS browser delegation.
+- **Firebase Authentication & Firestore Cloud Save**: Provides multi-session authentication via direct Email & Password with debounced auto-sync, session generation tracking, schema validation, numeric bounds, and deterministic conflict resolution (Additive Set Union, Monotonic Max, Stardust Net-Delta).
+- **Electron Desktop Architecture**: Secure desktop container with Chromium sandboxing, loopback static production server (providing HTTP origin parity for Firebase Auth and Firestore), origin-hardened navigation, and single-instance startup locking.
 - **Decoupled Pub/Sub EventBus**: Bridges high-frequency Phaser WebGL canvas signals with React DOM components cleanly without direct DOM manipulation or tight component coupling.
 
 ---
 
 ## 2. High-Level System Architecture Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                                 REACT PRESENTATION LAYER                        │
 │                                                                                 │
@@ -77,8 +77,8 @@ The career progression subsystem operates independently from physical ship hardw
 - **Level Thresholds & Ranks**: Defines 15 cumulative levels (0 to 10,000 XP) mapping directly to rank titles from **Space Cadet** (Level 1) to **Master Voyager of the Cosmos** (Level 15).
 - **Merit Badges Engine**: Evaluates 7 merit badges across `DISCOVERY`, `KNOWLEDGE`, `COLLECTION`, and `PILOTING` categories. Unlocks are automatically evaluated upon store state changes and saved to `profile.unlockedBadges`.
 - **Cosmetics Subsystem**: Manages 12 customizable cosmetics across 3 categories:
-  - **Ship Skins**: Custom color schemes (primary, secondary, accent, canopy, shield glow) applied dynamically to `PlayerShip` graphics.
-  - **Thruster Effects**: Custom exhaust flame and particle trail colors applied to `PlayerShip` thruster emitters.
+  - **Ship Skins**: Custom color schemes applied dynamically to `PlayerShip` graphics.
+  - **Thruster Effects**: Custom exhaust flame and particle trail colors applied to `PlayerShip` thrusters.
   - **Scanner Effects**: Custom spectrographic beam and reticle colors rendered by `ScannerVisualSystem`.
 - **Passive Perks**: Grants lightweight passive bonuses upon reaching specific level milestones:
   - Level 3: *High-Frequency Sensor* (+20% scanner speed)
@@ -133,9 +133,38 @@ $$\text{Approach Galaxy} \longrightarrow \text{Press E} \longrightarrow \text{Ac
 
 ---
 
-## 4. Stabilization & Reliability History
+## 4. Desktop Electron & Firebase Authentication Architecture
 
-### 4.1. Sprint 2.3 Stabilization
+```text
+[Electron Desktop UI / Renderer]
+        │
+        │ 1. User enters Email & Password in AuthModal.tsx
+        │ 2. Submits registration or sign in
+        ▼
+[AuthService (`src/services/auth/AuthService.ts`)]
+        │
+        │ 3. Calls createUserWithEmailAndPassword() or signInWithEmailAndPassword()
+        │ 4. If registration: updates pilot callsign via updateProfile()
+        │ 5. Dispatches email verification or handles password reset requests
+        ▼
+[Firebase Auth Core]
+        │
+        │ 6. Validates credentials over HTTPS
+        │ 7. Authenticates user session and mints Firebase Auth Token
+        │ 8. Emits onAuthStateChanged to SyncManager
+        ▼
+[SyncManager & Cloud Save (`src/services/cloudSave/SyncManager.ts`)]
+        │
+        │ 9. Initializes cloud session with generation ID (activeSyncSessionId)
+        │ 10. Reconciles local progress with Firestore (users/{uid}/profile/main)
+        │ 11. Establishes 3-second debounced auto-sync for ongoing gameplay mutations
+```
+
+---
+
+## 5. Stabilization & Reliability History
+
+### 5.1. Sprint 2.3 Stabilization
 During Sprint 2.3, the core architecture underwent comprehensive stabilization:
 1. **Discovery & Input Lock Resolution**: Fixed edge cases where rapidly closing dialogue overlays could leave flight controls locked in discovery mode.
 2. **State Synchronization Fix**: Ensured `profile.discoveredGalaxyIds` immediately updates Phaser `GalaxyManager` sprites and top HUD counters without requiring a scene reload.
@@ -143,7 +172,7 @@ During Sprint 2.3, the core architecture underwent comprehensive stabilization:
 4. **Perfect Scholar Badge Evaluation**: Corrected quiz evaluation formula in `progressionData.ts` to dynamically inspect target galaxy quiz length (`score >= maxScore`) rather than relying on a hardcoded threshold.
 5. **Save Compatibility**: Ensured legacy saved states missing Sprint 2.3 progression properties (`xp`, `level`, `unlockedBadges`, `equippedCosmetics`) automatically default safely without data corruption.
 
-### 4.2. Sprint 2.6.5 QA Remediation & Stability Hardening
+### 5.2. Sprint 2.6.5 QA Remediation & Stability Hardening
 During Sprint 2.6.5, security, cloud synchronization, and desktop packaging boundaries were hardened:
 1. **Cloud Sync Session Concurrency (SYNC-001)**: Implemented generation-based session tracking (`activeSyncSessionId`) in `SyncManager` preventing race conditions during rapid login/logout auth transitions.
 2. **Timestamp Conflict Resolution (SYNC-002)**: Added `updatedAt` tracking in `useGameStore` and deterministic timestamp precedence in `CloudSaveResolver` for callsigns and equipped cosmetics/perks.
@@ -153,3 +182,9 @@ During Sprint 2.6.5, security, cloud synchronization, and desktop packaging boun
 6. **Listener Memory Cleanup (LEAK-001)**: Bound and properly unregistered `SCANNER_INTERFERENCE_CHANGED` event listeners on system destruction in `ScannerVisualSystem`.
 7. **Offline Font Reliability (BUILD-001)**: Replaced external CSS font imports with local system fallback stacks in `src/index.css`.
 8. **Finite Numeric Validation (DATA-001)**: Guarded XP, Stardust, and score arithmetic against `NaN` and `Infinity` across store, serializer, and resolver layers.
+
+### 5.3. Sprint 2.7 Google OAuth Permanent Retirement
+1. **Unified Authentication Surface**: Retired Google OAuth across Web and Desktop in favor of direct Firebase Email & Password authentication, ensuring identical authentication behavior and zero platform-specific divergence.
+2. **Elimination of Desktop Secret Management**: Purged `dotenv` secret loading and `GOOGLE_DESKTOP_CLIENT_SECRET` dependencies from the desktop runtime.
+3. **Removal of Complex Loopback Listeners**: Purged the dynamic ephemeral loopback callback listener and PKCE challenge verification from `electron/main.ts`, retaining only the static production file server.
+4. **Clean Preload Context Bridge**: Removed `signInWithGoogle` from `electron/preload.ts`, leaving the context bridge lean, minimal, and fully sandboxed.

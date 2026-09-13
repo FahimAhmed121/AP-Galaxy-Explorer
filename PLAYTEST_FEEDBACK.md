@@ -4,6 +4,100 @@ This document records observed user behavior, UI/UX issues, bug reports, and res
 
 ---
 
+## Electron Desktop Playtest — Post-Sprint 2.7 Manual Verification & Stabilization Pass
+
+**Test Date:** 2026-09-13  
+**Environment:** Standalone Desktop (Electron on Windows)  
+**Test Stage:** Sprint 2.8 — Post-Playtest Stabilization & Release Hardening  
+
+### Verified Working Subsystems
+During manual Electron desktop execution, the following areas have been manually tested and verified functional:
+- [x] **Application launches in Electron** (clean boot via `node_modules\.bin\electron.exe .`)
+- [x] **Main UI loads** (glassmorphic menus, buttons, title layout)
+- [x] **Email/Password authentication UI loads** (`AuthModal` presentation and tab switches)
+- [x] **Gameplay loads** (Phaser scene mount, starfield, canvas rendering)
+- [x] **Player movement** (inertial thruster physics, drag, orientation rotation)
+- [x] **Galaxy scanning** (proximity detection, spectrographic reticle lock)
+- [x] **Galaxy discovery** (cinematic transition, AURA dialogue step pagination)
+- [x] **Learning cards** (bilingual educational dossiers, tabs, media presentation)
+- [x] **Quiz** (assessment questions, scientific feedback, score rewards)
+- [x] **Alien/enemy gameplay** (alien survey drone AI FSM states, laser combat)
+- [x] **General gameplay loop** (flight → exploration → scanning → discovery → quiz → progression)
+- [x] **Session persistence during runtime** (gameplay state maintained while window active, survived minimize/restore in the same session)
+
+---
+
+### Post-Playtest Stabilization Issues (Sprint 2.8 Resolution)
+
+#### Issue ELEC-PLAY-01: Keyboard Conflict in Authentication Input Fields
+- **Observed Behaviour**: In the standalone Electron application, when typing into the Email/Password authentication and settings input fields (`AuthModal`, `SettingsModal`), keys mapped to gameplay flight controls failed to enter reliably into the text inputs or simultaneously triggered ship actions (e.g., `S`, `D`, `F`, `E`).
+- **Browser Preview Comparison**: The same issue did not occur in the Google AI Studio browser preview; standard typing in input fields worked normally in the browser.
+- **Root Cause**: Phaser's default keyboard listener registered keys globally on `window` with capture/preventDefault behaviors. When HTML input fields were active, keydown events still triggered ship movement and action states.
+- **Implemented Solution**:
+  1. Set `enableCapture = false` on all mapped keys in `InputSystem.ts`, called `clearCaptures()`, and disabled `preventDefault`.
+  2. Implemented active DOM focus detection `isInputFocused()` in `InputSystem.ts` detecting `<input>`, `<textarea>`, `<select>`, and `contentEditable` elements, immediately returning neutral input states.
+  3. Added input element guards to `GameCanvas.tsx`'s window key listener for `Tab` and `KeyP`.
+- **Build Verification**:
+  - `bunx tsc --noEmit` — PASS
+  - `bun run build` — PASS
+  - `bun run build:electron` — PASS
+- **Manual Electron Verification**:
+  - **PASSED.** Tested in the local standalone Electron application.
+  - Verified that text can be entered normally into authentication and settings fields, including flight keys `S`, `D`, `F`, `E`, and `Space`, without unintended gameplay actions.
+  - Normal flight and combat controls were tested after leaving the form fields and continued to work as expected.
+- **Priority**: High / Critical
+- **Status**: **RESOLVED / VERIFIED**
+
+#### Issue ELEC-PLAY-02: Local Save Not Restoring Across Complete Electron Application Restart
+- **Observed Behaviour Sequence**:
+  1. User logged in with Email & Password.
+  2. User played the game and made progression (discovered galaxies, earned stardust, XP, upgrades).
+  3. User completely closed the Electron desktop application.
+  4. User launched Electron again.
+  5. The game started fresh instead of restoring previous saved progress.
+- **Root Cause**: In production mode, Electron's embedded loopback server previously bound to dynamic port `0` (`listen(0, '127.0.0.1')`), rotating the origin URL on every application launch. Because browser storage is origin-scoped, a changing port isolated `localStorage` and `IndexedDB` data between launches.
+- **Implemented Solution**:
+  1. Configured deterministic port binding with preferred port `39228` and fallback candidate ports in `electron/main.ts`.
+  2. Added port persistence via `userData/app_port.json` so the same loopback port and origin are reused across launches.
+  3. Hardened Zustand `merge` logic in `useGameStore.ts` with diagnostic `onRehydrateStorage` logging to ensure profile and ship state restore cleanly.
+- **Build Verification**:
+  - `bunx tsc --noEmit` — PASS
+  - `bun run build` — PASS
+  - `bun run build:electron` — PASS
+- **Manual Electron Verification**:
+  - **PASSED.** Tested in the local standalone Electron application.
+  - A complete Electron shutdown and relaunch was performed.
+  - Previously created progress remained available after reopening the application, including relevant gameplay progress such as discovered content and progression state.
+- **Priority**: High / Critical
+- **Status**: **RESOLVED / VERIFIED**
+
+#### Issue ELEC-PLAY-03: Missing Gameplay → Home/Main Menu Navigation
+- **Observed Behaviour**: While inside the active gameplay screen, there was no accessible button or clear flow to return to the game's Home/Main Menu screen.
+- **Expected Behaviour**: The application must support a full navigation loop:
+  ```text
+  Home Screen ──> Gameplay ──> In-Game Menu / Pause ──> Return to Home Screen
+  ```
+- **Constraint**: Navigating back to the Home screen must safely preserve the player's progress and must not unintentionally reset the game state, wipe local progress, clear discovered galaxies, reset upgrades or quiz progress, or terminate the authenticated user session.
+- **Implemented Solution**:
+  1. Added a dedicated Home navigation button to the top-right Action Bar in `ShipStatusHUD.tsx`.
+  2. Added an exit action to `SettingsModal.tsx` when opened from gameplay.
+  3. Wire-connected `onExitToMenu` in `App.tsx` and `GameCanvas.tsx` to save active ship coordinates and vitals into `useGameStore.savedShipState` before setting `gameState: 'MENU'`.
+  4. Updated `MainMenu.tsx` to detect existing missions and present "Resume Exploration" to jump straight back into space without replaying the intro cutscene.
+- **Build Verification**:
+  - `bunx tsc --noEmit` — PASS
+  - `bun run build` — PASS
+  - `bun run build:electron` — PASS
+- **Manual Electron Verification**:
+  - **PASSED.** Tested in the local standalone Electron application.
+  - Verified full navigation loop: `Gameplay → Home → Main Menu → Resume Exploration → Gameplay`.
+  - Progress, active session state, callsign, and discoveries remained completely intact without sign-out or state reset.
+- **Priority**: Medium / High
+- **Status**: **RESOLVED / VERIFIED**
+
+---
+
+## Historical Playtesting Log (Previous Sprints)
+
 ## Critical Priority Issues
 
 ### Issue CRIT-01: Interrupted AURA Dialogue Auto-Advancement

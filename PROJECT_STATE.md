@@ -1,8 +1,8 @@
-# PROJECT_STATE.md — AP Galaxy Explorer
+# PROJECT_STATE.md — AP Galaxy Explorer Master State
 
 ## 1. Project Overview
 
-- **Purpose**: Astronomy Pathshala (AP) Galaxy Explorer is an interactive, space-themed educational simulation that combines 2D space flight, real-time spectrographic galaxy scanning, cinematic discovery reveals, and interactive NASA/JWST/Hubble educational dossiers and adaptive scientific quizzes.
+- **Purpose**: Astronomy Pathshala (AP) Galaxy Explorer is an interactive, space-themed educational simulation that combines 2D space flight, real-time spectrographic galaxy scanning, cinematic discovery reveals, interactive NASA/JWST/Hubble educational dossiers, and adaptive scientific quizzes.
 - **Target Audience**: Students, astronomy enthusiasts, self-learners, and science educators seeking an engaging visual platform to explore deep-space astrophysics.
 - **Gameplay Loop**: Safe Sector Spawn → Open-Space Navigation & Inertial Thruster Control → Asteroid Mining & Plasma Cannon Combat → Stardust Harvesting & Magnetic Collection → Galaxy Proximity Lock → Active Spectrographic Scanning → Cinematic Reveal & AURA AI Dialogue → Interactive Educational Dossier (NASA/JWST Cards) → Adaptive Scientific Mission Quiz → Stardust & Explorer XP Rewards → Merit Badge Unlocks & Level Advancement → Ship Hardware Upgrades & Cosmetic Customization in Pilot Hangar → Galactic Archive Sync & Return to Exploration.
 - **Educational Goal**: Deliver authentic astrophysical insights—including galactic classification, spectral signatures, distance metrics, tidal collisions, black hole absence/presence, and Hubble/JWST discoveries—through interactive gameplay, curated educational modules, and adaptive scientific assessments.
@@ -18,301 +18,217 @@
 - **EventBus Architecture**: Decoupled Pub/Sub event pipeline (`EventEmitter`) bridging Phaser canvas updates with React UI state without direct DOM coupling.
 - **Web Audio API Engine**: Custom procedural synthesizer and audio engine handling multi-channel sound FX, thruster rumbles, scanner sweeps, warp jump hums, and ambient music crossfades.
 - **Zustand State Store**: Global reactive state management for user profiles, discovered galaxies, stardust currency, scores, and application settings with `localStorage` fallback persistence.
-- **Firebase Authentication & Firestore**: Client SDK integration (`AuthService`, `CloudSaveService`, `SyncManager`) for Google OAuth, Email/Password auth, and debounced cloud save synchronization with deterministic conflict resolution.
-- **Electron Desktop Architecture**: Secure, sandboxed Electron main process (`electron/main.ts`) and minimal preload context bridge (`electron/preload.ts`) with single-instance locking (`app.requestSingleInstanceLock()`), window lifecycle management ($1280 \times 720$, min $1024 \times 600$), gated `ready-to-show` rendering, and an embedded production loopback server (`127.0.0.1:<port>`) with safe shutdown hooks.
+- **Firebase Authentication & Firestore**: Client SDK integration (`AuthService`, `CloudSaveService`, `SyncManager`) for direct Email/Password authentication (with callsign assignment, email verification, and password resets) and debounced cloud save synchronization with deterministic conflict resolution.
+- **Electron Desktop Architecture**: Secure, sandboxed Electron main process (`electron/main.ts`) and minimal preload context bridge (`electron/preload.ts`) with single-instance locking (`app.requestSingleInstanceLock()`), window lifecycle management (1280 x 720, min 1024 x 600), gated `ready-to-show` rendering, and embedded production loopback server (`127.0.0.1:<port>`) guaranteeing HTTP origin parity for Firebase Auth and Firestore without external secret dependencies.
 
 ---
 
-## 3. Current Folder Structure
+## 3. Authoritative Repository Directory Structure
 
-```
+```text
 /
-├── electron/                   # Electron Desktop Foundation
-│   ├── main.ts                 # Main process (window lifecycle, sandboxing, loopback server)
-│   └── preload.ts              # Minimal context bridge (isDesktop, platform)
-├── public/                     # Static public assets (sounds, icons)
-├── src/
-│   ├── components/             # React UI components
-│   │   ├── common/             # Reusable UI containers, buttons, AuthModal
-│   │   │   ├── AuthModal.tsx              # Google OAuth & Email/Password login modal
-│   │   │   └── Certificate.tsx            # Explorer Completion Certificate
-│   │   ├── educational/        # Interactive educational widgets & dossiers
-│   │   │   └── GalaxyInfo.tsx             # Galaxy deep-dive inspection dossier
-│   │   ├── hud/                # Modernized Gameplay HUD overlays
-│   │   │   ├── DiscoveryOverlay.tsx       # AURA AI narrative dialogue
-│   │   │   ├── GameOverModal.tsx          # Game over state UI
-│   │   │   ├── LearningBriefingModal.tsx # 2-Column NASA/JWST educational dossiers
-│   │   │   ├── PilotDashboardModal.tsx    # Pilot profile, stats, upgrades & sync badge
-│   │   │   ├── QuizAssessmentModal.tsx    # Adaptive NASA Mission Console quiz
-│   │   │   ├── RadarHUD.tsx               # 2D Minimap radar with spatial coordinates
-│   │   │   ├── ShipStatusHUD.tsx          # Top HUD bar (Vitals, Mission, Cloud Sync)
-│   │   │   └── WarpJumpOverlay.tsx        # Multi-phase hyperdrive canvas particle FX
-│   │   └── views/              # Full-screen views (MainMenu, ArchiveModal, SettingsModal)
-│   │       ├── ArchiveModal.tsx           # Persistent Galactic Archive & Codex
-│   │       ├── MainMenu.tsx               # Main Menu view with user identity
-│   │       └── SettingsModal.tsx          # Settings, Audio controls & Auth status
-│   ├── core/                   # Shared types, event bus, and global configuration
-│   │   ├── config.ts           # Game physics, energy, and world bounds configuration
-│   │   ├── events.ts           # EventBus typed interfaces & event names
-│   │   ├── logger.ts           # Centralized logging engine
-│   │   └── types.ts            # Core TypeScript models (Ship, Galaxy, Profile, Quiz)
-│   ├── data/                   # Data registries & educational content
-│   │   ├── educational/        # Handcrafted galaxy JSON dossiers & content pipeline
-│   │   ├── quizzes/            # Handcrafted scientific quiz JSON datasets
-│   │   ├── contentPipeline.ts  # Dynamic dossier loading with fallback safety
-│   │   ├── quizPipeline.ts     # Asynchronous quiz pipeline & generator
-│   │   └── galaxies.json       # Master galaxy catalog & spatial coordinates
-│   ├── engine/                 # Custom sound engine & audio management
-│   │   └── audioEngine.ts      # Web Audio procedural oscillator & SFX synthesis
-│   ├── phaser/                 # Phaser game engine architecture
-│   │   ├── entities/           # PlayerShip, GalaxyObject, SpaceStation, AlienSurveyDrone
-│   │   ├── managers/           # GalaxyManager, AsteroidManager, DroneManager, SaveManager, ParticleManager
-│   │   ├── scenes/             # MainGameplayScene & LoadingScene
-│   │   └── systems/            # ScannerSystem, DiscoveryController, QuizController, LearningController, InputSystem, AudioSystem, DebugOverlaySystem
-│   ├── services/               # Isolated external services (Firebase, Auth, Cloud Save)
-│   │   ├── auth/
-│   │   │   └── AuthService.ts             # Firebase Authentication wrapper
-│   │   ├── cloudSave/
-│   │   │   ├── cloudSaveTypes.ts          # DTO schemas & payloads
-│   │   │   ├── CloudSaveSerializer.ts     # DTO serialization & sanitization
-│   │   │   ├── CloudSaveResolver.ts       # Deterministic conflict resolution
-│   │   │   ├── CloudSaveService.ts        # Firestore persistence (users/{uid}/profile/main)
-│   │   │   └── SyncManager.ts             # 3s debounced auto-sync & session manager
-│   │   └── firebase.ts         # Firebase SDK initialization singleton
-│   ├── store/                  # Zustand global state (game options, user profile, language)
-│   └── App.tsx / main.tsx      # Main application entry point & canvas integration
-├── docs/                       # Architecture & engineering documentation
-├── firestore.rules             # Locked Firestore security rules (owner-only access, schema & numeric bounds)
-├── PROJECT_STATE.md            # Master project state documentation
-├── DEVELOPMENT_ROADMAP.md      # Development milestone roadmap
+├── .env.example                # Template for environment variables (Vite & Electron)
+├── firestore.rules             # Security rules for user profile & cloud save
+├── index.html                  # Main DOM entry HTML
+├── package.json                # Project dependencies and build scripts
+├── tsconfig.json               # Strict TypeScript configuration
+├── vite.config.ts              # Vite bundler configuration (base: './')
+├── CHANGELOG.md                # Detailed project version & architecture changelog
+├── PROJECT_STATE.md            # Master project state & technical inventory
+├── DEVELOPMENT_ROADMAP.md      # Development milestone roadmap & progress
+├── SYSTEM_ARCHITECTURE.md      # Deep-dive system architecture specification
 ├── ARCHITECTURE_OVERVIEW.md    # High-level architecture map
-├── SPRINT_2_6_5_REPORT.md      # Sprint 2.6.5 QA Remediation & Stability Hardening report
-├── SPRINT_2_6_PHASE_2_REPORT.md# Sprint 2.6 Phase 2 Window Lifecycle & Integration report
-├── SPRINT_2_6_PHASE_1_REPORT.md# Sprint 2.6 Phase 1 Completion & Audit report
-├── SPRINT_2_5_REPORT.md        # Sprint 2.5 Completion report (Auth & Cloud Save)
-├── SPRINT_2_4_5_REPORT.md      # Sprint 2.4.5 Completion report
-├── SPRINT_2_4_REPORT.md        # Sprint 2.4 Completion & Verification report
-├── SPRINT_2_3_REPORT.md        # Sprint 2.3 Completion & Verification report
-├── QUALITY_SPRINT_1_REPORT.md  # Quality Sprint execution report
-└── STABILIZATION_SPRINT_1_REPORT.md # Stabilization & Root Cause Analysis report
+│
+├── electron/                   # Electron Desktop Foundation
+│   ├── main.ts                 # Main process (Loopback static server, single instance, sandboxing)
+│   └── preload.ts              # Secure preload bridge (window.electron)
+│
+├── docs/                       # Architectural & Engineering Documentation
+│   ├── ARCHITECTURE.md         # Master system architecture document
+│   ├── AUTHENTICATION.md       # In-depth Firebase Auth & Cloud Save guide
+│   ├── ENGINEERING_STANDARDS.md# Engineering rules, patterns, and conventions
+│   ├── TESTING_GUIDE.md        # Step-by-step test & verification protocols
+│   ├── DISCOVERY_SYSTEM_ARCHITECTURE.md
+│   ├── DRONE_SYSTEM_ARCHITECTURE.md
+│   ├── GALAXY_SYSTEM_ARCHITECTURE.md
+│   ├── LEARNING_SYSTEM_ARCHITECTURE.md
+│   ├── QUIZ_SYSTEM_ARCHITECTURE.md
+│   ├── SCANNER_SYSTEM_ARCHITECTURE.md
+│   └── UNIVERSE_ARCHITECTURE.md
+│
+├── public/                     # Static public assets (sounds, icons)
+│
+└── src/
+    ├── main.tsx                # DOM Application Entry Point
+    ├── App.tsx                 # Main Application Shell & GameState Switcher
+    ├── index.css               # Global CSS, Tailwind Directives & Offline Fonts
+    │
+    ├── components/             # React UI Component Hierarchy
+    │   ├── common/             # Reusable UI elements (AuthModal, AboutCredits, Certificate)
+    │   ├── educational/        # Astronomy dossiers, quiz modals, certificates
+    │   ├── hud/                # Glassmorphic HUDs (ShipStatusHUD, RadarHUD, PilotDashboardModal)
+    │   └── views/              # Full-screen views (MainMenu, ArchiveModal, SettingsModal)
+    │
+    ├── core/                   # Shared Infrastructure & Contracts
+    │   ├── config.ts           # Game physics, energy, and world bounds configuration
+    │   ├── constants.ts        # World bounds (8000x8000 px) & application constants
+    │   ├── errors.ts           # Custom error definitions
+    │   ├── events.ts           # Decoupled EventBus interfaces & payload contracts
+    │   ├── logger.ts           # Diagnostic logging utility
+    │   └── types.ts            # Global TypeScript types (Ship, Profile, Quiz, Cosmetics)
+    │
+    ├── data/                   # Educational & Gameplay Data Registries
+    │   ├── educational/        # Handcrafted 5-card bilingual dossiers for 10 galaxies
+    │   ├── quizzes/            # 50-question scientific quiz datasets
+    │   ├── contentPipeline.ts  # Fallback-protected dossier loader
+    │   ├── quizPipeline.ts     # Asynchronous quiz evaluator
+    │   ├── galaxies.json       # Master catalog of 10 galaxies & spatial coordinates
+    │   └── progressionData.ts  # 15 Explorer ranks, merit badges, cosmetics & perks
+    │
+    ├── engine/                 # Web Audio Procedural Synthesis
+    │   └── audioEngine.ts      # Procedural sound synthesizer (lasers, engines, ambient)
+    │
+    ├── phaser/                 # Phaser 2D Game Engine Architecture
+    │   ├── entities/           # PlayerShip, Asteroid, GalaxyObject, SpaceStation, Drone
+    │   ├── managers/           # GalaxyManager, AsteroidManager, DroneManager, WorldManager
+    │   ├── scenes/             # MainGameplayScene & LoadingScene
+    │   └── systems/            # InputSystem, ScannerSystem, DiscoveryController, AudioSystem
+    │
+    ├── services/               # External & Cloud Services
+    │   ├── auth/
+    │   │   └── AuthService.ts  # Firebase Authentication wrapper (Email/Password)
+    │   ├── cloudSave/
+    │   │   ├── cloudSaveTypes.ts      # DTO schemas & payloads
+    │   │   ├── CloudSaveSerializer.ts # DTO serialization & sanitization
+    │   │   ├── CloudSaveResolver.ts   # Deterministic conflict resolution
+    │   │   ├── CloudSaveService.ts    # Firestore persistence (users/{uid}/profile/main)
+    │   │   └── SyncManager.ts         # 3s debounced auto-sync & session manager
+    │   └── firebase.ts         # Firebase SDK initialization singleton
+    │
+    ├── store/                  # Zustand global state (game options, user profile, language)
+    │   └── useGameStore.ts
+    │
+    └── utils/                  # Helper Utilities (Math, formatting)
+        └── mathUtils.ts
 ```
 
 ---
 
-## 4. Core Architecture & System Components
+## 4. Subsystem & Component Status
 
-- **Managers (`/src/phaser/managers/`)**:
-  - `GalaxyManager`: Handles spatial indexing, proximity detection, galaxy entity instantiation, and discovery status tracking.
-  - `AsteroidManager`: Handles procedural asteroid field generation, organic clustering, fragmentation physics, laser beam collision overlap, and stardust orb drops.
-  - `DroneManager`: Manages off-screen autonomous AI survey probe spawning near distant unmapped galaxies, start-of-game spawn cooldown (60s), red plasma laser projectile pooling, proximity detection, and context-driven AURA alerts.
-  - `SaveManager`: Manages persistent local storage state (stardust, score, mapped galaxies, custom options).
-  - `ParticleManager`: Manages thruster emissions, scanner particle beams, and explosion visual FX.
-- **Controllers (`/src/phaser/systems/`)**:
-  - `DiscoveryController`: Manages state machine flow for galaxy discoveries (`IDLE` → `DISCOVERING` → `AURA_PRESENTING` → `READY_FOR_LEARNING` → `FINISHED`).
-  - `LearningController`: Manages educational dossier state machine (`IDLE` → `LOADING` → `PRESENTING` → `COMPLETED`), loading content via `contentPipeline.ts`.
-  - `QuizController`: Manages adaptive quiz state machine (`IDLE` → `LOADING` → `QUESTION_ACTIVE` → `EVALUATING` → `PASSED` / `FAILED` → `COMPLETED`), question timing, scoring, and accuracy tracking.
-- **Systems (`/src/phaser/systems/`)**:
-  - `ScannerSystem`: Computes player-to-target distance, energy consumption during scanning, and triggers scan events.
-  - `InputSystem`: Processes keyboard (WASD/Arrows/Space/Shift/E) and virtual touch controls, calculating thrust vectors.
-  - `ScannerVisualSystem`: Renders dynamic scanning reticles and spectrographic beams in WebGL.
-  - `AudioSystem`: Listens to EventBus triggers and synchronizes audio synthesis with gameplay events.
-  - `DebugOverlaySystem`: Toggable developer overlay (hidden by default, toggled via `~` key).
-- **HUD & View Components (`/src/components/`)**:
-  - `ShipStatusHUD`: Modernized top HUD bar aligning Pilot Vitals (Hull, Shield, Energy, Current Galaxy), Mission Objectives (`Map Galaxies [x/10]`), Stardust, Score, and Command Actions (Pilot Station, Codex, Settings) on a clean horizontal plane.
-  - `ArchiveModal`: Full-screen Galactic Archive & Codex providing instant search, morphology filters (Spiral, Elliptical, Irregular), discovery status badges, completion stats, and direct galaxy inspection / quiz retakes.
-  - `GalaxyInfo`: Deep-dive galaxy inspection dossier featuring scientific summaries, telescope showcases, key astrophysical parameters, and retake quiz button.
-  - `PilotDashboardModal`: Explorer Dossier displaying pilot statistics, total galaxies mapped, average accuracy, stardust count, rank titles, and unlocked badges.
-  - `RadarHUD`: Displays 2D minimap with player position/heading, space stations, and discovered/unmapped galaxy indicators.
-  - `DiscoveryOverlay`: Provides player-controlled AURA dialogue progression (`PREV`, `NEXT`, `SKIP`, `CONTINUE TO BRIEFING`).
-  - `LearningBriefingModal`: Renders 2-column NASA/JWST educational dossiers with telescope visual showcases.
-  - `QuizAssessmentModal`: NASA Mission Console interface for scientific mission debriefing, immediate feedback, and scoring.
-  - `WarpJumpOverlay`: Renders multi-phase HTML5 canvas hyperdrive particle tunnels.
-- **Data Pipeline**:
-  - `contentPipeline.ts` dynamically imports educational JSON files with automatic fallback content for unmapped deep-space objects.
-  - `quizPipeline.ts` dynamically imports quiz JSON datasets with fallback question generation.
-- **EventBus**:
-  - `eventBus` (`EventEmitter`) provides bidirectional communication between Phaser systems and React HUD components.
-- **Rendering**:
-  - Phaser WebGL pipeline handles smooth camera follow (`lerp 0.08`), parallax background starfields, thruster particle emissions, and glow filters.
-- **Audio**:
-  - `audioEngine.ts` triggers procedural synthesis and layered audio streams based on game state changes.
-- **Persistence & State Synchronization**:
-  - Zustand store (`useGameStore`) acts as the single source of truth for user profile data, discovered galaxy IDs (`profile.discoveredGalaxyIds`), quiz attempts (`profile.quizAttempts`), high scores (`profile.quizHighScores`), stardust currency, and settings—automatically synced to browser `localStorage`.
-  - Phaser `GalaxyManager` initializes discovery state from Zustand store and updates the store upon discovery completion.
+### 4.1. Electron Desktop Subsystem
+- **Main Process (`electron/main.ts`)**:
+  - Configures single-instance locking (`app.requestSingleInstanceLock()`).
+  - Launches sandboxed `BrowserWindow` with `ready-to-show` visual gating.
+  - Serves production assets via built-in loopback server with preferred port `39228`, fallback candidate sequence, and port persistence in `userData/app_port.json`. This guarantees a stable HTTP origin for Firebase Auth and Firestore across restarts without port drift.
+  - Denies unauthorized external window navigation, delegating external URLs to the system browser via `shell.openExternal`.
+  - Zero confidential client secrets required in main process or renderer bundle.
+- **Preload Bridge (`electron/preload.ts`)**:
+  - Exposes `window.electron` with safe context `{ isDesktop: true, platform }`.
+  - Zero Node.js primitives or OAuth endpoints exposed to the DOM.
+- **Current Runtime Status (Electron Playtesting & Stabilization Pass)**:
+  - Application launch, main UI loading, gameplay initialization, player movement, galaxy scanning, galaxy discovery, educational dossiers, quizzes, alien drones, and overall loop verified working in Electron.
+  - **Stabilization Pass Completed & Manually Verified**:
+    - *ELEC-PLAY-01 (Auth Keyboard Input Conflict)*: RESOLVED & MANUALLY VERIFIED. Form field typing accepts all keys (including S/D/F/E/Space) without triggering Phaser flight/combat actions.
+    - *ELEC-PLAY-02 (Local Persistence Across Electron Restart)*: RESOLVED & MANUALLY VERIFIED. Origin stabilized via persistent loopback port; game progress restores across complete Electron process shutdowns and restarts.
+    - *ELEC-PLAY-03 (Gameplay → Home Navigation)*: RESOLVED & MANUALLY VERIFIED. In-game HUD Action Bar and Settings include Home navigation, preserving active coordinates and session state, allowing "Resume Exploration" from Main Menu.
+
+### 4.2. Authentication & Cloud Save Subsystem
+- **AuthService (`src/services/auth/AuthService.ts`)**:
+  - Direct Firebase Authentication via Email & Password across all platforms (Web and Electron Desktop).
+  - Handles pilot registration, callsign attachment (`updateProfile`), sign in, sign out, email verification (`sendEmailVerification`), and password reset links (`sendPasswordResetEmail`).
+  - Google OAuth permanently retired to streamline cross-platform architecture and eliminate external secret dependencies.
+  - Current configuration in `.env` and `src/services/firebase.ts` remains active and unchanged.
+  - *Stabilization Note*: Form keyboard conflict in Electron (ELEC-PLAY-01) resolved; Email/Password typing verified functional without interference from Phaser keyboard controls.
+- **SyncManager (`src/services/cloudSave/SyncManager.ts`)**:
+  - Debounced auto-sync (3000ms) subscribed to Zustand store mutations.
+  - Generation-based session concurrency tracking (`activeSyncSessionId`) eliminating race conditions on rapid auth switches.
+  - Reentrancy guard (`applyCloudUpdateToStore`) preventing cloud sync writes from re-triggering local dirty flags.
+  - Baseline advancement for Stardust reserves occurs only on confirmed Firestore write.
+- **CloudSaveResolver (`src/services/cloudSave/CloudSaveResolver.ts`)**:
+  - Additive Set Union ($A \cup B$) for collections (`discoveredGalaxyIds`, `unlockedBadges`, `unlockedCosmetics`, `unlockedPerks`).
+  - Monotonic Max ($\max(A, B)$) for XP, career level, total score, and quiz best scores.
+  - Stardust Net-Delta Reconciliation: $\text{Reconciled} = \max(0, \text{Cloud} + (\text{Local} - \text{LastSynced}))$.
+  - Timestamp Ordering for profile customization (`name`, `equippedCosmetics`, `equippedPerks`).
+- **Persistence Status**:
+  - *Verified*: Active in-session state and persistence across window minimize/restore during the same session.
+  - *Verified (ELEC-PLAY-02)*: Restoring saved progress after a complete Electron application restart is resolved and manually verified in the local standalone Electron application via persistent loopback port origin and hardened Zustand rehydration.
 
 ---
 
-## 5. Current Gameplay Loop
+## 5. Conservative Verification Matrix
 
+| Subsystem / Feature | Build & Static Status | Runtime Test Status | Verification Notes |
+| :--- | :---: | :---: | :--- |
+| **Electron Application Launch** | ✅ **PASS** | ✅ **VERIFIED** | Clean desktop launch via `node_modules\.bin\electron.exe .`. |
+| **Main UI & Presentation** | ✅ **PASS** | ✅ **VERIFIED** | Glassmorphic menus, buttons, title screen loading verified in Electron. |
+| **Phaser 2D Gameplay & 60 FPS Engine** | ✅ **PASS** | ✅ **VERIFIED** | WebGL canvas, 10 galaxies, asteroids, laser combat, drone AI verified in Electron. |
+| **Player Movement & Flight Physics** | ✅ **PASS** | ✅ **VERIFIED** | Inertial thrust, drag, rotation, and weapon firing verified in Electron. |
+| **Galaxy Scanning & Discovery** | ✅ **PASS** | ✅ **VERIFIED** | Spectrographic scanning reticle, lock, reveal, and AURA dialogue verified in Electron. |
+| **Learning Cards & Quizzes** | ✅ **PASS** | ✅ **VERIFIED** | Bilingual dossiers, media visuals, adaptive quizzes, score rewards verified in Electron. |
+| **Alien Survey Drone Combat** | ✅ **PASS** | ✅ **VERIFIED** | AI drone FSM behavior, laser combat, stardust rewards verified in Electron. |
+| **General Gameplay Loop** | ✅ **PASS** | ✅ **VERIFIED** | Complete flight → scan → discover → learn → quiz progression cycle verified. |
+| **Firebase Email & Password Auth UI** | ✅ **PASS** | ✅ **VERIFIED** | UI functional; form field keyboard isolation (ELEC-PLAY-01) resolved and manually verified. |
+| **Local Persistence Across Electron Restart** | ✅ **PASS** | ✅ **VERIFIED** | Origin stabilization (ELEC-PLAY-02) resolved and manually verified across full Electron restart. |
+| **Gameplay → Home Navigation** | ✅ **PASS** | ✅ **VERIFIED** | Non-destructive Home/Resume loop (ELEC-PLAY-03) implemented and manually verified. |
+| **Web Production Build (`dist/`)** | ✅ **PASS** | ✅ **VERIFIED** | Compiles cleanly via `bun run build`. |
+| **Electron Main/Preload Build (`dist-electron/`)** | ✅ **PASS** | ✅ **VERIFIED** | Compiles cleanly via `esbuild` (0 errors). |
+| **Electron Navigation Hardening & Loopback** | ✅ **PASS** | ✅ **VERIFIED** | Deny-by-default navigation, deterministic loopback server (preferred 39228) with origin persistence. |
+| **Firestore Security Rules** | ✅ **PASS** | ✅ **VERIFIED** | User-owned paths, schema, and numeric upper/lower bounds. |
+| **Google OAuth Permanent Retirement** | ✅ **PASS** | ✅ **VERIFIED** | UI, Preload bridge, IPC, main process loopback, and secret variables cleanly purged. |
+| **Firestore Cloud Save Sync** | ✅ **PASS** | ⏳ **PENDING E2E RELEASE QA** | SyncManager active; targeted E2E release validation scheduled for Final QA stage. |
+
+---
+
+## 6. Milestones & Progress Tracking
+
+### Current Stage: Sprint 2.8 — Post-Playtest Stabilization & Release Hardening
+
+```text
+Current Stage:
+Sprint 2.8 — Post-Playtest Stabilization & Release Hardening
+
+Core gameplay:
+Working (Verified)
+
+Electron launch:
+Working (Verified)
+
+Electron gameplay:
+Working (Verified)
+
+Authentication:
+Working baseline; form input keyboard isolation verified (ELEC-PLAY-01)
+
+Local persistence across Electron restart:
+Working & verified (ELEC-PLAY-02)
+
+Gameplay → Home navigation:
+Working & verified (ELEC-PLAY-03)
+
+Electron Stabilization Pass:
+COMPLETE / VERIFIED
+
+Next Phase:
+Release Hardening / Final QA
 ```
-  Player Launch (Safe Sector Alpha)
-                 ↓
-  Exploration (Inertial Space Movement & Booster)
-                 ↓
-  Galaxy Proximity Lock (Target Detected)
-                 ↓
-  Scanner Activation (E Key / Energy Consumption)
-                 ↓
-  Discovery Cinematic Reveal (Camera Zoom & Focus)
-                 ↓
-  AURA AI Dialogue (Paced Narrative & Telemetry)
-                 ↓
-  Learning Briefing Dossier (NASA / JWST Telescope Cards)
-                 ↓
-  Adaptive Scientific Mission Quiz (NASA Console Assessment)
-                 ↓
-  Stardust & Score Rewards (Mapped Status Updated)
-                 ↓
-  Return to Exploration / Galactic Archive Sync
-```
-
----
-
-## 6. Implemented Features
-
-- **Spacecraft Physics**: Refined heavy inertial drift, smooth turn rates (`3.2 rad/s`), tuned acceleration (`220 px/s²`), and top speed bounds (`320 px/s` base, `520 px/s` boost).
-- **Procedural Asteroid Fields & Clusters**: 7 organic deep-space asteroid clusters (Large cores, Medium bodies, Small debris fringes) with serene natural drifting speeds and realistic collision durability.
-- **Plasma Cannon Combat System**: Nose-mounted energy beam weapon fired via `Spacebar`, `F`, `K`, or `Mouse Click`, expending 6 Plasma Energy per shot to fragment and destroy asteroids.
-- **Stardust Economy & Vacuum Magnetism**: Cosmic Stardust drops from destroyed asteroids (5 stardust / orb), galaxy discoveries (50 bonus), and quiz assessments (15 per correct answer + 25 perfect score bonus), collected via proximity or magnetic attraction field.
-- **Explorer XP & Level Progression Engine**: Earn Explorer XP via galaxy discoveries (+100 XP), passed quizzes (+50 XP), and 100% perfect quiz score bonuses (+25 XP), plus Curiosity Matrix bonus multipliers (+25%). 15 Explorer levels with rank titles scaling from Space Cadet (Lvl 1) to Master Voyager of the Cosmos (Lvl 15).
-- **Merit Badge System**: 7 handcrafted achievement badges (`EXPLORER_BADGES`) across DISCOVERY, KNOWLEDGE, COLLECTION, and PILOTING categories with automatic unlock evaluation and persistent storage.
-- **Cosmetics Customization Engine**: 12 unlockable visual cosmetics across 3 categories:
-  - *Ship Skins*: Cobalt Vanguard (default), Neon Cyberpunk (Lvl 4), Void Shadow (Lvl 10), Quantum Emerald (Lvl 14), Celestial Monarch (Lvl 15).
-  - *Thruster Effects*: Plasma Ion Blue (default), Solar Amber Flare (Lvl 6), Hyper Violet Pulse (Lvl 10), Celestial Warp Drive (Lvl 15).
-  - *Scanner Effects*: Standard Cyan Array (default), Quantum Magenta Matrix (Lvl 8), Emerald Aurora Sweep (Lvl 12).
-- **Passive Exploration Perks**: 5 passive gameplay perks unlocked at level thresholds: High-Frequency Sensor (+20% scan speed), Attraction Field Boost (+30% magnet range), Overclocked Thrusters (+15% flight speed), Capacitor Overdrive (+35% shield regen), Curiosity Matrix (+25% XP bonus).
-- **Enhanced Pilot Dashboard (`PilotDashboardModal.tsx`)**: 3-tab modern interface featuring Overview & Hardware Upgrades, Customization & Cosmetics Preview, and Dossier & Badges/Perks Inspection.
-- **HUD Rank & Level Integration (`ShipStatusHUD.tsx`)**: Real-time display of pilot level, rank title, badge icon, and dynamic XP progress bar in top status bar.
-- **Plasma Energy System**: Dynamic 100-point energy pool powering hyperspace boosters, plasma cannons, and spectrographic scanners with automatic passive regeneration (`14/s`).
-- **Player-Controlled AURA Dialogue**: Paginated dialogue flow with explicit `PREV`, `NEXT`, `SKIP CINEMATIC`, and `CONTINUE TO BRIEFING` controls.
-- **NASA / JWST / Hubble Educational Cards**: Structured 2-column learning dossiers featuring high-resolution telescope visual placeholders, spectral charts, and key astrophysical metrics.
-- **Adaptive Scientific Mission Quiz**: Mission debriefing console evaluating galaxy-specific astrophysics with immediate explanation feedback, score calculation, and stardust rewards.
-- **Modernized Distraction-Free HUD**: Cleaned top HUD bar removing all internal developer/debug data, perfectly aligning Pilot Identity, Ship Vitals, Mission Objectives, and Command Actions.
-- **Interactive Minimap / Radar HUD**: 2D radar displaying player heading angle, nearby targets, discovery markers, space station hub, and collapsible toggle mode.
-- **Multi-Phase Warp Animation**: Hyperspace warp jump sequence featuring engine charge, star stretching, radial bloom, particle tunnel rendering, and exit flashes.
-- **Persistent Galactic Archive & Codex (`ArchiveModal.tsx`)**: Full-screen logbook showcasing mapped celestial objects with real-time text search, morphology filters (Spiral, Elliptical, Irregular), status badges, accuracy ratings, and completion metrics.
-- **Single Source of Truth Discovery Synchronization**: Zustand `profile.discoveredGalaxyIds` drives discovery states seamlessly across Phaser engine (`GalaxyManager`), top HUD (`ShipStatusHUD`), Archive Modal, and Pilot Station.
-- **Archive → Inspect → Back Navigation Flow**: Smooth modal navigation preserving return state when opening galaxy dossiers from the Archive (`openedFromArchive` state).
-- **Quiz Retake Capability**: Players can re-inspect discovered galaxies and retake scientific quizzes anytime directly from the Archive / Galaxy Info screens to improve accuracy, score, and stardust rewards.
-- **Mission Objective HUD Synchronization**: Dynamic `Map Galaxies: X/10` display updated in real-time in `ShipStatusHUD`.
-- **Reliable Fallback Visual System**: SVG/WebGL procedural deep-space rendering for galaxies when external images are absent or mock assets.
-- **Handcrafted Educational Datasets**: Complete astrophysical datasets for 10 major galaxies.
-- **Autonomous Alien Survey Drones & FSM AI (`AlienSurveyDrone.ts`)**: 5-state AI FSM (`PATROL`, `SURVEY`, `INVESTIGATE`, `ATTACK`, `RETURN`) prioritizing galaxy spectrographic surveying, cautious approach at ~220px observation distance, defensive plasma laser combat, and Stardust/XP rewards upon destruction.
-- **Contextual Proximity AURA Alerts & Drone Spawning (`DroneManager.ts`)**: Off-screen sector spawning near distant unmapped galaxies with a 60-second start-of-game cooldown, distance-driven AURA warnings (< 600px relevance radius), and 15-second alert throttling.
-- **Arcade Physics Collision Identity Safeguards**: Strict object identity disambiguation (`objA` vs `objB`) in physics overlap callbacks preventing accidental player ship destruction during laser/drone collisions.
-- **Enriched Educational Content & 50-Question Quiz System**: 5-card structured learning briefings per galaxy across all 10 core galaxies with bilingual English/Bengali narrative support, plus 50 total questions (5 questions/galaxy) integrated into the adaptive mission quiz system.
-- **Real Astronomical Imagery & Media Fallback System**: Verified astronomical photo references (`realImageUrl`) across all 10 core galaxies, supported by `GalaxyImage.tsx` error fallback logic and automatic dossier fallback rendering.
-- **YouTube Astronomical Video Tours**: Integrated active YouTube video tour references (`youtubeVideoId`) featuring high-resolution thumbnail previews, in-app embedded playback, and direct YouTube watch navigation in `GalaxyInfo.tsx`.
-- **Learning Card Review & Replayability**: Discovered galaxy briefings can be reviewed anytime through the Galactic Archive without resetting player discovery metrics or progress.
-- **Refined Learning Briefing UI & Asteroid Visual Depth**: Streamlined card presentation in `LearningBriefingModal.tsx` and updated procedural asteroid crater rendering in `AsteroidManager.ts` to solid opaque depth.
-- **Bilingual Interface**: Seamless runtime toggle between English and Bengali (বাংলা) across all HUD elements and modals.
-
----
-
-## 7. Educational & Quiz Pipeline
-
-Educational and assessment content is loaded dynamically via dedicated pipelines:
-
-1. **JSON Dataset Registry**: Handcrafted JSON files located in `src/data/educational/` and `src/data/quizzes/` are mapped by `galaxyId`.
-2. **Dynamic Resolution**: When a galaxy is scanned, `contentPipeline.ts` retrieves the primary dossier JSON and `quizPipeline.ts` retrieves the corresponding quiz dataset.
-3. **Fallback Generation**: If a custom JSON file is missing or corrupted, the pipelines automatically generate valid `EducationalContent` and `QuizData` structures from core `galaxies.json` attributes to prevent UI crashes.
-
----
-
-## 8. Galaxy Database
-
-The following 10 handcrafted galaxies are fully integrated with coordinate data, spectral metrics, educational cards, and adaptive quizzes:
-
-1. **Milky Way Galaxy (`milky-way`)**: Barred spiral, 100,000 light-years diameter, home galaxy.
-2. **Andromeda Galaxy (`andromeda`)**: M31, largest Local Group member, 2.5 million light-years distance.
-3. **Sombrero Galaxy (`sombrero`)**: M104, prominent halo and dust lane in Virgo constellation.
-4. **Whirlpool Galaxy (`whirlpool`)**: M51, grand design spiral interacting with companion NGC 5195.
-5. **Triangulum Galaxy (`triangulum`)**: M33, third largest Local Group spiral, lacks central SMBH.
-6. **Black Eye Galaxy (`black-eye`)**: M64, counter-rotating gas disks and dark absorbing dust lane.
-7. **Pinwheel Galaxy (`pinwheel`)**: M101, face-on giant spiral spanning 170,000 light-years.
-8. **Cartwheel Galaxy (`cartwheel`)**: ESO 350-40, ring galaxy created by direct galactic collision.
-9. **Large Magellanic Cloud (`large-magellanic-cloud`)**: LMC, Milky Way satellite housing Tarantula Nebula.
-10. **Small Magellanic Cloud (`small-magellanic-cloud`)**: SMC, dwarf irregular galaxy with low metallicity.
-
----
-
-## 9. Controls
-
-- **W / Up Arrow**: Engage Main Forward Thrusters
-- **A / Left Arrow**: Rotate Ship Left
-- **D / Right Arrow**: Rotate Ship Right
-- **S / Down Arrow**: Reverse Dampeners / Slow Down
-- **Shift (Hold)**: Engage Plasma Booster
-- **Space / F / K / Left Click**: Fire Plasma Cannon Laser (Consumes 6 Energy)
-- **E**: Initiate Spectrographic Scanner / Open Briefing
-- **~ (Tilde)**: Toggle Developer Diagnostic Overlay
-- **ESC**: Skip Active Cinematic / Close Modals
-
----
-
-## 10. Audio Architecture
-
-- **Synthesizer Engine**: Procedural Web Audio oscillator generating custom thruster rumbles, scanner sweeps, laser zaps, explosion rumbles, and warp tunnels.
-- **Multi-Channel Mixing**: Independent gain nodes for BGM (`ambientVolume`) and SFX (`sfxVolume`).
-- **Seamless Crossfading**: Dynamic volume attenuation during warp sequences, dialogue triggers, and modal overlays.
-
----
-
-## 11. UI & Visual Hierarchy
-
-- **Design Aesthetic**: Clean, high-contrast dark sci-fi glassmorphism utilizing dark slate/cyan themes (`#0f172a`, `#0284c7`, `#f59e0b`).
-- **Responsive HUD Layout**: Desktop-first layout with fluid mobile scaling, non-overlapping action bars, and aligned top status panels.
-- **Typography**: Inter, Mono, and Serif font pairing with strict label hierarchy.
-
----
-
-## 12. Performance & Reliability
-
-- **Target Framerate**: Sustained 60 FPS across WebGL and Canvas fallback engines.
-- **Memory Management**: Automatic sprite pooling, particle emitter recycling, and EventBus listener cleanup on unmount.
-- **Build Optimization**: Vite bundler output clean modular chunks with fast initial load (`compile_applet` and `lint_applet` passed).
-
----
-
-## 13. Known Limitations & Operating Characteristics
-
-- **Single-System Canvas**: Exploration canvas operates within a 2D boundary grid (`8000x8000 px`).
-- **Verified Media Integration**: All 10 core galaxies feature verified real astronomical image references and YouTube video tour links with resilient client-side fallback handling.
-- **Hybrid Storage Model**: Local offline persistence via Zustand `localStorage` synchronization seamlessly operates alongside optional authenticated Firebase cloud save and conflict resolution.
-- **Desktop Production Loopback Server**: Electron production builds utilize an embedded loopback server on `127.0.0.1:<ephemeral-port>` ensuring standard web security and Web API compatibility with safe shutdown lifecycle hooks.
-- **Authentication Environment Verification**: Email/Password authentication is verified; Google OAuth popup interaction remains a runtime verification item on desktop environments with Firebase Authorized Domains configured.
-- **Cross-Platform Clean Script Notice**: The package clean script currently uses Unix `rm -rf` and is scheduled for cross-platform harmonization in Sprint 2.6 Phase 3 packaging.
-
----
-
-## 14. Milestones & Sprint Progress
 
 ### Completed Milestones
-- **Foundation Refactor**: ✅ **COMPLETE**
-- **Phaser Foundation**: ✅ **COMPLETE**
-- **Gameplay Foundation Migration**: ✅ **COMPLETE**
-- **Universe Generation System**: ✅ **COMPLETE**
-- **Interactive Galaxy System**: ✅ **COMPLETE**
-- **Scanner System**: ✅ **COMPLETE**
-- **Discovery Experience**: ✅ **COMPLETE**
-- **Educational Learning Layer**: ✅ **COMPLETE**
-- **Quality Sprint 1.0**: ✅ **COMPLETE**
-- **Sprint 2.0 — Adaptive Quiz & Scientific Assessment**: ✅ **COMPLETE**
-- **Stabilization Sprint 1.0**: ✅ **COMPLETE**
-- **Sprint 2.1 — Discovery Log & Galactic Archive**: ✅ **COMPLETE**
-- **Sprint 2.1.1 — Regression Fixes & State Synchronization**: ✅ **COMPLETE**
-- **Sprint 2.2 — Asteroids, Stardust Economy & Ship Progression**: ✅ **COMPLETE**
-- **Sprint 2.2.1 — Gameplay Balance, Feel & Polish**: ✅ **COMPLETE**
-- **Documentation Synchronization & HUD Redesign**: ✅ **COMPLETE**
-- **Sprint 2.3 — Explorer Progression & Cosmetics**: ✅ **COMPLETE**
-- **Sprint 2.4 — Alien Survey Drones**: ✅ **COMPLETE**
-- **Sprint 2.4.5 — Educational Content, UI/UX & Media Polish**: ✅ **COMPLETE**
-- **Sprint 2.5 — Firebase Authentication & Cloud Save**: ✅ **COMPLETE** (Google OAuth & Email/Password `AuthService`, DTOs, `CloudSaveSerializer`, `CloudSaveResolver` with Stardust Net-Delta reconciliation, `CloudSaveService`, `SyncManager` debounced auto-sync, `AuthModal`, and `firestore.rules`).
-- **Sprint 2.6 Phase 1 — Electron Core & Build Integration**: ✅ **COMPLETE & AUDITED** (Minimal Electron main process, secure preload context bridge, sandboxing, Vite relative base, embedded local loopback server, `esbuild` packaging scripts, and regression verification).
-- **Sprint 2.6 Phase 2 — Desktop Window Management & Lifecycle Integration**: ✅ **COMPLETE & AUDITED** (Single-instance locking, duplicate-window prevention, window sizing & centering, ready-to-show visual gating, macOS dock activation, clean loopback server teardown, and lifecycle event orchestration).
-- **Sprint 2.6.5 — QA Remediation & Stability Hardening**: ✅ **COMPLETE & VERIFIED** (Resolved SYNC-001 session generation synchronization, SYNC-002 timestamp conflict resolution with updatedAt, SEC-001 Electron navigation hardening, SEC-002/SEC-003 Firestore schema and numeric boundary enforcement, ELEC-001 single-instance startup hardening, LEAK-001 ScannerVisualSystem listener cleanup, BUILD-001 offline system font fallbacks, and DATA-001 finite numeric validation across store, serializer, and resolver layers).
+- **Sprint 2.0 through Sprint 2.4.5**: Core gameplay, discovery loop, educational briefings, 50-question quizzes, progression ranks, and alien drones complete.
+- **Sprint 2.5 — Firebase Authentication & Cloud Save**: Complete and verified on Web.
+- **Sprint 2.6 Phase 1–3 — Electron Desktop Integration**: Complete and audited.
+- **Sprint 2.6.5 — QA Remediation & Stability Hardening**: Complete and verified.
+- **Sprint 2.7 — Google OAuth Clean Retirement**: Permanent retirement of Google OAuth in favor of robust direct Firebase Email/Password Authentication across Web and Desktop.
+- **Sprint 2.7 Phase 3.6 — Electron Desktop Manual Playtest**: Verified core gameplay loop, flight, scanning, discovery, quizzes, learning dossiers, and alien drone combat in standalone Electron. Cataloged 3 post-playtest issues.
+- **Sprint 2.8 — Post-Playtest Stabilization Pass (ELEC-PLAY-01, ELEC-PLAY-02, ELEC-PLAY-03)**:
+  - Form field keyboard isolation implemented and manually verified.
+  - Loopback port stabilization and Electron restart persistence implemented and manually verified.
+  - Non-destructive Gameplay → Home navigation and contextual mission resumption implemented and manually verified.
+  - Validated with `bunx tsc --noEmit`, `bun run build`, and `bun run build:electron` (all PASS).
 
-### Active & Upcoming Milestones
-- **Sprint 2.6 Phase 3 — Desktop Packaging & Distribution**: 📋 **NOT STARTED** (electron-builder packaging, cross-platform clean script, installer generation).
-- **Beta Phase**: Full playtesting, bug fixing, performance optimization, UI/UX polish, and audio polish.
-- **Version 1.0 Release**: Educational desktop game ready for Astronomy Pathshala students.
+### Next Immediate Action: Release Hardening / Final QA
+- **Release Hardening / Final QA**: Proceed to systematic release verification:
+  - Comprehensive multi-platform packaged installer checks.
+  - Fresh-machine installation and offline recovery edge-case verification.
+  - Cloud-sync end-to-end multi-session verification.
+  - Final visual and performance stability sign-off.

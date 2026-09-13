@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Heart, Zap, Sparkles, Award, Settings, BookOpen, SlidersHorizontal } from 'lucide-react';
+import { Shield, Heart, Zap, Sparkles, Award, Settings, BookOpen, SlidersHorizontal, Home } from 'lucide-react';
 import { Spaceship } from '../../types';
 import { useGameStore } from '../../store/useGameStore';
 import { GALAXIES } from '../../data/galaxies';
@@ -10,6 +10,7 @@ interface ShipStatusHUDProps {
   onOpenDashboard: () => void;
   onOpenArchive: () => void;
   onOpenSettings: () => void;
+  onReturnToMenu?: () => void;
 }
 
 export default function ShipStatusHUD({
@@ -18,6 +19,7 @@ export default function ShipStatusHUD({
   onOpenDashboard,
   onOpenArchive,
   onOpenSettings,
+  onReturnToMenu,
 }: ShipStatusHUDProps) {
   const { profile, settings } = useGameStore();
   const isBN = settings.language === 'BN';
@@ -182,6 +184,17 @@ export default function ShipStatusHUD({
         >
           <Settings size={16} />
         </button>
+
+        {onReturnToMenu && (
+          <button
+            id="hud-return-home-btn"
+            onClick={onReturnToMenu}
+            className="p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 border border-slate-800/80 text-slate-200 hover:text-amber-400 cursor-pointer transition-all shadow-xl backdrop-blur-md active:scale-95"
+            title={t('Return to Main Menu', 'মূল মেনুতে ফিরে যান')}
+          >
+            <Home size={16} />
+          </button>
+        )}
       </div>
     </div>
   );

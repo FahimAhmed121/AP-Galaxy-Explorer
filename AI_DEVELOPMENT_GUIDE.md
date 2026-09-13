@@ -12,60 +12,77 @@
 
 ---
 
-## 2. Core Design Philosophy
+## 2. Development Workflow (Google AI Studio & Local Testing)
 
-- **Education First**: Every visual element, dialogue sequence, and game mechanic must reinforce authentic scientific discovery.
-- **Enjoyable Learning**: Gamification (inertia physics, spectrographic scanning, hyperdrive warps, score rewards) serves to make learning engaging and memorable.
-- **Distraction-Free UI**: The user interface must remain minimal, high-contrast, professional, and free from visual clutter or intrusive developer debug data.
-- **Simplicity Over Complexity**: Prefer straightforward, elegant architectural solutions over complex abstractions or unnecessary background layers.
-- **Scope Discipline**: Avoid feature creep. Prioritize high quality and pristine execution of requested features over volume.
+Development occurs iteratively in **Google AI Studio** with local execution and verification on a **Windows PC**:
+
+```text
+Google AI Studio (Gemini Engine)
+        │
+        │ Agent modifies codebase directly & performs static checks
+        ▼
+Download Updated Project ZIP
+        │
+        │ User exports ZIP from AI Studio
+        ▼
+Extract to Windows PC (e.g. D:\ap-galaxy-explorer-oauth-fix)
+        │
+        ▼
+Configure Local .env
+        │
+        │ Add machine-local Firebase keys
+        ▼
+Run Production & Electron Builds
+        │
+        │ bun run build
+        │ bun run build:electron
+        ▼
+Launch Desktop Application in Electron
+        │
+        │ node_modules\.bin\electron.exe .
+        ▼
+Verify Functionality & Report Results to AI Studio
+```
+
+**Golden Rule for AI Agents:** Do not instruct the user to manually edit source code files. Make all edits directly within the AI Studio workspace, verify compilation, and provide the updated codebase ready for export and download.
 
 ---
 
-## 3. Development Principles
+## 3. Security Model & Secrets Management
 
-- **Preserve Working Architecture**: Never rewrite or refactor working systems unless explicitly instructed to do so.
-- **Incremental Enhancement**: Build modular, incremental features on top of existing patterns rather than replacing foundational logic.
-- **Backward Compatibility**: Maintain compatibility across EventBus contracts, data models, and local save states.
-- **Dependency Hygiene**: Avoid adding external libraries unless strictly required and justified.
-- **Modular Code Organization**: Keep components and functions focused, small, and reusable. Keep files reasonably sized.
-- **Composition Over Duplication**: Reuse existing utility components, modals, and store hooks across feature modules.
+Every AI agent and developer MUST strictly adhere to the following security rules:
+
+1. **Zero Desktop Secret Dependencies:**
+   - With Google OAuth permanently retired in favor of direct Firebase Email & Password authentication, desktop builds require zero confidential client secrets.
+   - Client-side configuration uses standard public Firebase project identifiers.
+2. **Git & Environment Protection:**
+   - Real credentials must never be committed to git.
+   - `.env.example` serves as the public schema template with empty string values.
+3. **Loopback Server Origin Hardening:**
+   - Electron serves production bundle assets over a local loopback server (`127.0.0.1:<port>`) with strict path traversal validation to provide standard HTTP origin compatibility for Firebase Auth and Firestore.
 
 ---
 
 ## 4. Architecture Rules
 
-The codebase is split into distinct architectural boundaries. Every developer and AI agent MUST respect these boundaries:
+The codebase is split into distinct architectural boundaries:
 
 - **React Presentation Layer (`src/components/`)**: Handles UI overlays, HUD bars, interactive modals, Pilot Hangar upgrades, and accessibility controls. Strictly presentation and state display.
 - **Phaser 3 Engine Layer (`src/phaser/`)**: Manages 2D WebGL canvas rendering, physics bodies, camera tracking, particle systems, asteroid fields, laser projectiles, and world entity rendering. All 2D gameplay execution occurs strictly inside Phaser 3.
 - **Controllers (`src/phaser/systems/`)**: Orchestrate gameplay state machine transitions (`DiscoveryController`, `LearningController`, `QuizController`). Controllers are the sole authorities for state transitions.
 - **Managers (`src/phaser/managers/`)**: Own and manage game entities and persistent objects (`GalaxyManager`, `AsteroidManager`, `DroneManager`, `SaveManager`, `ParticleManager`).
-  - *AsteroidManager Responsibilities*: Owns procedural asteroid field generation, 7 organic cluster formations, fragmentation physics (Large → Medium → Small), collision impact mechanics, laser projectile physics, and Stardust orb spawning.
-  - *DroneManager Responsibilities*: Owns off-screen spawning of autonomous survey probes (`AlienSurveyDrone.ts`), start-of-game spawn cooldown enforcement, proximity-driven AURA alerts, laser projectile pooling, and Arcade Physics collision safety.
-  - *Arcade Physics Collision Identity Rule*: Never assume positional parameter order (`obj1`, `obj2`) in `physics.add.overlap` callbacks. Always compare `objA` and `objB` against explicit entity references (`objA === this.playerShip`) to prevent accidental destruction of player entities when clearing laser projectiles.
-- **Systems (`src/phaser/systems/`)**: Process continuous gameplay mechanics (`ScannerSystem`, `InputSystem`, `AudioSystem`).
-  - *Input & Weapon Bindings*: Spacebar, F, K, and Mouse Click fire the Plasma Cannon. Shift strictly engages thruster boost. Never bind Spacebar to boost to avoid weapon input conflicts.
-- **EventBus (`src/core/events.ts`)**: Serves as the single, decoupled Pub/Sub communication channel bridging Phaser 3 canvas events and React UI overlays without direct DOM coupling. Includes `UPDATE_SHIP_STATS` and `SHIP_STATS_CHANGED` contracts.
+- **EventBus (`src/core/events.ts`)**: Serves as the single, decoupled Pub/Sub communication channel bridging Phaser 3 canvas events and React UI overlays without direct DOM coupling.
 - **Data Pipelines (`src/data/`)**: Store educational datasets and quizzes in modular JSON registries with dynamic pipeline resolution (`contentPipeline.ts`, `quizPipeline.ts`).
-- **Global State Store (`src/store/useGameStore.ts`)**: Serves as the single source of truth for user profile state, discovered galaxy IDs (`profile.discoveredGalaxyIds`), quiz attempts (`profile.quizAttempts`), quiz high scores (`profile.quizHighScores`), stardust currency, and ship upgrade levels—automatically synced to browser `localStorage`.
-  - *Ship Upgrade Synchronization*: React `PilotDashboardModal` updates Zustand `useGameStore` and emits `UPDATE_SHIP_STATS`. Phaser `PlayerShip` listens to `UPDATE_SHIP_STATS` and dynamically updates speed, shield capacity, weapon cooldown, and vacuum magnet pull radius in real-time.
-  - *Progression Architecture Rule*: Ship Hardware Upgrades (Sprint 2.2 — Ion Engine, Deflector Shield, Plasma Cannon, Vacuum Dust Magnet purchased with Stardust) and Explorer Progression (Sprint 2.3 — Explorer XP, Levels, Rank Titles, Cosmetic Unlocks, Badges, Passive Perks) MUST remain strictly separate systems. Future AI development must never merge them into a single upgrade tree. Ship upgrades modify physical ship flight and combat performance, whereas Explorer Progression tracks player career identity, rank titles, cosmetic customizations, and lightweight passive bonuses.
-- **External Services & Cloud Save Layer (`src/services/`)**: Provides decoupled authentication and cloud synchronization:
-  - *AuthService (`src/services/auth/AuthService.ts`)*: Manages Google OAuth (`signInWithGoogle`) and Email/Password (`signInWithEmail`, `signUpWithEmail`) authentication, session state listeners (`onAuthStateChanged`), and human-readable error mapping.
-  - *CloudSaveService (`src/services/cloudSave/CloudSaveService.ts`)*: Isolated Firestore persistence strictly locked to document paths `users/{uid}/profile/main` and `users/{uid}/metadata/main` with UID session authorization validation.
-  - *CloudSaveSerializer (`src/services/cloudSave/CloudSaveSerializer.ts`)*: Handles bidirectional transformation, sanitization bounds, and schema validation between Zustand `ExplorerProfile` and Firestore DTOs (`CloudSaveProfileDTO`).
-  - *CloudSaveResolver (`src/services/cloudSave/CloudSaveResolver.ts`)*: Enforces deterministic conflict resolution: Additive Set Union ($A \cup B$) for unlocks/collections, Monotonic Max ($\max(A, B)$) for XP and quiz scores, Stardust Net-Delta Reconciliation for currency, and Timestamp-based precedence for callsigns and equipped cosmetics.
-  - *SyncManager (`src/services/cloudSave/SyncManager.ts`)*: Application-level orchestrator managing 3-second debounced auto-sync, dirty state tracking, reentrancy guards (`applyCloudUpdateToStore`), session generation tokens (`currentSessionId`), and network status listeners. Stardust baseline advancement (`stardustLastSynced`) is executed ONLY after confirmed cloud write.
+- **Global State Store (`src/store/useGameStore.ts`)**: Serves as the single source of truth for user profile state, discovered galaxy IDs, quiz attempts, quiz high scores, stardust currency, and ship upgrade levels—automatically synced to `localStorage`.
+- **External Services & Cloud Save Layer (`src/services/`)**:
+  - *AuthService (`src/services/auth/AuthService.ts`)*: Manages Email & Password authentication (`signInWithEmail`, `signUpWithEmail`, `updateProfile`, `sendEmailVerification`, `sendPasswordResetEmail`, `signOut`) seamlessly across Web and Desktop platforms.
+  - *CloudSaveService (`src/services/cloudSave/CloudSaveService.ts`)*: Firestore persistence strictly locked to `users/{uid}/profile/main`.
+  - *CloudSaveSerializer (`src/services/cloudSave/CloudSaveSerializer.ts`)*: Handles bidirectional transformation, sanitization bounds, and schema validation.
+  - *CloudSaveResolver (`src/services/cloudSave/CloudSaveResolver.ts`)*: Enforces deterministic conflict resolution (Additive Set Union, Monotonic Max, Stardust Net-Delta, Timestamp ordering).
+  - *SyncManager (`src/services/cloudSave/SyncManager.ts`)*: Orchestrates 3-second debounced auto-sync, dirty state tracking, reentrancy guards, and generation-based session tracking (`activeSyncSessionId`).
 - **Electron Desktop Architecture Layer (`electron/`)**:
-  - *Main Process (`electron/main.ts`)*: Manages single-instance application locking (`app.requestSingleInstanceLock()`), window lifecycle ($1280 \times 720$ initial, $1024 \times 600$ min, centered, dark background `#030712`, `ready-to-show` visual gating), strict Chromium sandboxing (`sandbox: true`, `contextIsolation: true`, `nodeIntegration: false`, `webSecurity: true`, `allowRunningInsecureContent: false`), embedded local loopback production server (`127.0.0.1:<port>`) with path traversal guards and graceful teardown (`stopLocalProductionServer`), cross-platform lifecycle orchestration (`whenReady`, `activate`, `window-all-closed`, `will-quit`), and external link interception routing to OS default browser via `shell.openExternal`.
-  - *Preload Context Bridge (`electron/preload.ts`)*: Minimal context bridge exposing only read-only platform metadata (`window.electron = { isDesktop: true, platform: process.platform }`). Never expose Node.js runtime APIs or arbitrary execution handles.
-  - *Build Pipeline*: Dual-target build using `esbuild` (`build:electron`, `electron:build`, `electron:dev`) with `base: './'` relative bundle resolution in `vite.config.ts`.
-
-### Strict Execution Rules:
-1. **Never Bypass Controllers**: React UI components must emit intent to the EventBus or trigger controller methods rather than attempting to mutate Phaser internal state directly.
-2. **Never Duplicate Logic**: Do not re-implement proximity detection, scoring, or state validation if an existing manager or controller already handles it.
-3. **Preserve Completed Systems**: Never refactor or alter working Sprint 2.5 Auth/Cloud Save services or Sprint 2.6 Phase 1 & 2 Electron infrastructure during subsequent UI or gameplay passes.
+  - *Main Process (`electron/main.ts`)*: Manages single-instance locking (`app.requestSingleInstanceLock()`), window lifecycle ($1280 \times 720$), Chromium sandboxing, and embedded loopback asset server (`127.0.0.1:<port>`).
+  - *Preload Context Bridge (`electron/preload.ts`)*: Minimal context bridge exposing only `{ isDesktop: true, platform: process.platform }`.
 
 ---
 
@@ -79,106 +96,44 @@ The codebase is split into distinct architectural boundaries. Every developer an
 
 ---
 
-## 6. UI / UX Standards
+## 6. Code Quality & AI Collaboration Rules
 
-- **Visual Theme**: NASA Mission Control dark sci-fi glassmorphic aesthetic (`slate-950`, `amber-400`, `cyan-400`).
-- **Typography & Hierarchy**: Pair clean display typography with high-contrast monospace indicators and serif headings for celestial nomenclature.
-- **Top Alignment**: Aligned top HUD elements sharing consistent top and side margins (`ShipStatusHUD`).
-- **Readability & Whitespace**: Maintain generous padding around containers and legible text contrast (WCAG AA compliant).
-- **Educational Priority**: Educational cards and mission quizzes always take precedence over ambient flight overlay controls during discovery sequences.
+When an AI coding agent works on this codebase, they MUST strictly abide by the following operational directives:
 
----
-
-## 7. Code Quality Standards
-
-- **TypeScript Strict Mode**: Fully typed interfaces, zero `any` assertions, and explicit enum/type exports in `src/core/types.ts`.
-- **Meaningful Naming**: Use clear, self-documenting function and variable names (`activeGalaxyRef`, `finishDiscovery`, `handleOverlayShown`).
-- **Centralized Configuration**: Maintain global physics parameters, world bounds, and key constants in `src/core/config.ts`.
-- **No Magic Numbers**: Move arbitrary numbers into central config or local descriptive constants.
-- **Clean Logging**: Use `src/core/logger.ts` for structured application logging instead of raw `console.log` statements.
-
----
-
-## 8. AI Collaboration Rules
-
-When an AI coding agent or developer works on this codebase, they MUST strictly abide by the following operational directives:
-
-1. **Read Documentation First**: Read `AI_DEVELOPMENT_GUIDE.md`, `PROJECT_STATE.md`, and relevant architecture docs before making changes.
+1. **Read Documentation First**: Read `AI_DEVELOPMENT_GUIDE.md`, `PROJECT_STATE.md`, `DEVELOPMENT_ROADMAP.md`, and relevant architecture docs before making changes.
 2. **Respect Current Architecture**: Work within the established React-Phaser-EventBus architecture.
 3. **Surgical Scope**: Implement only what is explicitly requested. Do not add unsolicited features, unrequested tabs, or background services.
-4. **No Unnecessary File Creation**: Do not generate extraneous documentation or wrapper files unless asked.
-5. **No Destructive Overwrites**: Never delete existing functionality or overwrite working components without explicit confirmation.
-6. **Explain Architectural Choices**: Briefly state rationale for key technical decisions in commit or response summaries.
-7. **Document Maintenance**: Update `PROJECT_STATE.md` and `DEVELOPMENT_ROADMAP.md` whenever milestones are completed.
+4. **No Destructive Overwrites**: Never delete existing functionality or overwrite working components without explicit confirmation.
+5. **No Secret Leaks**: Never put secrets into client-side code, git tracking, or public templates.
+6. **Maintain Documentation**: Keep all documentation files synchronized with actual code implementations.
 
 ---
 
-## 9. Required Reading Order
+## 7. Required Reading Order
 
 Before writing code or making edits, AI assistants and developers MUST inspect documentation in this exact order:
 
-1. `AI_DEVELOPMENT_GUIDE.md` (This constitution)
+1. `AI_DEVELOPMENT_GUIDE.md` (This guide)
 2. `PROJECT_STATE.md` (Current project status, folder structure, implemented features)
 3. `DEVELOPMENT_ROADMAP.md` (Lean V1 roadmap and milestone status)
-4. `ARCHITECTURE_OVERVIEW.md` (High-level architecture and EventBus flows)
-5. `docs/ENGINEERING_STANDARDS.md` (Detailed coding standards)
-6. Relevant system architecture doc in `docs/` (`DISCOVERY_SYSTEM_ARCHITECTURE.md`, `LEARNING_SYSTEM_ARCHITECTURE.md`, `QUIZ_SYSTEM_ARCHITECTURE.md`, `DRONE_SYSTEM_ARCHITECTURE.md`, etc.)
-7. Latest sprint reports (`SPRINT_2_6_5_REPORT.md`, `SPRINT_2_6_PHASE_2_REPORT.md`, `SPRINT_2_6_PHASE_1_REPORT.md`, `SPRINT_2_5_REPORT.md`, `SPRINT_2_4_5_REPORT.md`, `SPRINT_2_4_REPORT.md`, `SPRINT_2_3_REPORT.md`, `SPRINT_2_1_REPORT.md`, `STABILIZATION_SPRINT_1_REPORT.md`, `QUALITY_SPRINT_1_REPORT.md`)
+4. `SYSTEM_ARCHITECTURE.md` & `ARCHITECTURE_OVERVIEW.md` (High-level architecture and EventBus flows)
+5. `docs/AUTHENTICATION.md` (Firebase Authentication and Cloud Save specifications)
+6. `docs/TESTING_GUIDE.md` (Testing and verification protocols)
+7. `docs/ENGINEERING_STANDARDS.md` (Detailed coding standards)
+8. Latest sprint reports (`SPRINT_2_6_5_REPORT.md`, `SPRINT_2_6_PHASE_3_REPORT.md`, `SPRINT_2_5_REPORT.md`, etc.)
 
 ---
 
-## 10. Sprint Workflow
-
-All sprint work follows this deterministic execution pipeline:
-
-```
-  1. Understand Current Project State
-                 ↓
-  2. Read Required Documentation
-                 ↓
-  3. Implement Minimal Requested Scope
-                 ↓
-  4. Run Type Linter (lint_applet)
-                 ↓
-  5. Compile Application (compile_applet)
-                 ↓
-  6. Verify Visual & Functional Output
-                 ↓
-  7. Update Documentation & Summarize Changes
-```
-
----
-
-## 11. Non-Goals
-
-The following patterns and additions are STRICTLY PROHIBITED for Version 1.0:
-
-- **No Over-Engineering**: Do not build complex backend microservices, SQL databases, or multi-tenant servers unless explicitly requested.
-- **No Unplanned Combat Systems**: Do not transform the game into a space shooter or heavy combat simulator.
-- **No UI Clutter**: Do not re-introduce developer debug text or crowded panel grids to the main gameplay canvas.
-- **No Framework Swapping**: Do not attempt to replace Phaser 3, React 18, Vite, or Zustand with alternative frameworks.
-- **No Mock Placeholders for Core Data**: Do not hardcode fake UI stubs when working with real dataset pipelines.
-
----
-
-## 12. Long-Term Vision
-
-The ultimate goal for Version 1.0 is to deliver a world-class, polished educational desktop application where students travel across a 2D deep-space cosmos, discover real galaxies, read authentic NASA/JWST astronomical research cards, test their understanding through adaptive scientific assessments, collect stardust rewards, and build a persistent Galactic Archive.
-
-The application must look, feel, and perform like a commercial educational software product suitable for deployment in Astronomy Pathshala classrooms worldwide.
-
----
-
-## 13. AI Implementation Checklist
+## 8. AI Implementation Checklist
 
 Before finishing any task, the AI agent MUST verify:
 
 - [ ] Read all required documentation files.
-- [ ] Strictly followed architectural boundaries (React, Phaser, EventBus, Controllers).
+- [ ] Strictly followed architectural boundaries (React, Phaser, EventBus, Services, Electron).
 - [ ] Implemented only the requested functional scope without feature creep.
 - [ ] Preserved all existing working functionality.
-- [ ] Maintained 60 FPS performance and clean memory management.
+- [ ] Ensured client-side bundle and desktop builds contain zero private client secrets.
 - [ ] Verified build succeeds using `compile_applet`.
 - [ ] Verified strict typing passes using `lint_applet`.
-- [ ] Synchronized documentation if project state or roadmap changed.
+- [ ] Synchronized documentation across the repository.
 - [ ] Provided a concise, professional summary of modifications to the user.

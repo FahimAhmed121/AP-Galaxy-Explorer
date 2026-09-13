@@ -16,7 +16,8 @@ interface MainMenuProps {
 export default function MainMenu({ onStartGame, onOpenArchive, onOpenSettings, currentUser, onOpenAuth }: MainMenuProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [modalType, setModalType] = useState<'ABOUT' | 'CREDITS' | null>(null);
-  const { settings, toggleSound, profile } = useGameStore();
+  const { settings, toggleSound, profile, savedShipState } = useGameStore();
+  const hasActiveSession = Boolean(savedShipState || (profile && profile.discoveredGalaxyIds.length > 0));
 
   const isBN = settings.language === 'BN';
   const t = (en: string, bn: string) => (isBN ? bn : en);
@@ -233,7 +234,11 @@ export default function MainMenu({ onStartGame, onOpenArchive, onOpenSettings, c
           className="group relative w-full py-4 px-6 rounded-sm bg-gold text-black font-extrabold flex items-center justify-center gap-3 transition-colors duration-300 hover:bg-gold-hover shadow-xl hover:shadow-gold/20 active:scale-[0.98] cursor-pointer"
         >
           <Play size={16} className="fill-black group-hover:scale-110 transition-transform" />
-          <span className="tracking-[0.2em] text-xs uppercase">{t('Start Exploration', 'অভিযাত্রা শুরু করুন')}</span>
+          <span className="tracking-[0.2em] text-xs uppercase">
+            {hasActiveSession
+              ? t('Resume Exploration', 'অভিযাত্রা চালিয়ে যান')
+              : t('Start Exploration', 'অভিযাত্রা শুরু করুন')}
+          </span>
         </button>
 
         {/* GALACTIC CATALOG ARCHIVE */}

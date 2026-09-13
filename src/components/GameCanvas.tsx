@@ -181,6 +181,18 @@ export default function GameCanvas({
   // 2. Keyboard Event Listeners for Dashboard
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Do not capture keys if the user is typing into an input field or textarea
+      const target = e.target as HTMLElement;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
       if (e.code === 'KeyP' || e.code === 'Tab') {
         e.preventDefault();
         setShowDashboard((prev) => !prev);
@@ -190,6 +202,13 @@ export default function GameCanvas({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  // Handle Return to Main Menu with State Preservation
+  const handleReturnToMenu = () => {
+    onSaveShipState(hudShip);
+    saveShipState(hudShip);
+    onExitToMenu();
+  };
 
   // Handle Ship Upgrades & Updates
   const handleUpdateShip = (updatedShip: Spaceship) => {
@@ -239,6 +258,7 @@ export default function GameCanvas({
             onOpenDashboard={() => setShowDashboard(true)}
             onOpenArchive={onOpenArchive}
             onOpenSettings={onOpenSettings}
+            onReturnToMenu={handleReturnToMenu}
           />
         );
       })()}

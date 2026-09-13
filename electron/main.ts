@@ -57,9 +57,74 @@ if (!hasSingleInstanceLock) {
     }
   }
 
+  const DEFAULT_PRODUCTION_PORT = 39228;
+
+  /**
+   * Reads the previously used loopback port from userData to ensure origin persistence
+   * for localStorage and Firebase session across application restarts.
+   */
+  function getPersistedPort(): number {
+    try {
+      const portFilePath = path.join(app.getPath('userData'), 'app_port.json');
+      if (fs.existsSync(portFilePath)) {
+        const content = fs.readFileSync(portFilePath, 'utf-8');
+        const parsed = JSON.parse(content);
+        if (typeof parsed.port === 'number' && parsed.port >= 1024 && parsed.port <= 65535) {
+          return parsed.port;
+        }
+      }
+    } catch (err) {
+      console.warn('[Electron Main] Could not read persisted port file:', err);
+    }
+    return DEFAULT_PRODUCTION_PORT;
+  }
+
+  /**
+   * Saves the bound port to userData to reuse it across future launches.
+   */
+  function persistPort(port: number): void {
+    try {
+      const portFilePath = path.join(app.getPath('userData'), 'app_port.json');
+      fs.writeFileSync(portFilePath, JSON.stringify({ port, updatedAt: Date.now() }), 'utf-8');
+    } catch (err) {
+      console.warn('[Electron Main] Could not write persisted port file:', err);
+    }
+  }
+
+  /**
+   * Helper to attempt binding the HTTP server to a specific port on 127.0.0.1
+   */
+  function tryListen(server: http.Server, port: number): Promise<number> {
+    return new Promise((resolve, reject) => {
+      const onListening = () => {
+        cleanup();
+        const address = server.address();
+        if (address && typeof address === 'object') {
+          resolve(address.port);
+        } else {
+          resolve(port);
+        }
+      };
+
+      const onError = (err: any) => {
+        cleanup();
+        reject(err);
+      };
+
+      const cleanup = () => {
+        server.removeListener('listening', onListening);
+        server.removeListener('error', onError);
+      };
+
+      server.once('listening', onListening);
+      server.once('error', onError);
+      server.listen(port, '127.0.0.1');
+    });
+  }
+
   /**
    * Start an embedded loopback server to serve built files in production on 127.0.0.1
-   * Guarantees origin compatibility with Firebase Auth and Firestore while isolating local assets.
+   * Guarantees origin compatibility with Firebase Auth, Firestore, and localStorage persistence.
    */
   function startLocalProductionServer(distPath: string): Promise<number> {
     return new Promise((resolve, reject) => {
@@ -70,6 +135,9 @@ if (!hasSingleInstanceLock) {
       }
 
       const resolvedDistPath = path.resolve(distPath);
+      const distRootPrefix = resolvedDistPath.endsWith(path.sep)
+        ? resolvedDistPath
+        : resolvedDistPath + path.sep;
 
       staticServer = http.createServer((req, res) => {
         const parsedUrl = new URL(req.url || '/', 'http://127.0.0.1');
@@ -81,8 +149,8 @@ if (!hasSingleInstanceLock) {
 
         const filePath = path.normalize(path.join(resolvedDistPath, reqPath));
 
-        // Prevent path traversal
-        if (!filePath.startsWith(resolvedDistPath)) {
+        // Prevent path traversal and directory-boundary escapes
+        if (filePath !== resolvedDistPath && !filePath.startsWith(distRootPrefix)) {
           res.writeHead(403);
           res.end('Access Denied');
           return;
@@ -110,20 +178,30 @@ if (!hasSingleInstanceLock) {
         });
       });
 
-      staticServer.listen(0, '127.0.0.1', () => {
-        const address = staticServer?.address();
-        if (address && typeof address === 'object') {
-          serverPort = address.port;
-          resolve(serverPort);
-        } else {
-          reject(new Error('Failed to bind embedded production server'));
-        }
-      });
+      const preferredPort = getPersistedPort();
+      const candidatePorts = [preferredPort, preferredPort + 1, preferredPort + 2, preferredPort + 3, 0];
 
-      staticServer.on('error', (err) => {
-        console.error('[Electron Main] Local server error:', err);
-        reject(err);
-      });
+      (async () => {
+        for (const port of candidatePorts) {
+          try {
+            const boundPort = await tryListen(staticServer!, port);
+            serverPort = boundPort;
+            persistPort(boundPort);
+            console.log(`[Electron Main] Embedded production server bound to http://127.0.0.1:${boundPort}`);
+            resolve(boundPort);
+            return;
+          } catch (err: any) {
+            if (err?.code === 'EADDRINUSE') {
+              console.warn(`[Electron Main] Port ${port} in use, trying next candidate...`);
+              continue;
+            }
+            console.error('[Electron Main] Error starting loopback server:', err);
+            reject(err);
+            return;
+          }
+        }
+        reject(new Error('Failed to bind embedded production server to any candidate port'));
+      })().catch(reject);
     });
   }
 
