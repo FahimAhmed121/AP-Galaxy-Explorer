@@ -34,13 +34,13 @@ AP Galaxy Explorer is built for astronomy learning rather than as a conventional
 
 The application includes:
 
-- **Galaxy exploration** — a navigable 2D space environment containing multiple galaxies and astronomical objects
-- **Discovery system** — scan and record objects encountered during exploration
-- **Learning system** — structured astronomy dossiers associated with discovered content
-- **Quiz system** — a 50-question astronomy quiz dataset
-- **Progression system** — explorer ranks, merit badges, cosmetics, and progression rewards
-- **Drone system** — exploration and combat-support mechanics
-- **AURA** — Astronomical Universal Research Assistant integrated into the exploration experience
+- **Galaxy exploration** - a navigable 2D space environment containing multiple galaxies and astronomical objects
+- **Discovery system** - scan and record objects encountered during exploration
+- **Learning system** - structured astronomy dossiers associated with discovered content
+- **Quiz system** - a 50-question astronomy quiz dataset
+- **Progression system** - explorer ranks, merit badges, cosmetics, and progression rewards
+- **Drone system** - exploration and combat-support mechanics
+- **AURA** - Astronomical Universal Research Assistant integrated into the exploration experience
 
 ## Technology Stack
 
