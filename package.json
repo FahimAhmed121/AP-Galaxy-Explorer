@@ -1,7 +1,9 @@
 {
   "name": "ap-galaxy-explorer",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "An educational 2D space exploration game where players discover galaxies, learn astronomy facts, complete quizzes, and earn certificates.",
+  "author": "Astronomy Pathshala",
   "main": "dist-electron/main.cjs",
   "type": "module",
   "scripts": {
@@ -10,6 +12,8 @@
     "build:electron": "esbuild electron/main.ts --bundle --platform=node --format=cjs --packages=external --outfile=dist-electron/main.cjs && esbuild electron/preload.ts --bundle --platform=node --format=cjs --packages=external --outfile=dist-electron/preload.cjs",
     "electron:build": "npm run build && npm run build:electron",
     "electron:dev": "npm run build:electron && electron .",
+    "package:win": "npm run electron:build && electron-builder --win nsis",
+    "package:win:dir": "npm run electron:build && electron-builder --win --dir",
     "preview": "vite preview",
     "clean": "rm -rf dist dist-electron server.js",
     "lint": "tsc --noEmit"
@@ -33,10 +37,42 @@
     "@types/node": "^22.14.0",
     "autoprefixer": "^10.4.21",
     "electron": "^43.4.0",
+    "electron-builder": "^26.15.3",
     "esbuild": "^0.25.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.3"
+  },
+  "build": {
+    "appId": "com.astronomypathshala.apgalaxyexplorer",
+    "productName": "AP Galaxy Explorer",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AP Galaxy Explorer",
+      "artifactName": "${productName} Setup ${version}.${ext}"
+    }
   }
 }

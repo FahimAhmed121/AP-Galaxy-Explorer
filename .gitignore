@@ -1,8 +1,12 @@
 node_modules/
-build/
 dist/
-coverage/
-.DS_Store
-*.log
-.env*
+dist-electron/
+.env
+.env.*
 !.env.example
+*.log
+release/
+
+build/*
+!build/icon.png
+!build/icon.ico
