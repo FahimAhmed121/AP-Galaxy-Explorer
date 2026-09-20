@@ -1,181 +1,204 @@
-# AP Galaxy Explorer V2 — Astronomy Pathshala
+# AP Galaxy Explorer
 
-An interactive 2D astronomy exploration game and educational platform built with **React 18**, **TypeScript**, **Phaser (^4.2.1)**, **Zustand**, **Tailwind CSS**, **Firebase Authentication & Cloud Save**, and **Web Audio API**. Designed for high-performance cross-platform Web deployment and standalone Desktop execution via **Electron**.
+**AP Galaxy Explorer** is an educational 2D space-exploration game by **Astronomy Pathshala**, designed to make astronomy learning interactive through exploration, discovery, quizzes, learning dossiers, and progression.
 
----
+The project combines a browser-based React interface with a Phaser-powered game world and an Electron desktop runtime.
 
-## 🚀 Architectural Overview & Folder Structure
+## Download
+
+**Windows:** [Download AP Galaxy Explorer v1.0.0](https://github.com/FahimAhmed121/AP-Galaxy-Explorer/releases/tag/v1.0.0-windows)
+
+The Windows release is distributed as an NSIS installer:
+
+`AP Galaxy Explorer Setup 1.0.0.exe`
+
+**Windows:** x64  
+**Version:** 1.0.0  
+**Release tag:** `v1.0.0-windows`
+
+### What you can do
+
+- Explore a 2D space environment and visit different galaxies
+- Scan and discover astronomical objects
+- Read astronomy learning dossiers
+- Complete astronomy quizzes
+- Progress through explorer ranks and earn rewards
+- Deploy and use drones during exploration
+- Maintain local game progress
+- Sign in with Firebase Email/Password authentication
+- Sync supported player data through Firebase Cloud Save
+
+## Educational Focus
+
+AP Galaxy Explorer is built for astronomy learning rather than as a conventional arcade game. Gameplay systems are used to encourage exploration and reinforce scientific concepts.
+
+The application includes:
+
+- **Galaxy exploration** — a navigable 2D space environment containing multiple galaxies and astronomical objects
+- **Discovery system** — scan and record objects encountered during exploration
+- **Learning system** — structured astronomy dossiers associated with discovered content
+- **Quiz system** — a 50-question astronomy quiz dataset
+- **Progression system** — explorer ranks, merit badges, cosmetics, and progression rewards
+- **Drone system** — exploration and combat-support mechanics
+- **AURA** — Astronomical Universal Research Assistant integrated into the exploration experience
+
+## Technology Stack
+
+| Area | Technology |
+|---|---|
+| Frontend | React 19 + TypeScript |
+| Game Engine | Phaser |
+| Styling | Tailwind CSS |
+| State Management | Zustand |
+| Build Tool | Vite |
+| Desktop Runtime | Electron |
+| Authentication | Firebase Authentication |
+| Cloud Data | Firebase Cloud Firestore |
+| Audio | Web Audio API |
+| Package Management | Bun / npm-compatible scripts |
+
+## Project Structure
 
 ```text
 /
-├── .env.example                # Template for environment variables (Vite & Electron)
-├── firestore.rules             # Security rules for user profile & cloud save
-├── index.html                  # Main DOM entry HTML
-├── package.json                # Project dependencies and build scripts
-├── tsconfig.json               # Strict TypeScript configuration
-├── vite.config.ts              # Vite bundler configuration (relative asset paths)
-│
-├── electron/                   # Electron Desktop Architecture
-│   ├── main.ts                 # Main process (Loopback static server, single instance, sandboxing)
-│   └── preload.ts              # Secure preload context bridge (window.electron)
-│
-├── docs/                       # Technical Specifications & Guides
-│   ├── ARCHITECTURE.md         # Full system architecture specification
-│   ├── AUTHENTICATION.md       # In-depth Firebase Auth & Cloud Save guide
-│   ├── ENGINEERING_STANDARDS.md# Engineering rules, patterns, and conventions
-│   ├── TESTING_GUIDE.md        # Step-by-step test & verification protocols
-│   ├── DISCOVERY_SYSTEM_ARCHITECTURE.md
-│   ├── DRONE_SYSTEM_ARCHITECTURE.md
-│   ├── GALAXY_SYSTEM_ARCHITECTURE.md
-│   ├── LEARNING_SYSTEM_ARCHITECTURE.md
-│   ├── QUIZ_SYSTEM_ARCHITECTURE.md
-│   ├── SCANNER_SYSTEM_ARCHITECTURE.md
-│   └── UNIVERSE_ARCHITECTURE.md
-│
-└── src/
-    ├── main.tsx                # Application entry point
-    ├── App.tsx                 # Main application shell & view switcher
-    ├── index.css               # Global CSS & Tailwind directives
-    │
-    ├── components/             # React UI Component Hierarchy
-    │   ├── common/             # Reusable UI elements (AuthModal, AboutCredits, Certificate)
-    │   ├── educational/        # Astronomy dossiers, quiz modals, certificates
-    │   ├── hud/                # Glassmorphic HUDs (Status, Radar, Pilot Dashboard, AURA)
-    │   └── views/              # Full-screen views (MainMenu, Archive, Settings)
-    │
-    ├── core/                   # Shared Infrastructure & Contracts
-    │   ├── config.ts           # Game physics, energy, and world configurations
-    │   ├── constants.ts        # World bounds (8000x8000 px) & application constants
-    │   ├── errors.ts           # Custom error definitions
-    │   ├── events.ts           # Decoupled EventBus interfaces & payload contracts
-    │   ├── logger.ts           # Diagnostic logging utility
-    │   └── types.ts            # Global TypeScript types (Ship, Profile, Quiz, Cosmetics)
-    │
-    ├── data/                   # Educational & Gameplay Data Registries
-    │   ├── educational/        # Handcrafted 5-card bilingual dossiers for 10 galaxies
-    │   ├── quizzes/            # 50-question scientific quiz datasets
-    │   ├── contentPipeline.ts  # Fallback-protected dossier loader
-    │   ├── quizPipeline.ts     # Asynchronous quiz evaluator
-    │   ├── galaxies.json       # Master catalog of 10 galaxies & spatial coordinates
-    │   └── progressionData.ts  # 15 Explorer ranks, merit badges, cosmetics & perks
-    │
-    ├── engine/                 # Web Audio Procedural Synthesis
-    │   └── audioEngine.ts      # Procedural sound synthesizer (lasers, engines, ambient)
-    │
-    ├── phaser/                 # Phaser 2D Game Engine Architecture
-    │   ├── entities/           # PlayerShip, Asteroid, GalaxyObject, SpaceStation, Drone
-    │   ├── managers/           # GalaxyManager, AsteroidManager, DroneManager, WorldManager
-    │   ├── scenes/             # MainGameplayScene
-    │   └── systems/            # InputSystem, ScannerSystem, DiscoveryController
-    │
-    ├── services/               # External & Cloud Services
-    │   ├── auth/               # Firebase Authentication wrapper (Email/Password)
-    │   ├── cloudSave/          # Cloud Save, Conflict Resolver, DTOs & SyncManager
-    │   └── firebase.ts         # Firebase App & SDK Singleton
-    │
-    ├── store/                  # State Management (Zustand with localStorage fallback)
-    │   └── useGameStore.ts
-    │
-    └── utils/                  # Helper Utilities (Math, formatting)
-        └── mathUtils.ts
+├── electron/                  # Electron main and preload processes
+├── docs/                      # Architecture, testing, and engineering documentation
+├── src/
+│   ├── components/            # React UI components and views
+│   ├── core/                  # Shared types, configuration, events, and utilities
+│   ├── data/                  # Galaxies, educational content, quizzes, and progression data
+│   ├── engine/                # Procedural Web Audio engine
+│   ├── phaser/                # Game entities, scenes, managers, and gameplay systems
+│   ├── services/              # Authentication and cloud-save services
+│   ├── store/                 # Zustand game state and persistence
+│   └── utils/                 # General utilities
+├── build/                     # Electron packaging resources
+├── firestore.rules            # Firestore security rules
+├── index.html                 # Web application entry point
+├── package.json               # Dependencies and build/package scripts
+└── vite.config.ts             # Vite configuration
 ```
 
----
+## Running the Project Locally
 
-## 🛠️ Tech Stack
+### Prerequisites
 
-- **UI & Presentation:** React 18, Tailwind CSS, Lucide React, Motion
-- **Game Engine & Renderer:** Phaser `^4.2.1` (WebGL / 2D Canvas)
-- **State Management:** Zustand with LocalStorage fallback persistence
-- **Authentication:** Firebase Authentication (Email & Password with Verification & Password Reset)
-- **Cloud Database:** Firebase Cloud Firestore (with deterministic conflict resolution)
-- **Audio Engine:** Custom procedural synthesizer using Web Audio API
-- **Desktop Runtime:** Electron Framework (Sandboxed, Loopback Static Server, Single-Instance Lock)
+- Node.js or Bun
+- A Windows environment for Electron/Windows packaging
+- Firebase project configuration for authentication and cloud features
 
----
+### Environment Configuration
 
-## 🔄 Development & Testing Workflow
+Create a local `.env` file based on `.env.example`.
 
-Development is driven iteratively in **Google AI Studio** with local execution and verification on **Windows PC**:
+The application uses the following Vite environment variables:
 
 ```text
-Google AI Studio (Gemini) ──> Download ZIP ──> Extract to Windows ──> Local Build & Electron Test ──> Report Results
+VITE_FIREBASE_API_KEY
+VITE_FIREBASE_AUTH_DOMAIN
+VITE_FIREBASE_PROJECT_ID
+VITE_FIREBASE_STORAGE_BUCKET
+VITE_FIREBASE_MESSAGING_SENDER_ID
+VITE_FIREBASE_APP_ID
 ```
 
-1. **Modify Codebase**: Development performed in Google AI Studio.
-2. **Download & Extract**: Download updated ZIP package and extract to local workspace.
-3. **Configure Environment**: Copy `.env.example` to `.env` and fill in required Firebase credentials.
-4. **Build & Execute**: Compile assets and run Electron directly.
+Do **not** commit your local `.env` file.
 
----
+### Development
 
-## ⚙️ Environment Configuration
+Install dependencies:
 
-| Variable Name | Scope | Security Level | Purpose |
-| :--- | :--- | :---: | :--- |
-| `VITE_FIREBASE_API_KEY` | Client / Vite | Safe for bundle | Firebase Public Web API Key |
-| `VITE_FIREBASE_AUTH_DOMAIN` | Client / Vite | Safe for bundle | Firebase Authentication Domain |
-| `VITE_FIREBASE_PROJECT_ID` | Client / Vite | Safe for bundle | Firebase Project ID |
-| `VITE_FIREBASE_STORAGE_BUCKET` | Client / Vite | Safe for bundle | Firebase Storage Bucket |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID`| Client / Vite | Safe for bundle | Firebase Cloud Messaging Sender ID |
-| `VITE_FIREBASE_APP_ID` | Client / Vite | Safe for bundle | Firebase Application ID |
-
----
-
-## 💻 Build & Run Commands
-
-### 1. Web Application (Development)
 ```bash
-# Start local Vite development server on port 3000
+bun install
+```
+
+Start the Vite development server:
+
+```bash
 bun dev
-# or: npm run dev
 ```
 
-### 2. Desktop Application (Production Bundling & Launch)
-```powershell
-# Step 1: Compile React Vite frontend into /dist
-bun run build
+Or with npm:
 
-# Step 2: Compile Electron main & preload scripts into /dist-electron
-bun run build:electron
-
-# Step 3: Launch Desktop Application in Electron
-node_modules\.bin\electron.exe .
-# or: npm run electron:dev
+```bash
+npm install
+npm run dev
 ```
 
----
+### Electron Development
 
-## 🔐 Authentication & Cloud Save Architecture
+Build the frontend and Electron processes, then launch Electron:
 
-Firebase Authentication operates seamlessly across both Web and Electron Desktop environments:
+```bash
+npm run electron:dev
+```
 
-1. **Direct Registration & Login:** The user registers or signs in using Email & Password directly through `AuthModal.tsx` and `AuthService.ts`.
-2. **Callsign & Profile:** Upon registration, the pilot's callsign is attached directly to the Firebase profile (`updateProfile`).
-3. **Verification & Recovery:** Full support for email verification dispatch (`sendEmailVerification`) and password recovery links (`sendPasswordResetEmail`).
-4. **Embedded Desktop Loopback Server:** In standalone desktop mode, Electron serves the production bundle over `http://127.0.0.1:<port>` (using preferred port `39228` with origin persistence under `userData`), providing consistent HTTP origin parity across restarts for Firebase Auth, Firestore, and `localStorage`.
-5. **SyncManager Auto-Sync:** `SyncManager.ts` syncs player profile data with Cloud Firestore (`users/{uid}/profile/main`) using 3-second debouncing, session generation locks, and deterministic conflict resolution (Additive Set Union, Monotonic Max, Stardust Net-Delta).
+### Windows Packaging
 
-For complete technical details and troubleshooting, see **[`docs/AUTHENTICATION.md`](./docs/AUTHENTICATION.md)** and **[`docs/TESTING_GUIDE.md`](./docs/TESTING_GUIDE.md)**.
+Create an unpacked Windows build:
 
----
+```bash
+npm run package:win:dir
+```
 
-## 📊 Current Development Status
+Create the Windows NSIS installer:
 
-- **Sprint 2.5 (Completed & Verified)**: Firebase Authentication & Cloud Save.
-- **Sprint 2.6 (Completed & Audited)**: Electron Desktop Release.
-  - *Phase 1 (Completed & Audited)*: Electron Core, Sandboxing & Dual-Target Build Pipeline.
-  - *Phase 2 (Completed & Audited)*: Window Lifecycle, Single-Instance Lock & Loopback Asset Server.
-  - *Sprint 2.6.5 (Completed & Verified)*: QA Remediation, Session Concurrency & Navigation Hardening.
-  - *Phase 3.1–3.5 (Completed & Audited)*: Release Candidate Audit, Build Verification & Package Hardening.
-- **Sprint 2.7 (Completed & Verified)**: Permanent retirement of Google OAuth in favor of robust, direct Firebase Email/Password Authentication.
-  - *Phase 3.6 (Completed & Verified)*: Windows Desktop Manual Playtest. Core flight, scanning, discovery, quizzes, learning dossiers, and drone combat verified in Electron runtime.
-- **Sprint 2.8 (Post-Playtest Stabilization & Release Hardening)**:
-  - **Core gameplay**: Working (Verified)
-  - **Electron launch**: Working (Verified)
-  - **Electron gameplay**: Working (Verified)
-  - **Authentication**: Working baseline; form keyboard conflict (ELEC-PLAY-01) resolved and manually verified
-  - **Local persistence across Electron restart**: Origin stabilized (ELEC-PLAY-02); resolved and manually verified
-  - **Gameplay → Home navigation**: In-game HUD/Settings loop (ELEC-PLAY-03); resolved and manually verified
-  - **Status**: **Electron Stabilization Pass — COMPLETE / VERIFIED**
-  - **Next Phase**: **Release Hardening / Final QA**
+```bash
+npm run package:win
+```
+
+The installer is generated in:
+
+```text
+release/
+```
+
+## Authentication & Cloud Save
+
+The application uses Firebase Authentication with **Email/Password** sign-in.
+
+Cloud Save is backed by Firebase Cloud Firestore. Local persistence is also used so that core game progress can continue to work across application restarts.
+
+The Electron desktop application serves the production frontend through its local runtime so that browser-dependent functionality such as authentication and localStorage operates consistently within the desktop application.
+
+For implementation details, see:
+
+- [Authentication & Cloud Save](./docs/AUTHENTICATION.md)
+- [Testing Guide](./docs/TESTING_GUIDE.md)
+- [System Architecture](./docs/ARCHITECTURE.md)
+
+## Documentation
+
+The repository contains detailed technical documentation for contributors and maintainers.
+
+Key documents include:
+
+- [Architecture](./docs/ARCHITECTURE.md)
+- [Engineering Standards](./docs/ENGINEERING_STANDARDS.md)
+- [Testing Guide](./docs/TESTING_GUIDE.md)
+- [Authentication](./docs/AUTHENTICATION.md)
+- [Galaxy System](./docs/GALAXY_SYSTEM_ARCHITECTURE.md)
+- [Discovery System](./docs/DISCOVERY_SYSTEM_ARCHITECTURE.md)
+- [Learning System](./docs/LEARNING_SYSTEM_ARCHITECTURE.md)
+- [Quiz System](./docs/QUIZ_SYSTEM_ARCHITECTURE.md)
+- [Scanner System](./docs/SCANNER_SYSTEM_ARCHITECTURE.md)
+- [Drone System](./docs/DRONE_SYSTEM_ARCHITECTURE.md)
+- [Universe Architecture](./docs/UNIVERSE_ARCHITECTURE.md)
+
+## Release Status
+
+**Current public release: v1.0.0 for Windows**
+
+The Windows release has completed the desktop packaging and manual runtime verification process.
+
+Release assets and version history are available on the [GitHub Releases page](https://github.com/FahimAhmed121/AP-Galaxy-Explorer/releases).
+
+## About Astronomy Pathshala
+
+**Astronomy Pathshala** is a Bangladesh-based astronomy education initiative focused on making space science more accessible through Bengali educational content, programs, and technology.
+
+AP Galaxy Explorer is one of its interactive educational projects.
+
+## License
+
+See the repository for the applicable project licensing and usage terms.
